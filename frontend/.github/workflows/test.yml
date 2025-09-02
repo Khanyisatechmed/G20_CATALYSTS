@@ -1,0 +1,46 @@
+# .github/workflows/test.yml - Additional testing workflow
+name: Test Ubuntu Destinations
+
+on:
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.24.3'
+        channel: 'stable'
+        cache: true
+
+    - name: Install dependencies
+      working-directory: ./frontend
+      run: flutter pub get
+
+    - name: Verify formatting
+      working-directory: ./frontend
+      run: dart format --output=none --set-exit-if-changed .
+
+    - name: Analyze project source
+      working-directory: ./frontend
+      run: flutter analyze --no-fatal-infos
+
+    - name: Run widget tests
+      working-directory: ./frontend
+      run: flutter test --coverage
+
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./frontend/coverage/lcov.info
+        flags: flutter
+        name: ubuntu-destinations-coverage
+

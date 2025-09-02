@@ -17,6 +17,8 @@ dependencies:
   go_router: ^16.2.1
   google_maps_flutter: ^2.12.3
 
+
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -24,6 +26,17 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
+  web:
+    # Enable web support
+    pluginClass: WebPlugin
+
+fonts:
+    - family: Ubuntu
+      fonts:
+        - asset: fonts/Ubuntu-Regular.ttf
+        - asset: fonts/Ubuntu-Bold.ttf
+          weight: 700
 
 assets:
     # Images directory
@@ -37,3 +50,7 @@ assets:
     # Other assets
     - assets/data/
     - assets/fonts/
+
+  # Add web-specific fonts if needed
+
+
