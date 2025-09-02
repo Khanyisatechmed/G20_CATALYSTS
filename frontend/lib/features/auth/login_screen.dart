@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend/core/utils/responsive_helper.dart';
 import 'package:frontend/features/auth/providers/auth_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:go_router/go_router.dart'; // Import GoRouter
 import '../../../core/utils/responsive_helper.dart';
 import '../../../shared/widgets/responsive_layout.dart';
 import 'signup_screen.dart';
@@ -35,7 +36,8 @@ class _LoginScreenState extends State<LoginScreen> {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios, color: Colors.black87),
-          onPressed: () => Navigator.pop(context),
+          // Use context.pop() for back navigation with GoRouter
+          onPressed: () => context.pop(),
         ),
       ),
       body: ResponsiveLayoutBuilder(
@@ -58,9 +60,7 @@ class _LoginScreenState extends State<LoginScreen> {
       child: Container(
         constraints: const BoxConstraints(maxWidth: 500),
         padding: ResponsiveHelper.getResponsivePadding(context),
-        child: SingleChildScrollView(
-          child: _buildLoginForm(),
-        ),
+        child: SingleChildScrollView(child: _buildLoginForm()),
       ),
     );
   }
@@ -87,11 +87,7 @@ class _LoginScreenState extends State<LoginScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
-                    Icons.explore,
-                    size: 80,
-                    color: Colors.white,
-                  ),
+                  Icon(Icons.explore, size: 80, color: Colors.white),
                   SizedBox(height: 24),
                   Text(
                     'Ubuntu Destinations',
@@ -107,10 +103,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: Text(
                       'Discover authentic South African cultural experiences',
                       textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 18,
-                        color: Colors.white70,
-                      ),
+                      style: TextStyle(fontSize: 18, color: Colors.white70),
                     ),
                   ),
                 ],
@@ -234,7 +227,9 @@ class _LoginScreenState extends State<LoginScreen> {
                 validator: _validatePassword,
                 suffixIcon: IconButton(
                   icon: Icon(
-                    _isPasswordVisible ? Icons.visibility_off : Icons.visibility,
+                    _isPasswordVisible
+                        ? Icons.visibility_off
+                        : Icons.visibility,
                     color: Colors.grey,
                   ),
                   onPressed: () {
@@ -250,10 +245,7 @@ class _LoginScreenState extends State<LoginScreen> {
               // Password requirements
               Text(
                 'Password length must be at least 8 characters',
-                style: TextStyle(
-                  color: Colors.grey[600],
-                  fontSize: 14,
-                ),
+                style: TextStyle(color: Colors.grey[600], fontSize: 14),
               ),
 
               const SizedBox(height: 32),
@@ -331,7 +323,10 @@ class _LoginScreenState extends State<LoginScreen> {
               borderRadius: BorderRadius.circular(8),
               borderSide: BorderSide(color: Theme.of(context).primaryColor),
             ),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 16,
+            ),
           ),
         ),
       ],
@@ -359,10 +354,8 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _navigateToSignUp() {
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => const SignUpScreen()),
-    );
+    // Navigate using GoRouter
+    context.goNamed('signup');
   }
 
   Future<void> _handleLogin() async {
@@ -378,18 +371,13 @@ class _LoginScreenState extends State<LoginScreen> {
       );
 
       if (mounted && authProvider.isAuthenticated) {
-        Navigator.of(context).pushNamedAndRemoveUntil(
-          '/home',
-          (route) => false,
-        );
+        // Use GoRouter to navigate to the home route and remove the login route
+        context.goNamed('home');
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(e.toString()),
-            backgroundColor: Colors.red,
-          ),
+          SnackBar(content: Text(e.toString()), backgroundColor: Colors.red),
         );
       }
     } finally {
@@ -402,14 +390,12 @@ class _LoginScreenState extends State<LoginScreen> {
   void _handleForgotPassword() {
     // Implement forgot password logic
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Forgot password feature coming soon'),
-      ),
+      const SnackBar(content: Text('Forgot password feature coming soon')),
     );
   }
 }
 
-class  AuthButton extends StatelessWidget {
+class AuthButton extends StatelessWidget {
   final String text;
   final VoidCallback? onPressed;
   final bool isLoading;
@@ -429,28 +415,28 @@ class  AuthButton extends StatelessWidget {
       onPressed: isLoading ? null : onPressed,
       style: ElevatedButton.styleFrom(
         padding: const EdgeInsets.symmetric(vertical: 16),
-        backgroundColor: isPrimary ? Theme.of(context).primaryColor : Colors.grey[300],
+        backgroundColor:
+            isPrimary ? Theme.of(context).primaryColor : Colors.grey[300],
         foregroundColor: isPrimary ? Colors.white : Colors.black87,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       ),
-      child: isLoading
-          ? const SizedBox(
-              width: 24,
-              height: 24,
-              child: CircularProgressIndicator(
-                strokeWidth: 2,
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+      child:
+          isLoading
+              ? const SizedBox(
+                width: 24,
+                height: 24,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                ),
+              )
+              : Text(
+                text,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
-            )
-          : Text(
-              text,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
     );
   }
 }

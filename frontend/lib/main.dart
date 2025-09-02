@@ -25,9 +25,7 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         // Core services
-        Provider<ApiService>(
-          create: (_) => ApiService(),
-        ),
+        Provider<ApiService>(create: (_) => ApiService()),
 
         // Auth provider - foundation for other providers
         ChangeNotifierProxyProvider<ApiService, AuthProvider>(
@@ -58,23 +56,18 @@ class MyApp extends StatelessWidget {
 
         // Marketplace provider
         ChangeNotifierProvider<MarketplaceProvider>(
-          create: (context) => MarketplaceProvider(
-            context.read<ApiService>(),
-          ),
+          create: (context) => MarketplaceProvider(context.read<ApiService>()),
         ),
 
         // Accommodation provider
         ChangeNotifierProvider<AccommodationProvider>(
-          create: (context) => AccommodationProvider(
-            context.read<ApiService>(),
-          ),
+          create: (context) =>
+              AccommodationProvider(context.read<ApiService>()),
         ),
 
         // Profile provider
         ChangeNotifierProvider<ProfileProvider>(
-          create: (context) => ProfileProvider(
-            context.read<ApiService>(),
-          ),
+          create: (context) => ProfileProvider(context.read<ApiService>()),
         ),
       ],
       child: const UbuntuDestinationsApp(),

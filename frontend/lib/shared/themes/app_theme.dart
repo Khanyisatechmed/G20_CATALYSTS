@@ -126,9 +126,7 @@ class AppTheme {
           foregroundColor: Colors.white,
           elevation: 2,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           textStyle: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w600,
@@ -142,9 +140,7 @@ class AppTheme {
           foregroundColor: AppColors.primary,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
           side: const BorderSide(color: AppColors.primary),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           textStyle: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w600,
@@ -187,7 +183,10 @@ class AppTheme {
           borderRadius: BorderRadius.circular(8),
           borderSide: const BorderSide(color: AppColors.error, width: 2),
         ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 16,
+        ),
         hintStyle: const TextStyle(
           color: AppColors.textSecondary,
           fontFamily: 'Ubuntu',
@@ -199,13 +198,13 @@ class AppTheme {
       ),
 
       // Card Theme
-      cardTheme: CardTheme(
-        elevation: 2,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-        color: Colors.white,
-      ),
+      // cardTheme: CardTheme(
+      //   elevation: 2,
+      //   shape: RoundedRectangleBorder(
+      //     borderRadius: BorderRadius.circular(12),
+      //   ),
+      //   color: Colors.white,
+      // ),
 
       // Bottom Navigation Bar Theme
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
@@ -227,21 +226,21 @@ class AppTheme {
       ),
 
       // Tab Bar Theme
-      tabBarTheme: const TabBarTheme(
-        labelColor: AppColors.primary,
-        unselectedLabelColor: AppColors.textSecondary,
-        indicatorColor: AppColors.primary,
-        labelStyle: TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.w600,
-          fontFamily: 'Ubuntu',
-        ),
-        unselectedLabelStyle: TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.normal,
-          fontFamily: 'Ubuntu',
-        ),
-      ),
+      // tabBarTheme: const TabBarTheme(
+      //   labelColor: AppColors.primary,
+      //   unselectedLabelColor: AppColors.textSecondary,
+      //   indicatorColor: AppColors.primary,
+      //   labelStyle: TextStyle(
+      //     fontSize: 14,
+      //     fontWeight: FontWeight.w600,
+      //     fontFamily: 'Ubuntu',
+      //   ),
+      //   unselectedLabelStyle: TextStyle(
+      //     fontSize: 14,
+      //     fontWeight: FontWeight.normal,
+      //     fontFamily: 'Ubuntu',
+      //   ),
+      // ),
 
       // Chip Theme
       chipTheme: ChipThemeData(
@@ -252,9 +251,7 @@ class AppTheme {
           fontFamily: 'Ubuntu',
         ),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       ),
 
       // Divider Theme
@@ -265,15 +262,9 @@ class AppTheme {
       ),
 
       // Icon Theme
-      iconTheme: const IconThemeData(
-        color: AppColors.textPrimary,
-        size: 24,
-      ),
+      iconTheme: const IconThemeData(color: AppColors.textPrimary, size: 24),
 
-      primaryIconTheme: const IconThemeData(
-        color: Colors.white,
-        size: 24,
-      ),
+      primaryIconTheme: const IconThemeData(color: Colors.white, size: 24),
     );
   }
 
@@ -307,13 +298,13 @@ class AppTheme {
       ),
 
       // Card Theme for dark mode
-      cardTheme: CardTheme(
-        elevation: 2,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-        color: const Color(0xFF1E1E1E),
-      ),
+      // cardTheme: CardTheme(
+      //   elevation: 2,
+      //   shape: RoundedRectangleBorder(
+      //     borderRadius: BorderRadius.circular(12),
+      //   ),
+      //   color: const Color(0xFF1E1E1E),
+      // ),
 
       // Bottom Navigation Bar Theme for dark mode
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
