@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/features/bookings/providers/bookings_provider.dart';
 import 'package:provider/provider.dart';
+// ignore: depend_on_referenced_packages
 import 'package:flutter_web_plugins/url_strategy.dart';
 import 'app.dart';
 import 'core/services/api_service.dart';
 import 'features/auth/providers/auth_provider.dart';
 import 'features/home/providers/home_provider.dart';
-import 'features/explore/providers/explore_provider.dart';
-import 'features/bookings/providers/bookings_provider.dart';
+import 'features/explore/providers/explore_provider.dart'; // Fixed: was bookings_provider
 import 'features/marketplace/providers/marketplace_provider.dart';
 import 'features/accommodation/providers/accommodation_provider.dart';
 import 'features/profile/providers/profile_provider.dart';
@@ -23,46 +24,57 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        // Core services
         Provider<ApiService>(
           create: (_) => ApiService(),
         ),
+
+        // Auth provider - foundation for other providers
         ChangeNotifierProxyProvider<ApiService, AuthProvider>(
           create: (context) => AuthProvider(context.read<ApiService>()),
           update: (context, apiService, previous) =>
               previous ?? AuthProvider(apiService),
         ),
+
+        // Home provider
         ChangeNotifierProxyProvider<ApiService, HomeProvider>(
           create: (context) => HomeProvider(context.read<ApiService>()),
           update: (context, apiService, previous) =>
               previous ?? HomeProvider(apiService),
         ),
-        ChangeNotifierProxyProvider<ApiService, ExploreProvider>(
-          create: (context) => ExploreProvider(context.read<ApiService>()),
-          update: (context, apiService, previous) =>
-              previous ?? ExploreProvider(apiService),
+
+        // Explore provider
+        ChangeNotifierProvider<ExploreProvider>(
+          create: (context) => ExploreProvider(),
         ),
-        ChangeNotifierProxyProvider2<ApiService, AuthProvider, BookingsProvider>(
-          create: (context) => BookingsProvider(
+
+        // Booking provider - Fixed: BookingProvider instead of BookingsProvider
+        ChangeNotifierProvider<BookingProvider>(
+          create: (context) => BookingProvider(
             context.read<ApiService>(),
             context.read<AuthProvider>(),
           ),
-          update: (context, apiService, authProvider, previous) =>
-              previous ?? BookingsProvider(apiService, authProvider),
         ),
-        ChangeNotifierProxyProvider<ApiService, MarketplaceProvider>(
-          create: (context) => MarketplaceProvider(context.read<ApiService>()),
-          update: (context, apiService, previous) =>
-              previous ?? MarketplaceProvider(apiService),
+
+        // Marketplace provider
+        ChangeNotifierProvider<MarketplaceProvider>(
+          create: (context) => MarketplaceProvider(
+            context.read<ApiService>(),
+          ),
         ),
-        ChangeNotifierProxyProvider<ApiService, AccommodationProvider>(
-          create: (context) => AccommodationProvider(context.read<ApiService>()),
-          update: (context, apiService, previous) =>
-              previous ?? AccommodationProvider(apiService),
+
+        // Accommodation provider
+        ChangeNotifierProvider<AccommodationProvider>(
+          create: (context) => AccommodationProvider(
+            context.read<ApiService>(),
+          ),
         ),
-        ChangeNotifierProxyProvider<ApiService, ProfileProvider>(
-          create: (context) => ProfileProvider(context.read<ApiService>()),
-          update: (context, apiService, previous) =>
-              previous ?? ProfileProvider(apiService),
+
+        // Profile provider
+        ChangeNotifierProvider<ProfileProvider>(
+          create: (context) => ProfileProvider(
+            context.read<ApiService>(),
+          ),
         ),
       ],
       child: const UbuntuDestinationsApp(),

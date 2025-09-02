@@ -73,6 +73,20 @@ class UserModel {
     );
   }
 
+  get avatarUrl => null;
+
+  get displayName => null;
+
+  get location => null;
+
+  get membershipLevel => null;
+
+  get experiencesCount => null;
+
+  get placesVisited => null;
+
+  get culturalPoints => null;
+
   Map<String, dynamic> toJson() {
     return {
       'id': id,

@@ -2,7 +2,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:frontend/core/constants/app_colors.dart';
 import '../../../core/services/api_service.dart';
-import '../../../core/constants/api_endpoints.dart';
+import '../../../core/constants/api_endpoints.dart' as api_endpoints;
 
 class HomeProvider with ChangeNotifier {
   final ApiService _apiService;
@@ -39,7 +39,7 @@ class HomeProvider with ChangeNotifier {
 
   Future<void> _loadPopularExperiences() async {
     try {
-      final response = await _apiService.get(ApiEndpoints.popularExperiences);
+      final response = await _apiService.get(api_endpoints.ApiEndpoints.popularExperiences!);
       _popularExperiences = List<Map<String, dynamic>>.from(response.data['experiences']);
     } catch (e) {
       // Mock data for development
@@ -68,7 +68,7 @@ class HomeProvider with ChangeNotifier {
 
   Future<void> _loadARPackages() async {
     try {
-      final response = await _apiService.get('${ApiEndpoints.experiences}?has_ar=true');
+      final response = await _apiService.get('${api_endpoints.ApiEndpoints.experiences}?has_ar=true');
       _arPackages = List<Map<String, dynamic>>.from(response.data['experiences']);
     } catch (e) {
       // Mock data for development

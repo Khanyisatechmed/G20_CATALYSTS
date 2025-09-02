@@ -177,6 +177,74 @@ class ResponsiveHelper {
     );
   }
 
+  // MISSING METHOD - Get responsive grid delegate for GridView
+  static SliverGridDelegate getResponsiveGridDelegate(
+    BuildContext context, {
+    int? mobileCrossAxisCount,
+    int? tabletCrossAxisCount,
+    int? desktopCrossAxisCount,
+    double? childAspectRatio,
+    double? crossAxisSpacing,
+    double? mainAxisSpacing,
+    double? maxCrossAxisExtent,
+  }) {
+    final int crossAxisCount = getResponsiveCrossAxisCount(
+      context,
+      mobile: mobileCrossAxisCount ?? 2,
+      tablet: tabletCrossAxisCount ?? 3,
+      desktop: desktopCrossAxisCount ?? 4,
+    );
+
+    final double spacing = getResponsiveValue(
+      context,
+      mobile: 8.0,
+      tablet: 12.0,
+      desktop: 16.0,
+    );
+
+    // Use maxCrossAxisExtent if provided, otherwise use crossAxisCount
+    if (maxCrossAxisExtent != null) {
+      return SliverGridDelegateWithMaxCrossAxisExtent(
+        maxCrossAxisExtent: maxCrossAxisExtent,
+        childAspectRatio: childAspectRatio ?? 1.0,
+        crossAxisSpacing: crossAxisSpacing ?? spacing,
+        mainAxisSpacing: mainAxisSpacing ?? spacing,
+      );
+    }
+
+    return SliverGridDelegateWithFixedCrossAxisCount(
+      crossAxisCount: crossAxisCount,
+      childAspectRatio: childAspectRatio ?? 1.0,
+      crossAxisSpacing: crossAxisSpacing ?? spacing,
+      mainAxisSpacing: mainAxisSpacing ?? spacing,
+    );
+  }
+
+  // Alternative grid delegate method with more control
+  static SliverGridDelegate getCustomGridDelegate(
+    BuildContext context, {
+    required int mobileCrossAxisCount,
+    required int tabletCrossAxisCount,
+    required int desktopCrossAxisCount,
+    double childAspectRatio = 1.0,
+    double crossAxisSpacing = 8.0,
+    double mainAxisSpacing = 8.0,
+  }) {
+    final int crossAxisCount = getResponsiveValue(
+      context,
+      mobile: mobileCrossAxisCount,
+      tablet: tabletCrossAxisCount,
+      desktop: desktopCrossAxisCount,
+    );
+
+    return SliverGridDelegateWithFixedCrossAxisCount(
+      crossAxisCount: crossAxisCount,
+      childAspectRatio: childAspectRatio,
+      crossAxisSpacing: crossAxisSpacing,
+      mainAxisSpacing: mainAxisSpacing,
+    );
+  }
+
   // Check if device has small screen (mobile)
   static bool isSmallScreen(BuildContext context) {
     return getScreenWidth(context) < mobileBreakpoint;
@@ -246,6 +314,56 @@ class ResponsiveHelper {
       mobile: 60.0,
       tablet: 70.0,
       desktop: 80.0,
+    );
+  }
+
+  // Additional utility methods for better responsive design
+
+  // Get responsive card elevation
+  static double getResponsiveElevation(
+    BuildContext context, {
+    double? mobile,
+    double? tablet,
+    double? desktop,
+  }) {
+    return getResponsiveValue(
+      context,
+      mobile: mobile ?? 2.0,
+      tablet: tablet ?? 4.0,
+      desktop: desktop ?? 8.0,
+    );
+  }
+
+  // Get responsive dialog width
+  static double getDialogWidth(BuildContext context) {
+    final screenWidth = getScreenWidth(context);
+
+    if (isMobile(context)) {
+      return screenWidth * 0.9; // 90% of screen width
+    } else if (isTablet(context)) {
+      return screenWidth * 0.7; // 70% of screen width
+    } else {
+      return 600; // Fixed width for desktop
+    }
+  }
+
+  // Get responsive max width for content
+  static double getMaxContentWidth(BuildContext context) {
+    return getResponsiveValue(
+      context,
+      mobile: double.infinity,
+      tablet: 800.0,
+      desktop: 1200.0,
+    );
+  }
+
+  // Get responsive sidebar width
+  static double getSidebarWidth(BuildContext context) {
+    return getResponsiveValue(
+      context,
+      mobile: 280.0,
+      tablet: 320.0,
+      desktop: 350.0,
     );
   }
 }

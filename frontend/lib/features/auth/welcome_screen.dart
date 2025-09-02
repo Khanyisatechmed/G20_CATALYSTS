@@ -11,9 +11,9 @@ class WelcomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: ResponsiveLayoutBuilder(
-        mobile: _buildMobileLayout(context),
-        tablet: _buildTabletLayout(context),
-        desktop: _buildDesktopLayout(context),
+        mobile: (context, constraints) => _buildMobileLayout(context),
+        tablet: (context, constraints) => _buildTabletLayout(context),
+        desktop: (context, constraints) => _buildDesktopLayout(context),
       ),
     );
   }

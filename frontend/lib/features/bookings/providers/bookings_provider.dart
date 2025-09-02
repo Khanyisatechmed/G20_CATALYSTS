@@ -1,6 +1,7 @@
 // features/bookings/providers/booking_provider.dart
 import 'package:flutter/material.dart';
-import 'package:frontend/core/services/api_service.dart';
+import 'package:frontend/features/auth/providers/auth_provider.dart';
+import '../../../core/services/api_service.dart';
 
 class BookingProvider extends ChangeNotifier {
   final ApiService _apiService = ApiService();
@@ -10,6 +11,8 @@ class BookingProvider extends ChangeNotifier {
   List<Map<String, dynamic>> _experienceBookings = [];
   bool _isLoading = false;
   String? _error;
+
+  BookingProvider(ApiService read, AuthProvider read2);
 
   // Getters
   List<Map<String, dynamic>> get bookings => _bookings;
@@ -97,6 +100,33 @@ class BookingProvider extends ChangeNotifier {
 
     } catch (e) {
       _setError('Failed to create experience booking: $e');
+      _setLoading(false);
+    }
+  }
+
+  // Load a specific booking by ID
+  Future<void> loadBooking(String bookingId) async {
+    try {
+      _setLoading(true);
+      _setError(null);
+
+      // In a real app, you would make an API call here:
+      // final response = await _apiService.get('/bookings/$bookingId');
+
+      // For now, simulate with a delay
+      await Future.delayed(const Duration(seconds: 1));
+
+      // This would typically update a selectedBooking property
+      // For now, we'll just ensure the booking exists in our list
+      final booking = getBookingById(bookingId);
+      if (booking == null) {
+        throw Exception('Booking not found');
+      }
+
+      _setLoading(false);
+
+    } catch (e) {
+      _setError('Failed to load booking: $e');
       _setLoading(false);
     }
   }

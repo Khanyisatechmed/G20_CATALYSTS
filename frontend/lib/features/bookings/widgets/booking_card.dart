@@ -31,7 +31,7 @@ class BookingCard extends StatelessWidget {
     required this.imageUrl,
     required this.onTap,
     this.onCancel,
-    this.onModify,
+    this.onModify, required bool isPast,
   });
 
   @override

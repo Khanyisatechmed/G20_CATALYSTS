@@ -3,7 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/core/constants/app_colors.dart';
 import '../../../core/services/api_service.dart';
-import '../../../core/constants/api_endpoints.dart';
+import '../../../core/constants/api_endpoints.dart' as api_endpoints;
 
 class MarketplaceProvider with ChangeNotifier {
   final ApiService _apiService;
@@ -29,11 +29,17 @@ class MarketplaceProvider with ChangeNotifier {
   bool get showInStockOnly => _showInStockOnly;
   int get cartItemCount => _cart.length;
 
+  get error => null;
+
+  get toggleFairTradeFilter => null;
+
+  get showFairTradeOnly => null;
+
   Future<void> loadProducts() async {
     _setLoading(true);
 
     try {
-      final response = await _apiService.get(ApiEndpoints.products);
+      final response = await _apiService.get(api_endpoints.ApiEndpoints.products);
       _products = List<Map<String, dynamic>>.from(response.data['products']);
     } catch (e) {
       // Mock data for development

@@ -1,10 +1,11 @@
+// features/bookings/screens/bookings_screen.dart
 import 'package:flutter/material.dart';
+import 'package:frontend/features/bookings/providers/bookings_provider.dart';
 import 'package:provider/provider.dart';
-import 'package:frontend/core/utils/responsive_helper.dart';
-import 'package:frontend/shared/widgets/custom_bottom_nav.dart';
+import '../../../core/utils/responsive_helper.dart';
+import '../../../shared/widgets/responsive_layout.dart';
+import '../../../shared/widgets/custom_bottom_nav.dart';
 import '../widgets/booking_card.dart';
-import '../../accommodation/screens/accommodation_booking_screen.dart';
-import '../../marketplace/screens/product_detail_screen.dart';
 
 class BookingsScreen extends StatefulWidget {
   const BookingsScreen({super.key});
@@ -22,7 +23,7 @@ class _BookingsScreenState extends State<BookingsScreen>
     super.initState();
     _tabController = TabController(length: 4, vsync: this);
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<BookingsProvider>().loadBookings();
+      context.read<BookingProvider>().fetchBookings();
     });
   }
 
@@ -37,12 +38,12 @@ class _BookingsScreenState extends State<BookingsScreen>
     return Scaffold(
       appBar: _buildAppBar(),
       body: ResponsiveLayoutBuilder(
-        mobile: _buildMobileLayout(),
-        tablet: _buildTabletLayout(),
-        desktop: _buildDesktopLayout(),
+        mobile: (context, constraints) => _buildMobileLayout(),
+        tablet: (context, constraints) => _buildTabletLayout(),
+        desktop: (context, constraints) => _buildDesktopLayout(),
       ),
       bottomNavigationBar: ResponsiveHelper.isMobile(context)
-          ? const CustomBottomNavigation(currentIndex: 2)
+          ? const CustomBottomNav(currentRoute: '/bookings')
           : null,
     );
   }
@@ -51,6 +52,7 @@ class _BookingsScreenState extends State<BookingsScreen>
     return AppBar(
       elevation: 0,
       backgroundColor: Colors.white,
+      foregroundColor: Colors.black87,
       title: Text(
         'My Bookings',
         style: TextStyle(
@@ -138,7 +140,7 @@ class _BookingsScreenState extends State<BookingsScreen>
           decoration: BoxDecoration(
             color: Colors.grey[50],
             border: Border(
-              right: BorderSide(color: Colors.grey.withOpacity(0.2)),
+              right: BorderSide(color: Colors.grey.withValues(alpha: 0.2)),
             ),
           ),
           child: _buildSidebar(),
@@ -190,7 +192,7 @@ class _BookingsScreenState extends State<BookingsScreen>
   }
 
   Widget _buildSidebar() {
-    return Consumer<BookingsProvider>(
+    return Consumer<BookingProvider>(
       builder: (context, provider, child) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -211,21 +213,21 @@ class _BookingsScreenState extends State<BookingsScreen>
                 children: [
                   _buildSummaryCard(
                     'Total Bookings',
-                    provider.totalBookings.toString(),
+                    provider.bookings.length.toString(),
                     Icons.calendar_today,
                     Theme.of(context).primaryColor,
                   ),
                   const SizedBox(height: 12),
                   _buildSummaryCard(
                     'Upcoming',
-                    provider.upcomingBookings.length.toString(),
+                    provider.getUpcomingBookings().length.toString(),
                     Icons.schedule,
                     Colors.orange,
                   ),
                   const SizedBox(height: 12),
                   _buildSummaryCard(
                     'Completed',
-                    provider.completedBookings.length.toString(),
+                    provider.getPastBookings().length.toString(),
                     Icons.check_circle,
                     Colors.green,
                   ),
@@ -255,7 +257,8 @@ class _BookingsScreenState extends State<BookingsScreen>
                     width: double.infinity,
                     child: OutlinedButton.icon(
                       onPressed: () {
-                        // Export bookings
+                        // Export bookings functionality
+                        _exportBookings();
                       },
                       icon: const Icon(Icons.download),
                       label: const Text('Export History'),
@@ -281,7 +284,7 @@ class _BookingsScreenState extends State<BookingsScreen>
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.grey.withOpacity(0.1),
+            color: Colors.grey.withValues(alpha: 0.1),
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),
@@ -292,7 +295,7 @@ class _BookingsScreenState extends State<BookingsScreen>
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: color.withOpacity(0.1),
+              color: color.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Icon(icon, color: color, size: 20),
@@ -326,10 +329,44 @@ class _BookingsScreenState extends State<BookingsScreen>
   }
 
   Widget _buildBookingsList(String filter) {
-    return Consumer<BookingsProvider>(
+    return Consumer<BookingProvider>(
       builder: (context, provider, child) {
         if (provider.isLoading) {
           return const Center(child: CircularProgressIndicator());
+        }
+
+        if (provider.error != null) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.error_outline,
+                  size: 64,
+                  color: Colors.grey[400],
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'Error loading bookings',
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: Colors.grey[600],
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  provider.error!,
+                  style: TextStyle(color: Colors.grey[500]),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: () => provider.fetchBookings(),
+                  child: const Text('Retry'),
+                ),
+              ],
+            ),
+          );
         }
 
         List<Map<String, dynamic>> bookings = _getFilteredBookings(provider, filter);
@@ -346,15 +383,27 @@ class _BookingsScreenState extends State<BookingsScreen>
             return Padding(
               padding: const EdgeInsets.only(bottom: 16),
               child: BookingCard(
-                title: booking['title'] ?? 'Local Cooking Workshop',
-                location: booking['location'] ?? 'Qwaqwa',
-                date: DateTime.parse(booking['date'] ?? '2024-11-15'),
-                time: booking['time'] ?? '12:00 PM',
-                participants: booking['participants'] ?? 1,
-                price: booking['price']?.toDouble() ?? 200.0,
-                currency: booking['currency'] ?? 'ZAR',
-                status: booking['status'] ?? 'confirmed',
-                imageUrl: booking['imageUrl'] ?? '',
+                title: booking['accommodation_name'] as String? ??
+                       booking['experience_name'] as String? ??
+                       booking['title'] as String? ??
+                       'Ubuntu Experience',
+                location: booking['location'] as String? ?? 'South Africa',
+                date: booking['check_in_date'] != null
+                    ? DateTime.parse(booking['check_in_date'])
+                    : booking['date'] != null
+                        ? DateTime.parse(booking['date'])
+                        : DateTime.now(),
+                time: booking['time'] as String? ?? '12:00 PM',
+                participants: booking['participants'] as int? ??
+                             booking['adults'] as int? ??
+                             booking['guests'] as int? ?? 1,
+                price: (booking['total_amount'] as num?)?.toDouble() ??
+                       (booking['price'] as num?)?.toDouble() ?? 0.0,
+                currency: booking['currency'] as String? ?? 'ZAR',
+                status: booking['status'] as String? ?? 'confirmed',
+                imageUrl: booking['imageUrl'] as String? ??
+                         booking['image'] as String? ?? '',
+                isPast: _isBookingInPast(booking),
                 onTap: () => _navigateToBookingDetail(booking),
                 onCancel: booking['status'] == 'confirmed' || booking['status'] == 'pending'
                     ? () => _showCancelDialog(booking)
@@ -370,16 +419,16 @@ class _BookingsScreenState extends State<BookingsScreen>
     );
   }
 
-  List<Map<String, dynamic>> _getFilteredBookings(BookingsProvider provider, String filter) {
+  List<Map<String, dynamic>> _getFilteredBookings(BookingProvider provider, String filter) {
     switch (filter) {
       case 'upcoming':
-        return provider.upcomingBookings;
+        return provider.getUpcomingBookings();
       case 'completed':
-        return provider.completedBookings;
+        return provider.getPastBookings();
       case 'cancelled':
-        return provider.cancelledBookings;
+        return provider.getBookingsByStatus('cancelled');
       default:
-        return provider.allBookings;
+        return provider.bookings;
     }
   }
 
@@ -479,7 +528,7 @@ class _BookingsScreenState extends State<BookingsScreen>
       builder: (context) => AlertDialog(
         title: const Text('Cancel Booking'),
         content: Text(
-          'Are you sure you want to cancel your booking for "${booking['title']}"? This action cannot be undone.',
+          'Are you sure you want to cancel your booking for "${booking['accommodation_name'] ?? booking['experience_name'] ?? 'this booking'}"? This action cannot be undone.',
         ),
         actions: [
           TextButton(
@@ -503,12 +552,12 @@ class _BookingsScreenState extends State<BookingsScreen>
 
   Future<void> _cancelBooking(Map<String, dynamic> booking) async {
     try {
-      await context.read<BookingsProvider>().cancelBooking(booking['id']);
+      await context.read<BookingProvider>().cancelBooking(booking['id']);
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Booking for "${booking['title']}" has been cancelled'),
+            content: Text('Booking for "${booking['accommodation_name'] ?? booking['experience_name'] ?? 'experience'}" has been cancelled'),
             backgroundColor: Colors.orange,
           ),
         );
@@ -523,5 +572,33 @@ class _BookingsScreenState extends State<BookingsScreen>
         );
       }
     }
+  }
+
+  void _exportBookings() {
+    // Mock export functionality
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Export functionality will be implemented'),
+        backgroundColor: Colors.blue,
+      ),
+    );
+  }
+
+  bool _isBookingInPast(Map<String, dynamic> booking) {
+    final now = DateTime.now();
+
+    if (booking['type'] == 'accommodation') {
+      final checkOutDate = booking['check_out_date'] as String?;
+      if (checkOutDate != null) {
+        return DateTime.parse(checkOutDate).isBefore(now);
+      }
+    } else {
+      final bookingDate = booking['date'] as String?;
+      if (bookingDate != null) {
+        return DateTime.parse(bookingDate).isBefore(now);
+      }
+    }
+
+    return false;
   }
 }

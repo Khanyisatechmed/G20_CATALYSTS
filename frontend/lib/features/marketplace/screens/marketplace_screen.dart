@@ -1,3 +1,4 @@
+// features/marketplace/screens/marketplace_screen.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../core/utils/responsive_helper.dart';
@@ -40,12 +41,12 @@ class _MarketplaceScreenState extends State<MarketplaceScreen>
     return Scaffold(
       appBar: _buildAppBar(),
       body: ResponsiveLayoutBuilder(
-        mobile: _buildMobileLayout(),
-        tablet: _buildTabletLayout(),
-        desktop: _buildDesktopLayout(),
+        mobile: (context, constraints) => _buildMobileLayout(),
+        tablet: (context, constraints) => _buildTabletLayout(),
+        desktop: (context, constraints) => _buildDesktopLayout(),
       ),
       bottomNavigationBar: ResponsiveHelper.isMobile(context)
-          ? const CustomBottomNavigation(currentIndex: 3)
+          ? const CustomBottomNav(currentRoute: '/marketplace')
           : null,
     );
   }
@@ -53,11 +54,11 @@ class _MarketplaceScreenState extends State<MarketplaceScreen>
   PreferredSizeWidget _buildAppBar() {
     return AppBar(
       elevation: 0,
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).primaryColor,
+      foregroundColor: Colors.white,
       title: Text(
-        'Local Market place',
+        'Ubuntu Marketplace',
         style: TextStyle(
-          color: Colors.black87,
           fontWeight: FontWeight.bold,
           fontSize: ResponsiveHelper.isMobile(context) ? 20 : 24,
         ),
@@ -65,22 +66,88 @@ class _MarketplaceScreenState extends State<MarketplaceScreen>
       actions: [
         if (ResponsiveHelper.isDesktop(context)) ...[
           IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.favorite_border, color: Colors.black87),
+            onPressed: () => Navigator.pushNamed(context, '/wishlist'),
+            icon: const Icon(Icons.favorite_border),
+          ),
+          Consumer<MarketplaceProvider>(
+            builder: (context, provider, child) {
+              return Stack(
+                children: [
+                  IconButton(
+                    onPressed: () => Navigator.pushNamed(context, '/cart'),
+                    icon: const Icon(Icons.shopping_cart_outlined),
+                  ),
+                  if (provider.cartItemCount > 0)
+                    Positioned(
+                      right: 8,
+                      top: 8,
+                      child: Container(
+                        padding: const EdgeInsets.all(2),
+                        decoration: const BoxDecoration(
+                          color: Colors.red,
+                          shape: BoxShape.circle,
+                        ),
+                        constraints: const BoxConstraints(
+                          minWidth: 16,
+                          minHeight: 16,
+                        ),
+                        child: Text(
+                          '${provider.cartItemCount}',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+                ],
+              );
+            },
           ),
           IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.shopping_cart_outlined, color: Colors.black87),
-          ),
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.person_outline, color: Colors.black87),
+            onPressed: () => Navigator.pushNamed(context, '/profile'),
+            icon: const Icon(Icons.person_outline),
           ),
           const SizedBox(width: 16),
         ] else ...[
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.shopping_cart_outlined, color: Colors.black87),
+          Consumer<MarketplaceProvider>(
+            builder: (context, provider, child) {
+              return Stack(
+                children: [
+                  IconButton(
+                    onPressed: () => Navigator.pushNamed(context, '/cart'),
+                    icon: const Icon(Icons.shopping_cart_outlined),
+                  ),
+                  if (provider.cartItemCount > 0)
+                    Positioned(
+                      right: 8,
+                      top: 8,
+                      child: Container(
+                        padding: const EdgeInsets.all(2),
+                        decoration: const BoxDecoration(
+                          color: Colors.red,
+                          shape: BoxShape.circle,
+                        ),
+                        constraints: const BoxConstraints(
+                          minWidth: 16,
+                          minHeight: 16,
+                        ),
+                        child: Text(
+                          '${provider.cartItemCount}',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+                ],
+              );
+            },
           ),
         ],
       ],
@@ -103,13 +170,13 @@ class _MarketplaceScreenState extends State<MarketplaceScreen>
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
-        color: Colors.grey[100],
+        color: Colors.white,
         borderRadius: BorderRadius.circular(25),
       ),
       child: TextField(
         controller: _searchController,
         decoration: const InputDecoration(
-          hintText: 'Search local products...',
+          hintText: 'Search handcrafted products...',
           prefixIcon: Icon(Icons.search, color: Colors.grey),
           border: InputBorder.none,
           contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
@@ -122,23 +189,31 @@ class _MarketplaceScreenState extends State<MarketplaceScreen>
   }
 
   Widget _buildCategoryTabs() {
-    return TabBar(
-      controller: _tabController,
-      isScrollable: true,
-      labelColor: Colors.white,
-      unselectedLabelColor: Colors.grey[600],
-      indicator: BoxDecoration(
-        color: Theme.of(context).primaryColor,
-        borderRadius: BorderRadius.circular(25),
-      ),
-      labelPadding: const EdgeInsets.symmetric(horizontal: 20),
-      tabs: const [
-        Tab(text: 'All'),
-        Tab(text: 'Artwork'),
-        Tab(text: 'Textile'),
-        Tab(text: 'Pottery'),
-        Tab(text: 'Food'),
-      ],
+    return Consumer<MarketplaceProvider>(
+      builder: (context, provider, child) {
+        return TabBar(
+          controller: _tabController,
+          isScrollable: true,
+          labelColor: Colors.white,
+          unselectedLabelColor: Colors.white70,
+          indicator: BoxDecoration(
+            color: Colors.white.withValues(alpha: 0.3),
+            borderRadius: BorderRadius.circular(25),
+          ),
+          labelPadding: const EdgeInsets.symmetric(horizontal: 20),
+          onTap: (index) {
+            final categories = ['all', 'artwork', 'textile', 'pottery', 'food'];
+            provider.selectCategory(categories[index]);
+          },
+          tabs: const [
+            Tab(text: 'All'),
+            Tab(text: 'Artwork'),
+            Tab(text: 'Textile'),
+            Tab(text: 'Pottery'),
+            Tab(text: 'Food'),
+          ],
+        );
+      },
     );
   }
 
@@ -166,6 +241,7 @@ class _MarketplaceScreenState extends State<MarketplaceScreen>
       children: [
         Container(
           padding: const EdgeInsets.all(24),
+          color: Theme.of(context).primaryColor,
           child: Column(
             children: [
               _buildSearchBar(),
@@ -195,11 +271,11 @@ class _MarketplaceScreenState extends State<MarketplaceScreen>
       children: [
         // Left sidebar with categories and filters
         Container(
-          width: 300,
+          width: 320,
           decoration: BoxDecoration(
             color: Colors.grey[50],
             border: Border(
-              right: BorderSide(color: Colors.grey.withOpacity(0.2)),
+              right: BorderSide(color: Colors.grey.withValues(alpha: 0.2)),
             ),
           ),
           child: _buildSidebar(),
@@ -210,7 +286,10 @@ class _MarketplaceScreenState extends State<MarketplaceScreen>
             children: [
               // Search and header
               Container(
-                padding: const EdgeInsets.all(24),
+                padding: const EdgeInsets.all(32),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).primaryColor.withValues(alpha: 0.05),
+                ),
                 child: Column(
                   children: [
                     _buildSearchBar(),
@@ -236,26 +315,38 @@ class _MarketplaceScreenState extends State<MarketplaceScreen>
         return ListView(
           padding: const EdgeInsets.all(24),
           children: [
-            const Text(
-              'Categories',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-              ),
+            Row(
+              children: [
+                Icon(
+                  Icons.local_mall,
+                  color: Theme.of(context).primaryColor,
+                ),
+                const SizedBox(width: 8),
+                const Text(
+                  'Categories',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 20),
             ...['All', 'Artwork', 'Textile', 'Pottery', 'Food'].map((category) {
-              final isSelected = provider.selectedCategory == category.toLowerCase();
+              final categoryId = category.toLowerCase();
+              final isSelected = provider.selectedCategory == categoryId;
               return Container(
                 margin: const EdgeInsets.only(bottom: 8),
                 child: ListTile(
+                  leading: Icon(_getCategoryIcon(categoryId)),
                   title: Text(category),
                   selected: isSelected,
-                  selectedTileColor: Theme.of(context).primaryColor.withOpacity(0.1),
+                  selectedTileColor: Theme.of(context).primaryColor.withValues(alpha: 0.1),
+                  selectedColor: Theme.of(context).primaryColor,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  onTap: () => provider.selectCategory(category.toLowerCase()),
+                  onTap: () => provider.selectCategory(categoryId),
                 ),
               );
             }),
@@ -270,48 +361,122 @@ class _MarketplaceScreenState extends State<MarketplaceScreen>
               ),
             ),
             const SizedBox(height: 16),
-            RangeSlider(
-              values: provider.priceRange,
-              min: 0,
-              max: 1000,
-              divisions: 20,
-              labels: RangeLabels(
-                'ZAR${provider.priceRange.start.round()}',
-                'ZAR${provider.priceRange.end.round()}',
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.grey.withValues(alpha: 0.2)),
               ),
-              onChanged: provider.updatePriceRange,
+              child: Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'ZAR ${provider.priceRange.start.round()}',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          color: Theme.of(context).primaryColor,
+                        ),
+                      ),
+                      Text(
+                        'ZAR ${provider.priceRange.end.round()}',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          color: Theme.of(context).primaryColor,
+                        ),
+                      ),
+                    ],
+                  ),
+                  RangeSlider(
+                    values: provider.priceRange,
+                    min: 0,
+                    max: 1000,
+                    divisions: 20,
+                    activeColor: Theme.of(context).primaryColor,
+                    onChanged: provider.updatePriceRange,
+                  ),
+                ],
+              ),
             ),
 
             const SizedBox(height: 32),
 
             const Text(
-              'Features',
+              'Ubuntu Features',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
             ),
             const SizedBox(height: 16),
-            CheckboxListTile(
-              title: const Text('AR Preview'),
-              value: provider.showAROnly,
-              onChanged: provider.toggleARFilter,
-              controlAffinity: ListTileControlAffinity.leading,
-            ),
-            CheckboxListTile(
-              title: const Text('In Stock'),
-              value: provider.showInStockOnly,
-              onChanged: provider.toggleStockFilter,
-              controlAffinity: ListTileControlAffinity.leading,
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: Colors.grey.withValues(alpha: 0.2)),
+              ),
+              child: Column(
+                children: [
+                  CheckboxListTile(
+                    title: Row(
+                      children: [
+                        Icon(Icons.view_in_ar, size: 20, color: Colors.purple),
+                        const SizedBox(width: 8),
+                        const Text('AR Preview'),
+                      ],
+                    ),
+                    value: provider.showAROnly,
+                    onChanged: provider.toggleARFilter,
+                    controlAffinity: ListTileControlAffinity.leading,
+                    contentPadding: EdgeInsets.zero,
+                    activeColor: Theme.of(context).primaryColor,
+                  ),
+                  CheckboxListTile(
+                    title: Row(
+                      children: [
+                        Icon(Icons.inventory, size: 20, color: Colors.green),
+                        const SizedBox(width: 8),
+                        const Text('In Stock'),
+                      ],
+                    ),
+                    value: provider.showInStockOnly,
+                    onChanged: provider.toggleStockFilter,
+                    controlAffinity: ListTileControlAffinity.leading,
+                    contentPadding: EdgeInsets.zero,
+                    activeColor: Theme.of(context).primaryColor,
+                  ),
+                  CheckboxListTile(
+                    title: Row(
+                      children: [
+                        Icon(Icons.handshake, size: 20, color: Colors.orange),
+                        const SizedBox(width: 8),
+                        const Text('Fair Trade'),
+                      ],
+                    ),
+                    value: provider.showFairTradeOnly,
+                    onChanged: provider.toggleFairTradeFilter,
+                    controlAffinity: ListTileControlAffinity.leading,
+                    contentPadding: EdgeInsets.zero,
+                    activeColor: Theme.of(context).primaryColor,
+                  ),
+                ],
+              ),
             ),
 
             const SizedBox(height: 32),
 
             SizedBox(
               width: double.infinity,
-              child: OutlinedButton(
+              child: OutlinedButton.icon(
                 onPressed: provider.clearFilters,
-                child: const Text('Clear Filters'),
+                icon: const Icon(Icons.clear_all),
+                label: const Text('Clear Filters'),
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                ),
               ),
             ),
           ],
@@ -326,24 +491,33 @@ class _MarketplaceScreenState extends State<MarketplaceScreen>
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            Theme.of(context).primaryColor.withOpacity(0.1),
-            Theme.of(context).primaryColor.withOpacity(0.05),
+            Theme.of(context).primaryColor.withValues(alpha: 0.1),
+            Theme.of(context).primaryColor.withValues(alpha: 0.05),
           ],
         ),
         borderRadius: BorderRadius.circular(16),
       ),
-      child: const Column(
+      child: Column(
         children: [
-          Text(
-            'Featured Products',
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-            ),
+          Row(
+            children: [
+              Icon(
+                Icons.auto_awesome,
+                color: Theme.of(context).primaryColor,
+              ),
+              const SizedBox(width: 8),
+              const Text(
+                'Featured Ubuntu Crafts',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
           ),
-          SizedBox(height: 8),
-          Text(
-            'Discover authentic handcrafted items from local artisans',
+          const SizedBox(height: 8),
+          const Text(
+            'Discover authentic handcrafted items from local Ubuntu artisans celebrating South African heritage',
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 16,
@@ -362,6 +536,40 @@ class _MarketplaceScreenState extends State<MarketplaceScreen>
           return _buildLoadingGrid();
         }
 
+        if (provider.error != null) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.error_outline,
+                  size: 64,
+                  color: Colors.grey[400],
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'Error loading products',
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: Colors.grey[600],
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  provider.error!,
+                  style: TextStyle(color: Colors.grey[500]),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: () => provider.loadProducts(),
+                  child: const Text('Retry'),
+                ),
+              ],
+            ),
+          );
+        }
+
         final products = provider.getProductsByCategory(category);
 
         if (products.isEmpty) {
@@ -370,22 +578,17 @@ class _MarketplaceScreenState extends State<MarketplaceScreen>
 
         return GridView.builder(
           padding: ResponsiveHelper.getResponsivePadding(context),
-          gridDelegate: ResponsiveHelper.getResponsiveGridDelegate(
-            context,
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: ResponsiveHelper.getResponsiveGridColumns(context),
             childAspectRatio: ResponsiveHelper.isMobile(context) ? 0.75 : 0.8,
+            crossAxisSpacing: 16,
+            mainAxisSpacing: 16,
           ),
           itemCount: products.length,
           itemBuilder: (context, index) {
             final product = products[index];
             return ProductCard(
-              title: product['title'] ?? 'Rustic Terracotta Vase',
-              artisan: product['artisan'] ?? 'Local Artisan',
-              price: product['price']?.toDouble() ?? 200.0,
-              currency: product['currency'] ?? 'ZAR',
-              imageUrl: product['imageUrl'] ?? '',
-              hasAR: product['hasAR'] ?? false,
-              rating: product['rating']?.toDouble() ?? 4.5,
-              isInStock: product['isInStock'] ?? true,
+              product: product,
               onTap: () => _navigateToProductDetail(product),
               onARTap: product['hasAR'] == true
                   ? () => _showARViewer(product)
@@ -401,7 +604,11 @@ class _MarketplaceScreenState extends State<MarketplaceScreen>
   Widget _buildLoadingGrid() {
     return GridView.builder(
       padding: ResponsiveHelper.getResponsivePadding(context),
-      gridDelegate: ResponsiveHelper.getResponsiveGridDelegate(context),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: ResponsiveHelper.getResponsiveGridColumns(context),
+        crossAxisSpacing: 16,
+        mainAxisSpacing: 16,
+      ),
       itemCount: 6,
       itemBuilder: (context, index) {
         return Container(
@@ -439,16 +646,40 @@ class _MarketplaceScreenState extends State<MarketplaceScreen>
             ),
           ),
           const SizedBox(height: 12),
-          Text(
-            'Check back later for new arrivals',
+          const Text(
+            'Check back later for new Ubuntu crafts from local artisans',
             style: TextStyle(
               fontSize: 16,
-              color: Colors.grey[500],
+              color: Colors.grey,
             ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 24),
+          ElevatedButton.icon(
+            onPressed: () => context.read<MarketplaceProvider>().clearFilters(),
+            icon: const Icon(Icons.refresh),
+            label: const Text('Clear Filters'),
           ),
         ],
       ),
     );
+  }
+
+  IconData _getCategoryIcon(String category) {
+    switch (category) {
+      case 'all':
+        return Icons.apps;
+      case 'artwork':
+        return Icons.palette;
+      case 'textile':
+        return Icons.checkroom;
+      case 'pottery':
+        return Icons.emoji_objects;
+      case 'food':
+        return Icons.restaurant;
+      default:
+        return Icons.category;
+    }
   }
 
   void _navigateToProductDetail(Map<String, dynamic> product) {
@@ -463,6 +694,9 @@ class _MarketplaceScreenState extends State<MarketplaceScreen>
     showDialog(
       context: context,
       builder: (context) => Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
         child: Container(
           width: ResponsiveHelper.isMobile(context) ?
               MediaQuery.of(context).size.width * 0.9 : 600,
@@ -482,9 +716,11 @@ class _MarketplaceScreenState extends State<MarketplaceScreen>
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('${product['title']} added to cart'),
+        content: Text('${product['title'] ?? 'Product'} added to cart'),
+        backgroundColor: Theme.of(context).primaryColor,
         action: SnackBarAction(
           label: 'View Cart',
+          textColor: Colors.white,
           onPressed: () {
             Navigator.pushNamed(context, '/cart');
           },

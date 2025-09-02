@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:frontend/core/constants/app_colors.dart';
-import '../constants/api_endpoints.dart';
+import '../constants/api_endpoints.dart' as api_endpoints;
 import 'storage_service.dart';
 
 class ApiService {
@@ -13,7 +13,7 @@ class ApiService {
 
   ApiService() {
     _dio = Dio(BaseOptions(
-      baseUrl: ApiEndpoints.baseApiUrl,
+      baseUrl: api_endpoints.ApiEndpoints.baseUrl,
       connectTimeout: const Duration(seconds: AppConstants.apiTimeoutSeconds),
       receiveTimeout: const Duration(seconds: AppConstants.apiTimeoutSeconds),
       headers: {

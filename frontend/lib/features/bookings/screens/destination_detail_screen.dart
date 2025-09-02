@@ -1,17 +1,14 @@
 // features/bookings/screens/destination_detail_screen.dart
 import 'package:flutter/material.dart';
-import 'package:frontend/core/utils/responsive_helper.dart';
-import '../../../core/utils/responsive_helper.dart' as core_responsive_helper;
+import '../../../core/utils/responsive_helper.dart';
 import '../../../shared/widgets/responsive_layout.dart';
 
 class DestinationDetailScreen extends StatefulWidget {
   final Map<String, dynamic> destination;
-  final String destinationId;
 
   const DestinationDetailScreen({
     super.key,
-    required this.destination,
-    required this.destinationId,
+    required this.destination, required String destinationId,
   });
 
   @override
@@ -23,9 +20,9 @@ class _DestinationDetailScreenState extends State<DestinationDetailScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: ResponsiveLayoutBuilder(
-        mobile: _buildMobileLayout(),
-        tablet: _buildTabletLayout(),
-        desktop: _buildDesktopLayout(),
+        mobile: (context, constraints) => _buildMobileLayout(),
+        tablet: (context, constraints) => _buildTabletLayout(),
+        desktop: (context, constraints) => _buildDesktopLayout(),
       ),
     );
   }
@@ -36,7 +33,7 @@ class _DestinationDetailScreenState extends State<DestinationDetailScreen> {
         _buildSliverAppBar(),
         SliverToBoxAdapter(
           child: Padding(
-            padding: core_responsive_helper.ResponsiveHelper.getResponsivePadding(context),
+            padding: ResponsiveHelper.getResponsivePadding(context),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -114,9 +111,11 @@ class _DestinationDetailScreenState extends State<DestinationDetailScreen> {
           flex: 3,
           child: Container(
             height: MediaQuery.of(context).size.height,
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               image: DecorationImage(
-                image: AssetImage('assets/images/bantus_cultural.jpg'),
+                image: widget.destination['image'] != null
+                    ? NetworkImage(widget.destination['image'])
+                    : const AssetImage('assets/images/bantus_cultural.jpg') as ImageProvider,
                 fit: BoxFit.cover,
               ),
             ),
@@ -128,11 +127,9 @@ class _DestinationDetailScreenState extends State<DestinationDetailScreen> {
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
                       colors: [
-                        // ignore: deprecated_member_use
-                        Colors.black.withOpacity(0.3),
+                        Colors.black.withValues(alpha: 0.3),
                         Colors.transparent,
-                        // ignore: deprecated_member_use
-                        Colors.black.withOpacity(0.7),
+                        Colors.black.withValues(alpha: 0.7),
                       ],
                     ),
                   ),
@@ -144,8 +141,7 @@ class _DestinationDetailScreenState extends State<DestinationDetailScreen> {
                     onPressed: () => Navigator.pop(context),
                     icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
                     style: IconButton.styleFrom(
-                      // ignore: deprecated_member_use
-                      backgroundColor: Colors.black.withOpacity(0.5),
+                      backgroundColor: Colors.black.withValues(alpha: 0.5),
                     ),
                   ),
                 ),
@@ -188,9 +184,11 @@ class _DestinationDetailScreenState extends State<DestinationDetailScreen> {
       backgroundColor: Colors.transparent,
       flexibleSpace: FlexibleSpaceBar(
         background: Container(
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             image: DecorationImage(
-              image: AssetImage('assets/images/bantus_cultural.jpg'),
+              image: widget.destination['image'] != null
+                  ? NetworkImage(widget.destination['image'])
+                  : const AssetImage('assets/images/bantus_cultural.jpg') as ImageProvider,
               fit: BoxFit.cover,
             ),
           ),
@@ -200,11 +198,9 @@ class _DestinationDetailScreenState extends State<DestinationDetailScreen> {
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
-                  // ignore: deprecated_member_use
-                  Colors.black.withOpacity(0.3),
+                  Colors.black.withValues(alpha: 0.3),
                   Colors.transparent,
-                  // ignore: deprecated_member_use
-                  Colors.black.withOpacity(0.7),
+                  Colors.black.withValues(alpha: 0.7),
                 ],
               ),
             ),
@@ -219,9 +215,11 @@ class _DestinationDetailScreenState extends State<DestinationDetailScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          widget.destination['title'] ?? 'The Bantus',
+          widget.destination['title'] ??
+          widget.destination['name'] ??
+          'Ubuntu Cultural Experience',
           style: TextStyle(
-            fontSize: core_responsive_helper.ResponsiveHelper.isMobile(context) ? 28 : 32,
+            fontSize: ResponsiveHelper.isMobile(context) ? 28 : 32,
             fontWeight: FontWeight.bold,
             color: Colors.black87,
           ),
@@ -235,11 +233,13 @@ class _DestinationDetailScreenState extends State<DestinationDetailScreen> {
               color: Colors.grey[600],
             ),
             const SizedBox(width: 4),
-            Text(
-              widget.destination['location'] ?? '2199, Extension 2',
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.grey[600],
+            Expanded(
+              child: Text(
+                widget.destination['location'] ?? 'South Africa',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.grey[600],
+                ),
               ),
             ),
           ],
@@ -250,8 +250,7 @@ class _DestinationDetailScreenState extends State<DestinationDetailScreen> {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
-                // ignore: deprecated_member_use
-                color: Colors.orange.withOpacity(0.1),
+                color: Colors.orange.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Row(
@@ -271,7 +270,7 @@ class _DestinationDetailScreenState extends State<DestinationDetailScreen> {
             ),
             const SizedBox(width: 12),
             Text(
-              '(${widget.destination['reviewCount'] ?? 120} reviews)',
+              '(${widget.destination['reviewCount'] ?? widget.destination['reviews'] ?? 120} reviews)',
               style: TextStyle(
                 color: Colors.grey[600],
               ),
@@ -282,8 +281,7 @@ class _DestinationDetailScreenState extends State<DestinationDetailScreen> {
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            // ignore: deprecated_member_use
-            color: Theme.of(context).primaryColor.withOpacity(0.1),
+            color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Row(
@@ -294,7 +292,7 @@ class _DestinationDetailScreenState extends State<DestinationDetailScreen> {
               ),
               const SizedBox(width: 8),
               Text(
-                'From ZAR ${widget.destination['price'] ?? 150}',
+                'From ZAR ${(widget.destination['price'] ?? 150).toString()}',
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -323,7 +321,7 @@ class _DestinationDetailScreenState extends State<DestinationDetailScreen> {
         const SizedBox(height: 12),
         Text(
           widget.destination['description'] ??
-          'Discover the hidden heart of Mpumalanga where breathtaking mountains, waterfalls, and valleys meet the warmth of its people. In the rural villages, locals share their talents through traditional dance, storytelling, beadwork, pottery, wood carving, and weaving.',
+          'Discover the hidden heart of South Africa where breathtaking landscapes meet the warmth of Ubuntu hospitality. In the rural communities, locals share their rich cultural heritage through traditional dance, storytelling, beadwork, pottery, wood carving, and weaving. Experience authentic Ubuntu philosophy - "I am because we are" - through meaningful cultural exchanges that celebrate our shared humanity.',
           style: TextStyle(
             fontSize: 16,
             color: Colors.grey[700],
@@ -340,12 +338,10 @@ class _DestinationDetailScreenState extends State<DestinationDetailScreen> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
-        // ignore: deprecated_member_use
-        border: Border.all(color: Theme.of(context).primaryColor.withOpacity(0.2)),
+        border: Border.all(color: Theme.of(context).primaryColor.withValues(alpha: 0.2)),
         boxShadow: [
           BoxShadow(
-            // ignore: deprecated_member_use
-            color: Colors.grey.withOpacity(0.1),
+            color: Colors.grey.withValues(alpha: 0.1),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -354,23 +350,67 @@ class _DestinationDetailScreenState extends State<DestinationDetailScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Cultural Significance',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
+          Row(
+            children: [
+              Icon(
+                Icons.auto_stories,
+                color: Theme.of(context).primaryColor,
+                size: 24,
+              ),
+              const SizedBox(width: 8),
+              const Text(
+                'Cultural Significance',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 16),
           Text(
-            'The Bantus create beautiful, symbolic art that tells the story of their culture. Among the Ndebele people of Mpumalanga, one of the most treasured creations is the ithoyizi, a small handcrafted doll dressed in colourful beadwork and traditional fabrics.\n\nThese dolls are more than ornaments — they represent fertility, blessings, and heritage, often given to young women as a sign of love and hope for the future.',
+            widget.destination['culturalSignificance'] ??
+            'Ubuntu is a Nguni Bantu term meaning "humanity" and is often translated as "I am because we are" or "humanity towards others". This philosophy emphasizes the interconnectedness of all people and the belief that a person\'s well-being is tied to the well-being of others.\n\nThrough this cultural experience, you\'ll witness how Ubuntu principles shape daily life, community interactions, and traditional practices that have been passed down through generations.',
             style: TextStyle(
               fontSize: 15,
               color: Colors.grey[700],
               height: 1.5,
             ),
           ),
+          const SizedBox(height: 16),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              _buildCulturalTag('Traditional Dance'),
+              _buildCulturalTag('Storytelling'),
+              _buildCulturalTag('Beadwork'),
+              _buildCulturalTag('Pottery'),
+              _buildCulturalTag('Ubuntu Philosophy'),
+            ],
+          ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildCulturalTag(String tag) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: Theme.of(context).primaryColor.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: Theme.of(context).primaryColor.withValues(alpha: 0.3),
+        ),
+      ),
+      child: Text(
+        tag,
+        style: TextStyle(
+          fontSize: 12,
+          color: Theme.of(context).primaryColor,
+          fontWeight: FontWeight.w500,
+        ),
       ),
     );
   }
@@ -381,10 +421,8 @@ class _DestinationDetailScreenState extends State<DestinationDetailScreen> {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            // ignore: deprecated_member_use
-            Theme.of(context).primaryColor.withOpacity(0.1),
-            // ignore: deprecated_member_use
-            Theme.of(context).primaryColor.withOpacity(0.05),
+            Theme.of(context).primaryColor.withValues(alpha: 0.1),
+            Theme.of(context).primaryColor.withValues(alpha: 0.05),
           ],
         ),
         borderRadius: BorderRadius.circular(16),
@@ -406,7 +444,7 @@ class _DestinationDetailScreenState extends State<DestinationDetailScreen> {
           ),
           const SizedBox(height: 8),
           const Text(
-            'Experience this cultural destination through augmented reality',
+            'Experience this cultural destination through augmented reality and explore traditional artifacts in 3D',
             textAlign: TextAlign.center,
             style: TextStyle(
               color: Colors.grey,
@@ -418,7 +456,7 @@ class _DestinationDetailScreenState extends State<DestinationDetailScreen> {
             child: OutlinedButton.icon(
               onPressed: _launchARExperience,
               icon: const Icon(Icons.view_in_ar),
-              label: const Text('View in AR'),
+              label: const Text('Launch AR Experience'),
               style: OutlinedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 12),
                 side: BorderSide(color: Theme.of(context).primaryColor),
@@ -436,37 +474,57 @@ class _DestinationDetailScreenState extends State<DestinationDetailScreen> {
       children: [
         SizedBox(
           width: double.infinity,
-          child: ElevatedButton(
+          child: ElevatedButton.icon(
             onPressed: _navigateToBooking,
-            style: ElevatedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-            child: const Text(
+            icon: const Icon(Icons.calendar_month),
+            label: const Text(
               'Book Experience',
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
               ),
             ),
-          ),
-        ),
-        const SizedBox(height: 12),
-        SizedBox(
-          width: double.infinity,
-          child: OutlinedButton.icon(
-            onPressed: _shareDestination,
-            icon: const Icon(Icons.share),
-            label: const Text('Share'),
-            style: OutlinedButton.styleFrom(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Theme.of(context).primaryColor,
+              foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(vertical: 16),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
             ),
           ),
+        ),
+        const SizedBox(height: 12),
+        Row(
+          children: [
+            Expanded(
+              child: OutlinedButton.icon(
+                onPressed: _shareDestination,
+                icon: const Icon(Icons.share),
+                label: const Text('Share'),
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: OutlinedButton.icon(
+                onPressed: _addToWishlist,
+                icon: const Icon(Icons.favorite_border),
+                label: const Text('Save'),
+                style: OutlinedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ],
     );
@@ -476,22 +534,45 @@ class _DestinationDetailScreenState extends State<DestinationDetailScreen> {
     showDialog(
       context: context,
       builder: (context) => Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
         child: SizedBox(
-          width: core_responsive_helper.ResponsiveHelper.isMobile(context) ?
+          width: ResponsiveHelper.isMobile(context) ?
               MediaQuery.of(context).size.width * 0.9 : 600,
-          height: core_responsive_helper.ResponsiveHelper.isMobile(context) ?
+          height: ResponsiveHelper.isMobile(context) ?
               MediaQuery.of(context).size.height * 0.7 : 500,
           child: Column(
             children: [
-              AppBar(
-                title: const Text('AR Experience'),
-                automaticallyImplyLeading: false,
-                actions: [
-                  IconButton(
-                    onPressed: () => Navigator.pop(context),
-                    icon: const Icon(Icons.close),
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).primaryColor,
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(16),
+                    topRight: Radius.circular(16),
                   ),
-                ],
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.view_in_ar, color: Colors.white),
+                    const SizedBox(width: 8),
+                    const Expanded(
+                      child: Text(
+                        'AR Cultural Experience',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () => Navigator.pop(context),
+                      icon: const Icon(Icons.close, color: Colors.white),
+                    ),
+                  ],
+                ),
               ),
               const Expanded(
                 child: Center(
@@ -501,7 +582,7 @@ class _DestinationDetailScreenState extends State<DestinationDetailScreen> {
                       Icon(Icons.view_in_ar, size: 80, color: Colors.grey),
                       SizedBox(height: 16),
                       Text(
-                        'AR Experience',
+                        'AR Experience Loading...',
                         style: TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
@@ -509,9 +590,12 @@ class _DestinationDetailScreenState extends State<DestinationDetailScreen> {
                       ),
                       SizedBox(height: 8),
                       Text(
-                        'Launch AR to explore cultural artifacts',
+                        'Point your camera to explore cultural artifacts in 3D',
                         style: TextStyle(color: Colors.grey),
+                        textAlign: TextAlign.center,
                       ),
+                      SizedBox(height: 24),
+                      CircularProgressIndicator(),
                     ],
                   ),
                 ),
@@ -533,8 +617,18 @@ class _DestinationDetailScreenState extends State<DestinationDetailScreen> {
 
   void _shareDestination() {
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Share functionality coming soon!'),
+      SnackBar(
+        content: Text('Sharing "${widget.destination['title'] ?? 'Ubuntu Experience'}"...'),
+        backgroundColor: Theme.of(context).primaryColor,
+      ),
+    );
+  }
+
+  void _addToWishlist() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Added "${widget.destination['title'] ?? 'Ubuntu Experience'}" to your wishlist'),
+        backgroundColor: Colors.green,
       ),
     );
   }

@@ -1,3 +1,4 @@
+// features/explore/screens/explore_screen.dart
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../core/utils/responsive_helper.dart';
@@ -6,7 +7,6 @@ import '../../../shared/widgets/custom_bottom_nav.dart';
 import '../providers/explore_provider.dart';
 import '../widgets/destination_card.dart';
 import '../widgets/filter_chip.dart';
-import '../widgets/map_view.dart';
 
 class ExploreScreen extends StatefulWidget {
   const ExploreScreen({super.key});
@@ -15,476 +15,517 @@ class ExploreScreen extends StatefulWidget {
   State<ExploreScreen> createState() => _ExploreScreenState();
 }
 
-class _ExploreScreenState extends State<ExploreScreen>
-    with SingleTickerProviderStateMixin {
-  late TabController _tabController;
-  final TextEditingController _searchController = TextEditingController();
-
+class _ExploreScreenState extends State<ExploreScreen> {
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 5, vsync: this);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<ExploreProvider>().loadDestinations();
     });
   }
 
   @override
-  void dispose() {
-    _tabController.dispose();
-    _searchController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: _buildAppBar(),
-      body: ResponsiveLayoutBuilder(
-        mobile: _buildMobileLayout(),
-        tablet: _buildTabletLayout(),
-        desktop: _buildDesktopLayout(),
-      ),
-      bottomNavigationBar: ResponsiveHelper.isMobile(context)
-          ? const CustomBottomNavigation(currentIndex: 1)
-          : null,
-    );
-  }
-
-  PreferredSizeWidget _buildAppBar() {
-    return AppBar(
-      elevation: 0,
-      backgroundColor: Colors.white,
-      title: Text(
-        'Explore',
-        style: TextStyle(
-          color: Colors.black87,
-          fontWeight: FontWeight.bold,
-          fontSize: ResponsiveHelper.isMobile(context) ? 24 : 28,
-        ),
-      ),
-      actions: ResponsiveHelper.isDesktop(context) ? [
-        IconButton(
-          onPressed: () {},
-          icon: const Icon(Icons.notifications_outlined, color: Colors.black87),
-        ),
-        IconButton(
-          onPressed: () {},
-          icon: const Icon(Icons.person_outline, color: Colors.black87),
-        ),
-        const SizedBox(width: 16),
-      ] : null,
+    return Consumer<ExploreProvider>(
+      builder: (context, provider, child) {
+        return Scaffold(
+          appBar: AppBar(
+            title: const Text(
+              'Explore Ubuntu',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            backgroundColor: Theme.of(context).primaryColor,
+            foregroundColor: Colors.white,
+            elevation: 0,
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.search),
+                onPressed: () => _showSearchDialog(context, provider),
+              ),
+              if (ResponsiveHelper.isMobile(context))
+                IconButton(
+                  icon: Stack(
+                    children: [
+                      const Icon(Icons.filter_list),
+                      if (_hasActiveFilters(provider))
+                        Positioned(
+                          right: 0,
+                          top: 0,
+                          child: Container(
+                            width: 8,
+                            height: 8,
+                            decoration: const BoxDecoration(
+                              color: Colors.red,
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                  onPressed: () => _showFilterBottomSheet(context, provider),
+                ),
+            ],
+          ),
+          body: ResponsiveLayout(
+            mobile: _buildMobileLayout(),
+            tablet: _buildTabletLayout(),
+            desktop: _buildDesktopLayout(),
+          ),
+          bottomNavigationBar: const CustomBottomNav(currentRoute: '/explore'),
+        );
+      },
     );
   }
 
   Widget _buildMobileLayout() {
-    return Column(
-      children: [
-        _buildSearchAndFilters(),
-        Expanded(
-          child: Consumer<ExploreProvider>(
-            builder: (context, provider, child) {
-              if (provider.showMapView) {
-                return _buildMapView();
-              }
-              return _buildDestinationsList();
-            },
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildTabletLayout() {
-    return Column(
-      children: [
-        Container(
-          padding: ResponsiveHelper.getResponsivePadding(context),
-          child: _buildSearchAndFilters(),
-        ),
-        Expanded(
-          child: Consumer<ExploreProvider>(
-            builder: (context, provider, child) {
-              if (provider.showMapView) {
-                return _buildMapView();
-              }
-              return _buildDestinationsList();
-            },
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildDesktopLayout() {
-    return Row(
-      children: [
-        // Left panel - Filters and search
-        Container(
-          width: 350,
-          decoration: BoxDecoration(
-            color: Colors.grey[50],
-            border: Border(
-              right: BorderSide(color: Colors.grey.withOpacity(0.2)),
-            ),
-          ),
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(24),
-                child: _buildSearchAndFilters(),
-              ),
-              Expanded(
-                child: _buildFiltersList(),
-              ),
-            ],
-          ),
-        ),
-        // Right panel - Content
-        Expanded(
-          child: Consumer<ExploreProvider>(
-            builder: (context, provider, child) {
-              return Row(
-                children: [
-                  // Destinations list
-                  Expanded(
-                    flex: provider.showMapView ? 1 : 2,
-                    child: _buildDestinationsList(),
-                  ),
-                  // Map view
-                  if (provider.showMapView)
-                    Expanded(
-                      flex: 1,
-                      child: _buildMapView(),
-                    ),
-                ],
-              );
-            },
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildSearchAndFilters() {
-    return Column(
-      children: [
-        // Search bar
-        Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.grey.withOpacity(0.1),
-                blurRadius: 8,
-                offset: const Offset(0, 2),
-              ),
-            ],
-          ),
-          child: TextField(
-            controller: _searchController,
-            decoration: InputDecoration(
-              hintText: 'Search destinations...',
-              prefixIcon: const Icon(Icons.search, color: Colors.grey),
-              border: InputBorder.none,
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 16,
-              ),
-            ),
-            onChanged: (value) {
-              context.read<ExploreProvider>().searchDestinations(value);
-            },
-          ),
-        ),
-
-        const SizedBox(height: 16),
-
-        // Filter tabs
-        if (!ResponsiveHelper.isDesktop(context)) ...[
-          TabBar(
-            controller: _tabController,
-            isScrollable: true,
-            labelColor: Colors.white,
-            unselectedLabelColor: Colors.grey[600],
-            indicator: BoxDecoration(
-              color: Theme.of(context).primaryColor,
-              borderRadius: BorderRadius.circular(25),
-            ),
-            labelPadding: const EdgeInsets.symmetric(horizontal: 20),
-            tabs: const [
-              Tab(text: 'All'),
-              Tab(text: 'Story telling'),
-              Tab(text: 'Arts'),
-              Tab(text: 'Guided Tours'),
-              Tab(text: 'Accommodation'),
-            ],
-          ),
-
-          const SizedBox(height: 16),
-
-          // Map toggle
-          Row(
-            children: [
-              Expanded(
-                child: Consumer<ExploreProvider>(
-                  builder: (context, provider, child) {
-                    return ElevatedButton.icon(
-                      onPressed: () => provider.toggleMapView(),
-                      icon: Icon(
-                        provider.showMapView ? Icons.list : Icons.map,
-                        size: 20,
-                      ),
-                      label: Text(
-                        provider.showMapView ? 'List View' : 'Map View',
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: provider.showMapView
-                            ? Theme.of(context).primaryColor
-                            : Colors.grey[100],
-                        foregroundColor: provider.showMapView
-                            ? Colors.white
-                            : Colors.black87,
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-              const SizedBox(width: 12),
-              Consumer<ExploreProvider>(
-                builder: (context, provider, child) {
-                  return IconButton(
-                    onPressed: () => _showFilterBottomSheet(),
-                    icon: Stack(
-                      children: [
-                        const Icon(Icons.filter_list),
-                        if (provider.hasActiveFilters)
-                          Positioned(
-                            right: 0,
-                            top: 0,
-                            child: Container(
-                              width: 8,
-                              height: 8,
-                              decoration: BoxDecoration(
-                                color: Theme.of(context).primaryColor,
-                                shape: BoxShape.circle,
-                              ),
-                            ),
-                          ),
-                      ],
-                    ),
-                  );
-                },
-              ),
-            ],
-          ),
-        ],
-      ],
-    );
-  }
-
-  Widget _buildFiltersList() {
     return Consumer<ExploreProvider>(
       builder: (context, provider, child) {
-        return ListView(
-          padding: const EdgeInsets.all(16),
+        return Column(
           children: [
-            const Text(
-              'Categories',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+            _buildFilterChips(provider),
+            Expanded(
+              child: _buildDestinationGrid(context, provider),
             ),
-            const SizedBox(height: 12),
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: [
-                'All', 'Story telling', 'Arts', 'Guided Tours', 'Accommodation'
-              ].map((category) {
-                final isSelected = provider.selectedCategory == category;
-                return FilterChipWidget(
-                  label: category,
-                  isSelected: isSelected,
-                  onTap: () => provider.selectCategory(category),
-                );
-              }).toList(),
-            ),
-
-            const SizedBox(height: 24),
-
-            const Text(
-              'Price Range',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 12),
-            RangeSlider(
-              values: provider.priceRange,
-              min: 0,
-              max: 1000,
-              divisions: 20,
-              labels: RangeLabels(
-                'ZAR${provider.priceRange.start.round()}',
-                'ZAR${provider.priceRange.end.round()}',
-              ),
-              onChanged: provider.updatePriceRange,
-            ),
-
-            const SizedBox(height: 24),
-
-            const Text(
-              'Location',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 12),
-            ...['Mpumalanga', 'KwaZulu-Natal', 'Limpopo', 'Eastern Cape']
-                .map((province) {
-              final isSelected = provider.selectedProvinces.contains(province);
-              return CheckboxListTile(
-                title: Text(province),
-                value: isSelected,
-                onChanged: (value) => provider.toggleProvince(province),
-                controlAffinity: ListTileControlAffinity.leading,
-              );
-            }),
           ],
         );
       },
     );
   }
 
-  Widget _buildDestinationsList() {
+  Widget _buildTabletLayout() {
     return Consumer<ExploreProvider>(
       builder: (context, provider, child) {
-        if (provider.isLoading) {
-          return const Center(child: CircularProgressIndicator());
-        }
-
-        if (provider.filteredDestinations.isEmpty) {
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.search_off,
-                  size: 64,
-                  color: Colors.grey[400],
+        return Row(
+          children: [
+            // Sidebar with filters
+            Container(
+              width: 300,
+              decoration: BoxDecoration(
+                color: Colors.grey[50],
+                border: Border(
+                  right: BorderSide(color: Colors.grey.withValues(alpha: 0.2)),
                 ),
-                const SizedBox(height: 16),
-                Text(
-                  'No destinations found',
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: Colors.grey[600],
-                  ),
-                ),
-              ],
+              ),
+              child: _buildFilterSidebar(provider),
             ),
-          );
-        }
-
-        return GridView.builder(
-          padding: ResponsiveHelper.getResponsivePadding(context),
-          gridDelegate: ResponsiveHelper.getResponsiveGridDelegate(
-            context,
-            childAspectRatio: ResponsiveHelper.isMobile(context) ? 0.8 : 0.9,
-          ),
-          itemCount: provider.filteredDestinations.length,
-          itemBuilder: (context, index) {
-            final destination = provider.filteredDestinations[index];
-            return DestinationCard(
-              title: destination['title'] ?? 'The Bantus',
-              location: destination['location'] ?? 'Mpumalanga',
-              rating: destination['rating']?.toDouble() ?? 4.5,
-              reviewCount: destination['reviewCount'] ?? 120,
-              price: destination['price']?.toDouble() ?? 150.0,
-              imageUrl: destination['imageUrl'] ?? '',
-              onTap: () => _navigateToDestinationDetail(destination),
-            );
-          },
+            // Main content
+            Expanded(
+              child: _buildDestinationGrid(context, provider),
+            ),
+          ],
         );
       },
     );
   }
 
-  Widget _buildMapView() {
+  Widget _buildDesktopLayout() {
     return Consumer<ExploreProvider>(
       builder: (context, provider, child) {
-        return MapView(
-          destinations: provider.filteredDestinations,
-          onDestinationTap: _navigateToDestinationDetail,
-        );
-      },
-    );
-  }
-
-  void _showFilterBottomSheet() {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-      ),
-      builder: (context) => DraggableScrollableSheet(
-        initialChildSize: 0.7,
-        maxChildSize: 0.9,
-        minChildSize: 0.5,
-        expand: false,
-        builder: (context, scrollController) {
-          return Container(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              children: [
-                Container(
-                  width: 40,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: Colors.grey[300],
-                    borderRadius: BorderRadius.circular(2),
-                  ),
+        return Row(
+          children: [
+            // Sidebar with filters
+            Container(
+              width: 350,
+              decoration: BoxDecoration(
+                color: Colors.grey[50],
+                border: Border(
+                  right: BorderSide(color: Colors.grey.withValues(alpha: 0.2)),
                 ),
-                const SizedBox(height: 16),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      'Filters',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
+              ),
+              child: _buildFilterSidebar(provider),
+            ),
+            // Main content
+            Expanded(
+              child: Column(
+                children: [
+                  // Header with results count and sort options
+                  Container(
+                    padding: const EdgeInsets.all(24),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      border: Border(
+                        bottom: BorderSide(color: Colors.grey.withValues(alpha: 0.2)),
                       ),
                     ),
-                    TextButton(
-                      onPressed: () {
-                        context.read<ExploreProvider>().clearFilters();
-                      },
-                      child: const Text('Clear All'),
+                    child: Row(
+                      children: [
+                        Text(
+                          '${provider.filteredDestinations.length} destinations found',
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const Spacer(),
+                        _buildSortDropdown(provider),
+                      ],
                     ),
-                  ],
-                ),
-                Expanded(
-                  child: SingleChildScrollView(
-                    controller: scrollController,
-                    child: _buildFiltersList(),
                   ),
-                ),
-              ],
+                  // Destinations grid
+                  Expanded(
+                    child: _buildDestinationGrid(context, provider),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildFilterChips(ExploreProvider provider) {
+    final categories = provider.categories;
+
+    return Container(
+      height: 60,
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border(
+          bottom: BorderSide(color: Colors.grey.withValues(alpha: 0.2)),
+        ),
+      ),
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        itemCount: categories.length + 1, // +1 for "All" chip
+        itemBuilder: (context, index) {
+          if (index == 0) {
+            // "All" chip
+            return Padding(
+              padding: const EdgeInsets.only(right: 8),
+              child: FilterChipWidget(
+                label: 'All',
+                isSelected: provider.selectedCategories.isEmpty,
+                onTap: () => provider.clearCategorySelection(),
+              ),
+            );
+          }
+
+          final category = categories[index - 1];
+          final isSelected = provider.selectedCategories.contains(category);
+
+          return Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: FilterChipWidget(
+              label: category,
+              isSelected: isSelected,
+              onTap: () => provider.selectCategory(category),
             ),
           );
         },
       ),
+    );
+  }
+
+  Widget _buildFilterSidebar(ExploreProvider provider) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Text(
+                'Filters',
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const Spacer(),
+              if (_hasActiveFilters(provider))
+                TextButton(
+                  onPressed: () => provider.clearFilters(),
+                  child: const Text('Clear All'),
+                ),
+            ],
+          ),
+          const SizedBox(height: 24),
+
+          // Search
+          TextField(
+            onChanged: (value) => provider.updateSearchQuery(value),
+            decoration: InputDecoration(
+              hintText: 'Search destinations...',
+              prefixIcon: const Icon(Icons.search),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              filled: true,
+              fillColor: Colors.white,
+            ),
+          ),
+          const SizedBox(height: 24),
+
+          // Categories
+          const Text(
+            'Categories',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: provider.categories.map((category) {
+              final isSelected = provider.selectedCategories.contains(category);
+              return FilterChip(
+                label: Text(category),
+                selected: isSelected,
+                onSelected: (bool selected) => provider.selectCategory(category),
+                selectedColor: Theme.of(context).primaryColor.withValues(alpha: 0.2),
+                checkmarkColor: Theme.of(context).primaryColor,
+              );
+            }).toList(),
+          ),
+
+          const SizedBox(height: 32),
+
+          // Price Range
+          const Text(
+            'Price Range (per person)',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Colors.grey.withValues(alpha: 0.2)),
+            ),
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'ZAR ${provider.priceRange.start.round()}',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        color: Theme.of(context).primaryColor,
+                      ),
+                    ),
+                    Text(
+                      'ZAR ${provider.priceRange.end.round()}',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        color: Theme.of(context).primaryColor,
+                      ),
+                    ),
+                  ],
+                ),
+                RangeSlider(
+                  values: provider.priceRange,
+                  min: 0,
+                  max: 2000,
+                  divisions: 20,
+                  activeColor: Theme.of(context).primaryColor,
+                  onChanged: (RangeValues values) => provider.updatePriceRange(values),
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 32),
+
+          // Rating Filter
+          const Text(
+            'Minimum Rating',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: Colors.grey.withValues(alpha: 0.2)),
+            ),
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    Icon(
+                      Icons.star,
+                      color: Colors.amber,
+                      size: 20,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      '${provider.minimumRating.toStringAsFixed(1)} stars and above',
+                      style: const TextStyle(fontWeight: FontWeight.w500),
+                    ),
+                  ],
+                ),
+                Slider(
+                  value: provider.minimumRating,
+                  min: 0,
+                  max: 5,
+                  divisions: 10,
+                  activeColor: Colors.amber,
+                  onChanged: (double value) => provider.updateMinimumRating(value),
+                ),
+              ],
+            ),
+          ),
+
+          const SizedBox(height: 32),
+
+          // Ubuntu Features
+          const Text(
+            'Ubuntu Features',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 12),
+          ..._getUbuntuFeatures().map((feature) => CheckboxListTile(
+            title: Text(feature['title']!),
+            subtitle: Text(feature['description']!),
+            value: provider.selectedFeatures.contains(feature['id']),
+            onChanged: (bool? value) => provider.toggleFeature(feature['id']!),
+            contentPadding: EdgeInsets.zero,
+            activeColor: Theme.of(context).primaryColor,
+          )),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSortDropdown(ExploreProvider provider) {
+    return DropdownButton<String>(
+      value: provider.sortBy,
+      onChanged: (String? value) {
+        if (value != null) {
+          provider.updateSortBy(value);
+        }
+      },
+      items: const [
+        DropdownMenuItem(value: 'name', child: Text('Name')),
+        DropdownMenuItem(value: 'price_low', child: Text('Price: Low to High')),
+        DropdownMenuItem(value: 'price_high', child: Text('Price: High to Low')),
+        DropdownMenuItem(value: 'rating', child: Text('Highest Rated')),
+        DropdownMenuItem(value: 'popular', child: Text('Most Popular')),
+      ],
+    );
+  }
+
+  Widget _buildDestinationGrid(BuildContext context, ExploreProvider provider) {
+    if (provider.isLoading) {
+      return const Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            CircularProgressIndicator(),
+            SizedBox(height: 16),
+            Text('Loading Ubuntu destinations...'),
+          ],
+        ),
+      );
+    }
+
+    if (provider.error != null) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.error_outline,
+              size: 64,
+              color: Colors.grey[400],
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Error loading destinations',
+              style: TextStyle(
+                fontSize: 18,
+                color: Colors.grey[600],
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              provider.error!,
+              style: TextStyle(color: Colors.grey[500]),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: () => provider.loadDestinations(),
+              child: const Text('Retry'),
+            ),
+          ],
+        ),
+      );
+    }
+
+    final filteredDestinations = provider.filteredDestinations;
+
+    if (filteredDestinations.isEmpty) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.search_off,
+              size: 64,
+              color: Colors.grey[400],
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              'No destinations found',
+              style: TextStyle(
+                fontSize: 18,
+                color: Colors.grey,
+              ),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              'Try adjusting your filters or search terms',
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.grey,
+              ),
+            ),
+            const SizedBox(height: 16),
+            OutlinedButton(
+              onPressed: () => provider.clearFilters(),
+              child: const Text('Clear Filters'),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return GridView.builder(
+      padding: ResponsiveHelper.getResponsivePadding(context),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: ResponsiveHelper.getResponsiveGridColumns(context),
+        childAspectRatio: ResponsiveHelper.isMobile(context) ? 0.8 : 0.9,
+        crossAxisSpacing: 16,
+        mainAxisSpacing: 16,
+      ),
+      itemCount: filteredDestinations.length,
+      itemBuilder: (context, index) {
+        final destination = filteredDestinations[index];
+        return DestinationCard(
+          destination: destination,
+          onTap: () => _navigateToDestinationDetail(destination),
+        );
+      },
     );
   }
 
@@ -494,5 +535,123 @@ class _ExploreScreenState extends State<ExploreScreen>
       '/destination-detail',
       arguments: destination,
     );
+  }
+
+  void _showSearchDialog(BuildContext context, ExploreProvider provider) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) => AlertDialog(
+        title: const Text('Search Ubuntu Destinations'),
+        content: TextField(
+          onChanged: (value) => provider.updateSearchQuery(value),
+          decoration: const InputDecoration(
+            hintText: 'Enter destination or cultural experience...',
+            prefixIcon: Icon(Icons.search),
+          ),
+          autofocus: true,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Close'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showFilterBottomSheet(BuildContext context, ExploreProvider provider) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (BuildContext context) => Container(
+        height: MediaQuery.of(context).size.height * 0.9,
+        decoration: const BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(20),
+            topRight: Radius.circular(20),
+          ),
+        ),
+        child: Column(
+          children: [
+            // Handle
+            Container(
+              width: 40,
+              height: 4,
+              margin: const EdgeInsets.symmetric(vertical: 12),
+              decoration: BoxDecoration(
+                color: Colors.grey[300],
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            // Header
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Row(
+                children: [
+                  const Text(
+                    'Filters',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const Spacer(),
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text('Done'),
+                  ),
+                ],
+              ),
+            ),
+            // Filter content
+            Expanded(
+              child: _buildFilterSidebar(provider),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  bool _hasActiveFilters(ExploreProvider provider) {
+    return provider.selectedCategories.isNotEmpty ||
+           provider.priceRange.start > 0 ||
+           provider.priceRange.end < 2000 ||
+           provider.minimumRating > 0 ||
+           provider.searchQuery.isNotEmpty ||
+           provider.selectedFeatures.isNotEmpty;
+  }
+
+  List<Map<String, String>> _getUbuntuFeatures() {
+    return [
+      {
+        'id': 'cultural_tours',
+        'title': 'Cultural Tours',
+        'description': 'Traditional cultural experiences',
+      },
+      {
+        'id': 'ubuntu_philosophy',
+        'title': 'Ubuntu Philosophy',
+        'description': 'Learn about "I am because we are"',
+      },
+      {
+        'id': 'local_community',
+        'title': 'Community Interaction',
+        'description': 'Meet and interact with locals',
+      },
+      {
+        'id': 'traditional_food',
+        'title': 'Traditional Food',
+        'description': 'Authentic South African cuisine',
+      },
+      {
+        'id': 'ar_experience',
+        'title': 'AR Experience',
+        'description': 'Augmented reality cultural tours',
+      },
+    ];
   }
 }

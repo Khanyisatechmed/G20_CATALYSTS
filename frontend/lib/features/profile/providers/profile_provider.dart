@@ -3,7 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:frontend/core/constants/app_colors.dart';
 import 'package:frontend/routes/route_names.dart';
 import '../../../core/services/api_service.dart';
-import '../../../core/constants/api_endpoints.dart';
+import '../../../core/constants/api_endpoints.dart' as api_endpoints;
 import '../../../core/models/user_model.dart';
 
 class ProfileProvider with ChangeNotifier {
@@ -25,7 +25,7 @@ class ProfileProvider with ChangeNotifier {
     _error = null;
 
     try {
-      final response = await _apiService.get(ApiEndpoints.profile);
+      final response = await _apiService.get(api_endpoints.ApiEndpoints.profile);
       _user = UserModel.fromJson(response.data['user']);
     } catch (e) {
       _error = e.toString();
@@ -52,7 +52,7 @@ class ProfileProvider with ChangeNotifier {
     _error = null;
 
     try {
-      final response = await _apiService.put(ApiEndpoints.updateProfile, data: updates);
+      final response = await _apiService.put(api_endpoints.ApiEndpoints.updateProfile, data: updates);
       _user = UserModel.fromJson(response.data['user']);
     } catch (e) {
       _error = e.toString();
