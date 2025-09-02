@@ -24,3 +24,16 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
+assets:
+    # Images directory
+    - assets/images/
+    - assets/images/backgrounds/
+    - assets/images/icons/
+    - assets/images/products/
+    - assets/images/destinations/
+    - assets/images/experiences/
+
+    # Other assets
+    - assets/data/
+    - assets/fonts/
