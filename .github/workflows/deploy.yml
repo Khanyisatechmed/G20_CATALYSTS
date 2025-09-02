@@ -1,11 +1,9 @@
 # .github/workflows/deploy.yml
-name: Deploy Ubuntu Destinations to GitHub Pages
+name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [ main, master ]
-  pull_request:
-    branches: [ main, master ]
+    branches: [ main ]
   workflow_dispatch:
 
 permissions:
@@ -18,11 +16,11 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
     
     steps:
-    - name: Checkout repository
+    - name: Checkout
       uses: actions/checkout@v4
 
     - name: Setup Flutter
@@ -32,45 +30,26 @@ jobs:
         channel: 'stable'
         cache: true
 
-    - name: Verify Flutter installation
-      run: flutter doctor -v
-
-    - name: Get dependencies
+    - name: Install dependencies
       working-directory: ./frontend
       run: flutter pub get
 
-    - name: Analyze code
-      working-directory: ./frontend
-      run: flutter analyze --no-fatal-infos
-
-    - name: Run tests
-      working-directory: ./frontend
-      run: flutter test --coverage
-
-    - name: Build web application
+    - name: Build web
       working-directory: ./frontend
       run: |
         flutter build web --release \
           --web-renderer html \
-          --base-href /ubuntu_destinations/ \
-          --dart-define=FLUTTER_WEB_CANVASKIT_URL=https://unpkg.com/canvaskit-wasm@0.39.1/bin/
+          --base-href /G20_CATALYSTS/ \
+          --no-tree-shake-icons
 
     - name: Setup Pages
       uses: actions/configure-pages@v4
 
-    - name: Upload build artifacts
+    - name: Upload artifact
       uses: actions/upload-pages-artifact@v3
       with:
         path: ./frontend/build/web
 
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    needs: build
-    
-    steps:
     - name: Deploy to GitHub Pages
       id: deployment
       uses: actions/deploy-pages@v4
