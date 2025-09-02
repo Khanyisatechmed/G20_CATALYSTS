@@ -1,100 +1,315 @@
 // features/home/providers/home_provider.dart
 import 'package:flutter/foundation.dart';
-import 'package:frontend/core/constants/app_colors.dart';
-import '../../../core/services/api_service.dart';
-import '../../../core/constants/api_endpoints.dart' as api_endpoints;
+import 'package:frontend/core/services/api_service.dart';
 
-class HomeProvider with ChangeNotifier {
-  final ApiService _apiService;
-
-  List<Map<String, dynamic>> _popularExperiences = [];
-  List<Map<String, dynamic>> _arPackages = [];
+class HomeProvider extends ChangeNotifier {
   bool _isLoading = false;
   String? _error;
+  List<Map<String, dynamic>> _featuredExperiences = [];
+  List<Map<String, dynamic>> _arPackages = [];
+  Map<String, dynamic>? _userStats;
 
-  HomeProvider(this._apiService);
+  HomeProvider(ApiService read);
 
   // Getters
-  List<Map<String, dynamic>> get popularExperiences => _popularExperiences;
-  List<Map<String, dynamic>> get arPackages => _arPackages;
   bool get isLoading => _isLoading;
   String? get error => _error;
+  List<Map<String, dynamic>> get featuredExperiences => _featuredExperiences;
+  List<Map<String, dynamic>> get arPackages => _arPackages;
+  Map<String, dynamic>? get userStats => _userStats;
 
+  // Load all data needed for the home screen
   Future<void> loadData() async {
-    _setLoading(true);
-    _error = null;
-
     try {
-      await Future.wait([
-        _loadPopularExperiences(),
-        _loadARPackages(),
-      ]);
-    } catch (e) {
-      _error = e.toString();
-      if (kDebugMode) print('Error loading home data: $e');
-    }
+      _setLoading(true);
+      _setError(null);
 
-    _setLoading(false);
+      // Simulate API delay
+      await Future.delayed(const Duration(seconds: 1));
+
+      // Load mock data
+      await _loadFeaturedExperiences();
+      await _loadARPackages();
+      await _loadUserStats();
+
+      debugPrint('Home data loaded successfully');
+    } catch (e) {
+      _setError('Failed to load home data: ${e.toString()}');
+      debugPrint('Home data loading error: $e');
+    } finally {
+      _setLoading(false);
+    }
   }
 
-  Future<void> _loadPopularExperiences() async {
-    try {
-      final response = await _apiService.get(api_endpoints.ApiEndpoints.popularExperiences!);
-      _popularExperiences = List<Map<String, dynamic>>.from(response.data['experiences']);
-    } catch (e) {
-      // Mock data for development
-      _popularExperiences = [
-        {
-          'id': 1,
-          'title': 'Pottery Workshop',
-          'price': 150.0,
-          'currency': 'ZAR',
-          'imageUrl': '',
-          'location': 'Mpumalanga',
-          'rating': 4.5,
-        },
-        {
-          'id': 2,
-          'title': 'Safari Ride',
-          'price': 150.0,
-          'currency': 'ZAR',
-          'imageUrl': '',
-          'location': 'Kruger National Park',
-          'rating': 4.8,
-        },
-      ];
-    }
+  Future<void> _loadFeaturedExperiences() async {
+    _featuredExperiences = [
+      {
+        'id': '1',
+        'title': 'Ubuntu Village Experience',
+        'location': 'Eastern Cape',
+        'price': 450,
+        'currency': 'ZAR',
+        'rating': 4.8,
+        'reviewCount': 24,
+        'duration': 180, // minutes
+        'description': 'Immerse yourself in traditional Ubuntu village life',
+        'image': null,
+        'category': 'Cultural',
+        'difficulty': 'Easy',
+        'groupSize': 'Up to 8 people',
+        'includes': ['Traditional meals', 'Cultural guide', 'Craft workshop'],
+      },
+      {
+        'id': '2',
+        'title': 'Traditional Zulu Dancing',
+        'location': 'KwaZulu-Natal',
+        'price': 280,
+        'currency': 'ZAR',
+        'rating': 4.6,
+        'reviewCount': 18,
+        'duration': 120,
+        'description': 'Learn traditional Zulu dance and cultural significance',
+        'image': null,
+        'category': 'Cultural',
+        'difficulty': 'Moderate',
+        'groupSize': 'Up to 15 people',
+        'includes': ['Traditional attire', 'Dance lessons', 'Cultural story'],
+      },
+      {
+        'id': '3',
+        'title': 'Ndebele Art Workshop',
+        'location': 'Mpumalanga',
+        'price': 320,
+        'currency': 'ZAR',
+        'rating': 4.9,
+        'reviewCount': 31,
+        'duration': 240,
+        'description': 'Create your own Ndebele geometric art pieces',
+        'image': null,
+        'category': 'Art & Craft',
+        'difficulty': 'Easy',
+        'groupSize': 'Up to 10 people',
+        'includes': ['Art supplies', 'Expert instruction', 'Take-home artwork'],
+      },
+      {
+        'id': '4',
+        'title': 'Ubuntu Philosophy Circle',
+        'location': 'Johannesburg',
+        'price': 150,
+        'currency': 'ZAR',
+        'rating': 4.7,
+        'reviewCount': 42,
+        'duration': 90,
+        'description': 'Explore the deep meaning of Ubuntu philosophy',
+        'image': null,
+        'category': 'Philosophy',
+        'difficulty': 'Easy',
+        'groupSize': 'Up to 12 people',
+        'includes': ['Discussion circle', 'Traditional tea', 'Philosophy guide'],
+      },
+    ];
   }
 
   Future<void> _loadARPackages() async {
+    _arPackages = [
+      {
+        'id': 'ar_1',
+        'title': 'Museum AR Tour',
+        'location': 'Johannesburg',
+        'description': 'Explore ancient artifacts through AR technology',
+        'price': 150,
+        'currency': 'ZAR',
+        'rating': 4.8,
+        'reviewCount': 67,
+        'duration': 45,
+        'type': 'museum',
+        'difficulty': 'Easy',
+        'ageRange': '8+',
+        'features': ['3D artifacts', 'Interactive exhibits', 'Audio guide'],
+        'requirements': ['Smartphone', 'AR app'],
+        'isActive': true,
+      },
+      {
+        'id': 'ar_2',
+        'title': 'Cultural Heritage AR',
+        'location': 'Cape Town',
+        'description': 'Experience traditional culture through AR immersion',
+        'price': 200,
+        'currency': 'ZAR',
+        'rating': 4.6,
+        'reviewCount': 43,
+        'duration': 60,
+        'type': 'cultural',
+        'difficulty': 'Easy',
+        'ageRange': '10+',
+        'features': ['Cultural ceremonies', 'Traditional stories', 'Virtual guides'],
+        'requirements': ['VR headset provided', 'Comfortable shoes'],
+        'isActive': true,
+      },
+      {
+        'id': 'ar_3',
+        'title': 'Historical Sites AR',
+        'location': 'Pretoria',
+        'description': 'Walk through history with AR reconstruction',
+        'price': 0, // Free experience
+        'currency': 'ZAR',
+        'rating': 4.5,
+        'reviewCount': 89,
+        'duration': 30,
+        'type': 'historical',
+        'difficulty': 'Easy',
+        'ageRange': 'All ages',
+        'features': ['Historical recreation', 'Timeline view', 'Educational content'],
+        'requirements': ['Mobile device', 'GPS enabled'],
+        'isActive': true,
+      },
+      {
+        'id': 'ar_4',
+        'title': 'Wildlife AR Safari',
+        'location': 'Kruger National Park',
+        'description': 'Virtual wildlife encounters with AR animals',
+        'price': 350,
+        'currency': 'ZAR',
+        'rating': 4.9,
+        'reviewCount': 156,
+        'duration': 90,
+        'type': 'wildlife',
+        'difficulty': 'Moderate',
+        'ageRange': '6+',
+        'features': ['AR animals', 'Conservation education', 'Photo opportunities'],
+        'requirements': ['AR device provided', 'Outdoor activity'],
+        'isActive': true,
+      },
+    ];
+  }
+
+  Future<void> _loadUserStats() async {
+    _userStats = {
+      'experiencesBooked': 5,
+      'placesVisited': 8,
+      'culturalPoints': 250,
+      'totalSpent': 1240,
+      'currency': 'ZAR',
+      'favoriteCategory': 'Cultural',
+      'memberSince': DateTime.now().subtract(const Duration(days: 90)),
+      'achievements': [
+        'First Ubuntu Experience',
+        'Cultural Explorer',
+        'AR Pioneer',
+      ],
+      'upcomingBookings': 2,
+      'wishlistItems': 7,
+    };
+  }
+
+  // Search functionality
+  Future<List<Map<String, dynamic>>> searchExperiences(String query) async {
+    if (query.isEmpty) return [];
+
     try {
-      final response = await _apiService.get('${api_endpoints.ApiEndpoints.experiences}?has_ar=true');
-      _arPackages = List<Map<String, dynamic>>.from(response.data['experiences']);
+      _setLoading(true);
+
+      // Simulate search delay
+      await Future.delayed(const Duration(milliseconds: 500));
+
+      final allExperiences = [..._featuredExperiences, ..._arPackages];
+      final results = allExperiences.where((experience) {
+        final title = experience['title']?.toString().toLowerCase() ?? '';
+        final location = experience['location']?.toString().toLowerCase() ?? '';
+        final description = experience['description']?.toString().toLowerCase() ?? '';
+        final searchTerm = query.toLowerCase();
+
+        return title.contains(searchTerm) ||
+               location.contains(searchTerm) ||
+               description.contains(searchTerm);
+      }).toList();
+
+      return results;
     } catch (e) {
-      // Mock data for development
-      _arPackages = [
-        {
-          'id': 1,
-          'title': 'Museum AR Tour',
-          'description': 'Interactive cultural experience',
-          'imageUrl': '',
-          'hasAR': true,
-        },
-        {
-          'id': 2,
-          'title': 'Lion Anatomy',
-          'description': 'Educational wildlife experience',
-          'imageUrl': '',
-          'hasAR': true,
-        },
-      ];
+      _setError('Search failed: ${e.toString()}');
+      return [];
+    } finally {
+      _setLoading(false);
     }
   }
 
+  // Get recommendations based on user preferences
+  List<Map<String, dynamic>> getRecommendations() {
+    final recommendations = <Map<String, dynamic>>[];
+
+    // Add experience-based recommendations
+    if (_featuredExperiences.isNotEmpty) {
+      recommendations.add({
+        'id': 'rec_1',
+        'type': 'experience',
+        'title': 'Recommended Experience',
+        'subtitle': _featuredExperiences.first['title'],
+        'icon': 'local_activity',
+        'color': 'green',
+        'data': _featuredExperiences.first,
+      });
+    }
+
+    // Add AR-based recommendations
+    if (_arPackages.isNotEmpty) {
+      recommendations.add({
+        'id': 'rec_2',
+        'type': 'ar_experience',
+        'title': 'Try AR Experience',
+        'subtitle': _arPackages.first['title'],
+        'icon': 'view_in_ar',
+        'color': 'purple',
+        'data': _arPackages.first,
+      });
+    }
+
+    return recommendations;
+  }
+
+  // Refresh data
+  Future<void> refresh() async {
+    await loadData();
+  }
+
+  // Helper methods
   void _setLoading(bool loading) {
     _isLoading = loading;
     notifyListeners();
   }
+
+  void _setError(String? error) {
+    _error = error;
+    notifyListeners();
+  }
+
+  void clearError() {
+    _error = null;
+    notifyListeners();
+  }
+
+  // Get popular categories
+  List<String> getPopularCategories() {
+    final categories = <String>{};
+    for (final experience in _featuredExperiences) {
+      final category = experience['category'] as String?;
+      if (category != null) {
+        categories.add(category);
+      }
+    }
+    return categories.toList();
+  }
+
+  // Get experiences by category
+  List<Map<String, dynamic>> getExperiencesByCategory(String category) {
+    return _featuredExperiences.where((experience) =>
+      experience['category'] == category
+    ).toList();
+  }
+
+  // Get AR experiences by type
+  List<Map<String, dynamic>> getARExperiencesByType(String type) {
+    return _arPackages.where((experience) =>
+      experience['type'] == type
+    ).toList();
+  }
 }
-
-

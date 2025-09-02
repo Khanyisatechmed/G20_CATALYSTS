@@ -8,6 +8,7 @@ import '../../../shared/widgets/responsive_layout.dart';
 import '../../../shared/widgets/custom_bottom_nav.dart';
 import '../providers/home_provider.dart';
 import '../widgets/ar_package_card.dart';
+import '../widgets/search_bar.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -19,6 +20,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final ScrollController _scrollController = ScrollController();
   final TextEditingController _searchController = TextEditingController();
+  final Set<String> _favorites = <String>{};
 
   @override
   void initState() {
@@ -48,65 +50,95 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildMobileLayout() {
-    return CustomScrollView(
-      controller: _scrollController,
-      slivers: [
-        _buildSliverAppBar(),
-        SliverToBoxAdapter(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildWelcomeSection(),
-              const SizedBox(height: 24),
-              _buildSearchSection(),
-              const SizedBox(height: 32),
-              _buildQuickActionsSection(),
-              const SizedBox(height: 32),
-              _buildFeaturedExperiencesSection(),
-              const SizedBox(height: 32),
-              _buildARPackagesSection(),
-              const SizedBox(height: 32),
-              _buildCulturalHighlightsSection(),
-              const SizedBox(height: 32),
-              _buildRecommendationsSection(),
-              const SizedBox(height: 100), // Bottom padding for nav
-            ],
+    return RefreshIndicator(
+      onRefresh: () => context.read<HomeProvider>().refresh(),
+      child: CustomScrollView(
+        controller: _scrollController,
+        slivers: [
+          _buildSliverAppBar(),
+          SliverToBoxAdapter(
+            child: Consumer<HomeProvider>(
+              builder: (context, provider, child) {
+                if (provider.isLoading && provider.featuredExperiences.isEmpty) {
+                  return _buildLoadingState();
+                }
+
+                if (provider.error != null) {
+                  return _buildErrorState(provider.error!);
+                }
+
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _buildWelcomeSection(),
+                    const SizedBox(height: 24),
+                    _buildSearchSection(),
+                    const SizedBox(height: 32),
+                    _buildQuickActionsSection(),
+                    const SizedBox(height: 32),
+                    _buildFeaturedExperiencesSection(provider),
+                    const SizedBox(height: 32),
+                    _buildARPackagesSection(provider),
+                    const SizedBox(height: 32),
+                    _buildCulturalHighlightsSection(),
+                    const SizedBox(height: 32),
+                    _buildRecommendationsSection(),
+                    const SizedBox(height: 100), // Bottom padding for nav
+                  ],
+                );
+              },
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
   Widget _buildTabletLayout() {
-    return CustomScrollView(
-      controller: _scrollController,
-      slivers: [
-        _buildSliverAppBar(),
-        SliverToBoxAdapter(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _buildWelcomeSection(),
-                const SizedBox(height: 32),
-                _buildSearchSection(),
-                const SizedBox(height: 40),
-                _buildQuickActionsSection(),
-                const SizedBox(height: 40),
-                _buildFeaturedExperiencesSection(),
-                const SizedBox(height: 40),
-                _buildARPackagesSection(),
-                const SizedBox(height: 40),
-                _buildCulturalHighlightsSection(),
-                const SizedBox(height: 40),
-                _buildRecommendationsSection(),
-                const SizedBox(height: 40),
-              ],
+    return RefreshIndicator(
+      onRefresh: () => context.read<HomeProvider>().refresh(),
+      child: CustomScrollView(
+        controller: _scrollController,
+        slivers: [
+          _buildSliverAppBar(),
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Consumer<HomeProvider>(
+                builder: (context, provider, child) {
+                  if (provider.isLoading && provider.featuredExperiences.isEmpty) {
+                    return _buildLoadingState();
+                  }
+
+                  if (provider.error != null) {
+                    return _buildErrorState(provider.error!);
+                  }
+
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildWelcomeSection(),
+                      const SizedBox(height: 32),
+                      _buildSearchSection(),
+                      const SizedBox(height: 40),
+                      _buildQuickActionsSection(),
+                      const SizedBox(height: 40),
+                      _buildFeaturedExperiencesSection(provider),
+                      const SizedBox(height: 40),
+                      _buildARPackagesSection(provider),
+                      const SizedBox(height: 40),
+                      _buildCulturalHighlightsSection(),
+                      const SizedBox(height: 40),
+                      _buildRecommendationsSection(),
+                      const SizedBox(height: 40),
+                    ],
+                  );
+                },
+              ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
@@ -116,51 +148,69 @@ class _HomeScreenState extends State<HomeScreen> {
         // Sidebar
         Container(
           width: 280,
-          color: Colors.grey[50],
+          decoration: BoxDecoration(
+            color: Colors.grey[50],
+            border: Border(right: BorderSide(color: Colors.grey[200]!)),
+          ),
           child: _buildDesktopSidebar(),
         ),
         // Main content
         Expanded(
-          child: CustomScrollView(
-            controller: _scrollController,
-            slivers: [
-              _buildDesktopHeader(),
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.all(32),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(
-                            flex: 2,
-                            child: Column(
+          child: RefreshIndicator(
+            onRefresh: () => context.read<HomeProvider>().refresh(),
+            child: CustomScrollView(
+              controller: _scrollController,
+              slivers: [
+                _buildDesktopHeader(),
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.all(32),
+                    child: Consumer<HomeProvider>(
+                      builder: (context, provider, child) {
+                        if (provider.isLoading && provider.featuredExperiences.isEmpty) {
+                          return _buildLoadingState();
+                        }
+
+                        if (provider.error != null) {
+                          return _buildErrorState(provider.error!);
+                        }
+
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                _buildFeaturedExperiencesSection(),
-                                const SizedBox(height: 40),
-                                _buildCulturalHighlightsSection(),
+                                Expanded(
+                                  flex: 2,
+                                  child: Column(
+                                    children: [
+                                      _buildFeaturedExperiencesSection(provider),
+                                      const SizedBox(height: 40),
+                                      _buildCulturalHighlightsSection(),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(width: 32),
+                                Expanded(
+                                  child: Column(
+                                    children: [
+                                      _buildARPackagesSection(provider),
+                                      const SizedBox(height: 40),
+                                      _buildRecommendationsSection(),
+                                    ],
+                                  ),
+                                ),
                               ],
                             ),
-                          ),
-                          const SizedBox(width: 32),
-                          Expanded(
-                            child: Column(
-                              children: [
-                                _buildARPackagesSection(),
-                                const SizedBox(height: 40),
-                                _buildRecommendationsSection(),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
+                          ],
+                        );
+                      },
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ],
@@ -306,126 +356,119 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildWelcomeSection() {
-    return Consumer<HomeProvider>(
-      builder: (context, provider, child) {
-        return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Sawubona! Welcome back',
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.grey[600],
-                ),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Sawubona! Welcome back',
+            style: TextStyle(
+              fontSize: 16,
+              color: Colors.grey[600],
+            ),
+          ),
+          const SizedBox(height: 4),
+          const Text(
+            'Discover Ubuntu experiences',
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 16),
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Theme.of(context).primaryColor.withValues(alpha: 0.1),
+                  Theme.of(context).primaryColor.withValues(alpha: 0.05),
+                ],
               ),
-              const SizedBox(height: 4),
-              const Text(
-                'Discover Ubuntu experiences',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.lightbulb_outline,
+                  color: Theme.of(context).primaryColor,
                 ),
-              ),
-              const SizedBox(height: 16),
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      Theme.of(context).primaryColor.withValues(alpha: 0.1),
-                      Theme.of(context).primaryColor.withValues(alpha: 0.05),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Ubuntu Philosophy',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 14,
+                        ),
+                      ),
+                      Text(
+                        '"I am because we are" - Experience authentic South African culture',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey[600],
+                        ),
+                      ),
                     ],
                   ),
-                  borderRadius: BorderRadius.circular(12),
                 ),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.lightbulb_outline,
-                      color: Theme.of(context).primaryColor,
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'Ubuntu Philosophy',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 14,
-                            ),
-                          ),
-                          Text(
-                            '"I am because we are" - Experience authentic South African culture',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey[600],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
-        );
-      },
+        ],
+      ),
     );
   }
 
   Widget _buildSearchSection() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: TextField(
+      child: CustomSearchBar(
         controller: _searchController,
-        decoration: InputDecoration(
-          hintText: 'Search experiences, places, culture...',
-          prefixIcon: const Icon(Icons.search),
-          suffixIcon: IconButton(
-            onPressed: () => _searchController.clear(),
-            icon: const Icon(Icons.clear),
-          ),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide.none,
-          ),
-          filled: true,
-          fillColor: Colors.white,
-        ),
         onSubmitted: _performSearch,
+        suggestions: const [
+          'Ubuntu Village Experience',
+          'Traditional Zulu Dancing',
+          'Ndebele Art Workshop',
+          'Cultural Heritage Tour',
+          'Museum AR Experience',
+        ],
       ),
     );
   }
 
-  Widget _buildQuickActionsSection() {
+   Widget _buildQuickActionsSection() {
     final actions = [
       {
         'title': 'Book Stay',
-        'icon': Icons.hotel,
-        'color': Colors.blue,
+        'subtitle': 'Ubuntu Homestays',
+        'icon': Icons.hotel_outlined,
+        'gradient': [Colors.blue.shade400, Colors.blue.shade600],
         'route': '/accommodation',
       },
       {
         'title': 'Experiences',
-        'icon': Icons.local_activity,
-        'color': Colors.green,
+        'subtitle': 'Cultural Tours',
+        'icon': Icons.local_activity_outlined,
+        'gradient': [Colors.green.shade400, Colors.green.shade600],
         'route': '/explore',
       },
       {
         'title': 'Marketplace',
-        'icon': Icons.shopping_bag,
-        'color': Colors.purple,
+        'subtitle': 'Local Crafts',
+        'icon': Icons.shopping_bag_outlined,
+        'gradient': [Colors.purple.shade400, Colors.purple.shade600],
         'route': '/marketplace',
       },
       {
         'title': 'AR Tours',
-        'icon': Icons.view_in_ar,
-        'color': Colors.orange,
+        'subtitle': 'Virtual Reality',
+        'icon': Icons.view_in_ar_outlined,
+        'gradient': [Colors.orange.shade400, Colors.orange.shade600],
         'route': '/ar-experiences',
       },
     ];
@@ -435,68 +478,199 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Quick Actions',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
           const SizedBox(height: 16),
-          GridView.count(
-            crossAxisCount: ResponsiveHelper.isMobile(context) ? 2 : 4,
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            childAspectRatio: 1.2,
-            crossAxisSpacing: 16,
-            mainAxisSpacing: 16,
-            children: actions.map((action) => _buildQuickActionCard(action)).toList(),
-          ),
+          // Use different layout for desktop vs mobile/tablet
+          if (ResponsiveHelper.isDesktop(context))
+            _buildDesktopQuickActions(actions)
+          else
+            _buildMobileQuickActions(actions),
         ],
       ),
     );
   }
 
-  Widget _buildQuickActionCard(Map<String, dynamic> action) {
-    return Card(
-      elevation: 2,
-      child: InkWell(
-        onTap: () => context.push(action['route']),
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: (action['color'] as Color).withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(12),
+  // Desktop layout - vertical list with full labels
+  Widget _buildDesktopQuickActions(List<Map<String, dynamic>> actions) {
+    return Column(
+      children: actions.map((action) => Container(
+        margin: const EdgeInsets.only(bottom: 12),
+        child: Material(
+          borderRadius: BorderRadius.circular(12),
+          child: InkWell(
+            onTap: () => context.push(action['route']),
+            borderRadius: BorderRadius.circular(12),
+            child: Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                  colors: action['gradient'] as List<Color>,
                 ),
-                child: Icon(
-                  action['icon'],
-                  color: action['color'],
-                  size: 24,
-                ),
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: (action['gradient'] as List<Color>).first.withValues(alpha: 0.3),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
               ),
-              const SizedBox(height: 8),
-              Text(
-                action['title'],
-                style: const TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 12,
-                ),
-                textAlign: TextAlign.center,
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Icon(
+                      action['icon'],
+                      color: Colors.white,
+                      size: 24,
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          action['title'],
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          action['subtitle'],
+                          style: TextStyle(
+                            color: Colors.white.withValues(alpha: 0.8),
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Icon(
+                    Icons.arrow_forward_ios,
+                    color: Colors.white.withValues(alpha: 0.8),
+                    size: 16,
+                  ),
+                ],
               ),
-            ],
+            ),
+          ),
+        ),
+      )).toList(),
+    );
+  }
+
+  // Mobile/Tablet layout - grid with enhanced cards
+  Widget _buildMobileQuickActions(List<Map<String, dynamic>> actions) {
+    return GridView.count(
+      crossAxisCount: ResponsiveHelper.isMobile(context) ? 2 : 4,
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      childAspectRatio: ResponsiveHelper.isMobile(context) ? 1.1 : 1.2,
+      crossAxisSpacing: 16,
+      mainAxisSpacing: 16,
+      children: actions.map((action) => _buildEnhancedQuickActionCard(action)).toList(),
+    );
+  }
+
+  Widget _buildEnhancedQuickActionCard(Map<String, dynamic> action) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: (action['gradient'] as List<Color>).first.withValues(alpha: 0.3),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Material(
+        borderRadius: BorderRadius.circular(20),
+        child: InkWell(
+          onTap: () => context.push(action['route']),
+          borderRadius: BorderRadius.circular(20),
+          child: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: action['gradient'] as List<Color>,
+              ),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.25),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: Icon(
+                      action['icon'],
+                      color: Colors.white,
+                      size: ResponsiveHelper.isMobile(context) ? 28 : 32,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    action['title'],
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    action['subtitle'],
+                    style: TextStyle(
+                      color: Colors.white.withValues(alpha: 0.8),
+                      fontSize: 12,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      const Spacer(),
+                      Container(
+                        padding: const EdgeInsets.all(6),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.2),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.arrow_forward_ios,
+                          color: Colors.white,
+                          size: 12,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
           ),
         ),
       ),
     );
   }
 
-  Widget _buildFeaturedExperiencesSection() {
+
+  Widget _buildFeaturedExperiencesSection(HomeProvider provider) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -520,22 +694,29 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         const SizedBox(height: 16),
-        SizedBox(
-          height: 200,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            itemCount: _getFeaturedExperiences().length,
-            itemBuilder: (context, index) {
-              final experience = _getFeaturedExperiences()[index];
-              return Container(
-                width: 280,
-                margin: const EdgeInsets.only(right: 16),
-                child: _buildFeaturedExperienceCard(experience),
-              );
-            },
+        if (provider.isLoading)
+          _buildExperienceSkeletonList()
+        else
+          SizedBox(
+            height: 220,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              itemCount: provider.featuredExperiences.isNotEmpty
+                  ? provider.featuredExperiences.length
+                  : _getFeaturedExperiences().length,
+              itemBuilder: (context, index) {
+                final experience = provider.featuredExperiences.isNotEmpty
+                    ? provider.featuredExperiences[index]
+                    : _getFeaturedExperiences()[index];
+                return Container(
+                  width: 280,
+                  margin: const EdgeInsets.only(right: 16),
+                  child: _buildFeaturedExperienceCard(experience),
+                );
+              },
+            ),
           ),
-        ),
       ],
     );
   }
@@ -548,7 +729,7 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Stack(
           children: [
             Container(
-              height: 200,
+              height: 220,
               decoration: BoxDecoration(
                 image: experience['image'] != null
                     ? DecorationImage(
@@ -569,7 +750,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   : null,
             ),
             Container(
-              height: 200,
+              height: 220,
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
@@ -642,7 +823,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildARPackagesSection() {
+  Widget _buildARPackagesSection(HomeProvider provider) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -672,25 +853,32 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         const SizedBox(height: 16),
-        SizedBox(
-          height: 280,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            itemCount: _getARPackages().length,
-            itemBuilder: (context, index) {
-              final package = _getARPackages()[index];
-              return Container(
-                width: 240,
-                margin: const EdgeInsets.only(right: 16),
-                child: ARPackageCard(
-                  package: package,
-                  onTap: () => context.push('/ar-experience/${package['id']}', extra: package),
-                ),
-              );
-            },
+        if (provider.isLoading)
+          _buildARSkeletonList()
+        else
+          SizedBox(
+            height: 270,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              itemCount: provider.arPackages.isNotEmpty
+                  ? provider.arPackages.length
+                  : _getARPackages().length,
+              itemBuilder: (context, index) {
+                final package = provider.arPackages.isNotEmpty
+                    ? provider.arPackages[index]
+                    : _getARPackages()[index];
+                return Container(
+                  width: 240,
+                  margin: const EdgeInsets.only(right: 16),
+                  child: ARPackageCard(
+                    package: package,
+                    onTap: () => context.push('/ar-experience/${package['id']}', extra: package),
+                  ),
+                );
+              },
+            ),
           ),
-        ),
       ],
     );
   }
@@ -851,6 +1039,126 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  // Loading and Error States
+  Widget _buildLoadingState() {
+    return const Center(
+      child: Padding(
+        padding: EdgeInsets.all(40),
+        child: Column(
+          children: [
+            CircularProgressIndicator(),
+            SizedBox(height: 16),
+            Text('Loading Ubuntu experiences...'),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildErrorState(String error) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(40),
+        child: Column(
+          children: [
+            Icon(Icons.error_outline, size: 64, color: Colors.grey[400]),
+            const SizedBox(height: 16),
+            Text(
+              'Something went wrong',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.grey[700],
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              error,
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Colors.grey[600]),
+            ),
+            const SizedBox(height: 24),
+            ElevatedButton.icon(
+              onPressed: () => context.read<HomeProvider>().refresh(),
+              icon: const Icon(Icons.refresh),
+              label: const Text('Try Again'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildExperienceSkeletonList() {
+    return SizedBox(
+      height: 220,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        itemCount: 3,
+        itemBuilder: (context, index) => Container(
+          width: 280,
+          margin: const EdgeInsets.only(right: 16),
+          child: _buildSkeletonCard(),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildARSkeletonList() {
+    return SizedBox(
+      height: 270,
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        itemCount: 3,
+        itemBuilder: (context, index) => Container(
+          width: 240,
+          margin: const EdgeInsets.only(right: 16),
+          child: _buildSkeletonCard(),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSkeletonCard() {
+    return Card(
+      child: Column(
+        children: [
+          Container(
+            height: 140,
+            color: Colors.grey[300],
+          ),
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  height: 16,
+                  width: double.infinity,
+                  color: Colors.grey[300],
+                ),
+                const SizedBox(height: 8),
+                Container(
+                  height: 14,
+                  width: 150,
+                  color: Colors.grey[300],
+                ),
+                const SizedBox(height: 8),
+                Container(
+                  height: 14,
+                  width: 100,
+                  color: Colors.grey[300],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   // Data methods
   List<Map<String, dynamic>> _getFeaturedExperiences() {
     return [
@@ -944,6 +1252,16 @@ class _HomeScreenState extends State<HomeScreen> {
     if (query.isNotEmpty) {
       context.push('/search?q=$query');
     }
+  }
+
+  void _toggleFavorite(String experienceId) {
+    setState(() {
+      if (_favorites.contains(experienceId)) {
+        _favorites.remove(experienceId);
+      } else {
+        _favorites.add(experienceId);
+      }
+    });
   }
 
   void _showNotifications() {
