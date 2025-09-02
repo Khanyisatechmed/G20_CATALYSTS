@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/core/constants/app_colors.dart';
+import 'package:flutter/src/painting/rounded_rectangle_border.dart';
 
 class AppTheme {
   static ThemeData get lightTheme {
@@ -199,13 +200,13 @@ class AppTheme {
       ),
 
       // Card Theme
-      cardTheme: CardTheme(
-        elevation: 2,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-        color: Colors.white,
-      ),
+      // cardTheme: CardTheme(
+      //   elevation: 2,
+      //   shape: RoundedRectangleBorder(
+      //     borderRadius: BorderRadius.circular(12),
+      //   ),
+      //   color: Colors.white,
+      // ),
 
       // Bottom Navigation Bar Theme
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
@@ -227,21 +228,21 @@ class AppTheme {
       ),
 
       // Tab Bar Theme
-      tabBarTheme: const TabBarTheme(
-        labelColor: AppColors.primary,
-        unselectedLabelColor: AppColors.textSecondary,
-        indicatorColor: AppColors.primary,
-        labelStyle: TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.w600,
-          fontFamily: 'Ubuntu',
-        ),
-        unselectedLabelStyle: TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.normal,
-          fontFamily: 'Ubuntu',
-        ),
-      ),
+      // tabBarTheme: const TabBarTheme(
+      //   labelColor: AppColors.primary,
+      //   unselectedLabelColor: AppColors.textSecondary,
+      //   indicatorColor: AppColors.primary,
+      //   labelStyle: TextStyle(
+      //     fontSize: 14,
+      //     fontWeight: FontWeight.w600,
+      //     fontFamily: 'Ubuntu',
+      //   ),
+      //   unselectedLabelStyle: TextStyle(
+      //     fontSize: 14,
+      //     fontWeight: FontWeight.normal,
+      //     fontFamily: 'Ubuntu',
+      //   ),
+      // ),
 
       // Chip Theme
       chipTheme: ChipThemeData(
@@ -306,14 +307,14 @@ class AppTheme {
         displayColor: Colors.white,
       ),
 
-      // Card Theme for dark mode
-      cardTheme: CardTheme(
-        elevation: 2,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-        color: const Color(0xFF1E1E1E),
-      ),
+      // // Card Theme for dark mode
+      // cardTheme: CardTheme(
+      //   elevation: 2,
+      //   shape: RoundedRectangleBorder(
+      //     borderRadius: BorderRadius.circular(12),
+      //   ),
+      //   color: const Color(0xFF1E1E1E),
+      // ),
 
       // Bottom Navigation Bar Theme for dark mode
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(

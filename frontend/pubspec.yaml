@@ -46,21 +46,21 @@ dev_dependencies:
 flutter:
   uses-material-design: true
 
-  assets:
-    - assets/images/
-    - assets/images/backgrounds/
-    - assets/images/icons/
-    - assets/images/products/
-    - assets/images/destinations/
-    - assets/images/experiences/
-    - assets/data/
-    - assets/fonts/
+  # assets:
+  #   - assets/images/
+  #   - assets/images/backgrounds/
+  #   - assets/images/icons/
+  #   - assets/images/products/
+  #   - assets/images/destinations/
+  #   - assets/images/experiences/
+  #   - assets/data/
+  #   - assets/fonts/
 
-  fonts:
-    - family: Ubuntu
-      fonts:
-        - asset: assets/fonts/Ubuntu-Regular.ttf
-        - asset: assets/fonts/Ubuntu-Bold.ttf
-          weight: 700
-        - asset: assets/fonts/Ubuntu-Light.ttf
-          weight: 300
+  # fonts:
+  #   - family: Ubuntu
+  #     fonts:
+  #       - asset: assets/fonts/Ubuntu-Regular.ttf
+  #       - asset: assets/fonts/Ubuntu-Bold.ttf
+  #         weight: 700
+  #       - asset: assets/fonts/Ubuntu-Light.ttf
+  #         weight: 300
