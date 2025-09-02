@@ -1,56 +1,66 @@
 name: frontend
-description: "A new Flutter project."
-publish_to: 'none'
-version: 0.1.0
+description: "Ubuntu Destinations App - Connecting communities through travel and cultural exchange"
+publish_to: "none"
+version: 1.0.0+1
 
 environment:
-  sdk: ^3.7.2
+  sdk: ">=3.1.0 <4.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
+
+  # State management
+  provider: ^6.1.2
+
+  # HTTP and networking
   dio: ^5.9.0
-  shared_preferences: ^2.5.3
-  intl: ^0.20.2
-  provider: ^6.1.5+1
+
+  # Caching / images
   cached_network_image: ^3.4.1
-  go_router: ^16.2.1
+
+  # Routing
+  go_router: ^12.1.3
+
+  # Platform & storage
+  shared_preferences: ^2.2.3
+  intl: ^0.20.2
+
+  # Maps
   google_maps_flutter: ^2.12.3
 
+  # Web plugin glue (safe to keep, does nothing on mobile)
+  flutter_web_plugins:
+    sdk: flutter
 
+  # UI
+  cupertino_icons: ^1.0.2
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^5.0.0
+  flutter_lints: ^3.0.0
+  build_runner: ^2.4.7
+  test: ^1.24.0
 
 flutter:
   uses-material-design: true
 
-  web:
-    # Enable web support
-    pluginClass: WebPlugin
-
-fonts:
-    - family: Ubuntu
-      fonts:
-        - asset: fonts/Ubuntu-Regular.ttf
-        - asset: fonts/Ubuntu-Bold.ttf
-          weight: 700
-
-assets:
-    # Images directory
+  assets:
     - assets/images/
     - assets/images/backgrounds/
     - assets/images/icons/
     - assets/images/products/
     - assets/images/destinations/
     - assets/images/experiences/
-
-    # Other assets
     - assets/data/
     - assets/fonts/
 
-  # Add web-specific fonts if needed
-
-
+  fonts:
+    - family: Ubuntu
+      fonts:
+        - asset: assets/fonts/Ubuntu-Regular.ttf
+        - asset: assets/fonts/Ubuntu-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/Ubuntu-Light.ttf
+          weight: 300
