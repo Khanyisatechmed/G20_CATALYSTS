@@ -22,28 +22,28 @@ class AppRouter {
 
   static final GoRouter router = GoRouter(
     navigatorKey: _rootNavigatorKey,
-    initialLocation: '/home',
+    initialLocation: '/welcome',
     debugLogDiagnostics: true,
 
-    // // Authentication redirect logic
-    // redirect: (BuildContext context, GoRouterState state) {
-    //   final authProvider = context.read<AuthProvider>();
-    //   final isAuthenticated = authProvider.isAuthenticated;
-    //   final isAuthRoute = ['/welcome', '/login', '/signup'].contains(state.uri.toString());
+    // Authentication redirect logic
+    redirect: (BuildContext context, GoRouterState state) {
+      final authProvider = context.read<AuthProvider>();
+      final isAuthenticated = authProvider.isAuthenticated;
+      final isAuthRoute = ['/welcome', '/login', '/signup'].contains(state.uri.toString());
 
-    //   // If not authenticated and trying to access protected routes
-    //   if (!isAuthenticated && !isAuthRoute) {
-    //     return '/welcome';
-    //   }
+      // If not authenticated and trying to access protected routes
+      if (!isAuthenticated && !isAuthRoute) {
+        return '/welcome';
+      }
 
-    //   // If authenticated and on auth routes, redirect to home
-    //   if (isAuthenticated && isAuthRoute) {
-    //     return '/home';
-    //   }
+      // If authenticated and on auth routes, redirect to home
+      if (isAuthenticated && isAuthRoute) {
+        return '/home';
+      }
 
-    //   // No redirect needed
-    //   return null;
-    // },
+      // No redirect needed
+      return null;
+    },
 
     routes: [
       // Auth Routes
