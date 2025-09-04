@@ -197,7 +197,7 @@ class _MarketplaceScreenState extends State<MarketplaceScreen>
           labelColor: Colors.white,
           unselectedLabelColor: Colors.white70,
           indicator: BoxDecoration(
-            color: Colors.white.withValues(alpha: 0.3),
+            color: Colors.white.withOpacity(0.3),
             borderRadius: BorderRadius.circular(25),
           ),
           labelPadding: const EdgeInsets.symmetric(horizontal: 20),
@@ -275,7 +275,7 @@ class _MarketplaceScreenState extends State<MarketplaceScreen>
           decoration: BoxDecoration(
             color: Colors.grey[50],
             border: Border(
-              right: BorderSide(color: Colors.grey.withValues(alpha: 0.2)),
+              right: BorderSide(color: Colors.grey.withOpacity(0.2)),
             ),
           ),
           child: _buildSidebar(),
@@ -288,7 +288,7 @@ class _MarketplaceScreenState extends State<MarketplaceScreen>
               Container(
                 padding: const EdgeInsets.all(32),
                 decoration: BoxDecoration(
-                  color: Theme.of(context).primaryColor.withValues(alpha: 0.05),
+                  color: Theme.of(context).primaryColor.withOpacity(0.05),
                 ),
                 child: Column(
                   children: [
@@ -341,7 +341,7 @@ class _MarketplaceScreenState extends State<MarketplaceScreen>
                   leading: Icon(_getCategoryIcon(categoryId)),
                   title: Text(category),
                   selected: isSelected,
-                  selectedTileColor: Theme.of(context).primaryColor.withValues(alpha: 0.1),
+                  selectedTileColor: Theme.of(context).primaryColor.withOpacity(0.1),
                   selectedColor: Theme.of(context).primaryColor,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
@@ -366,7 +366,7 @@ class _MarketplaceScreenState extends State<MarketplaceScreen>
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.grey.withValues(alpha: 0.2)),
+                border: Border.all(color: Colors.grey.withOpacity(0.2)),
               ),
               child: Column(
                 children: [
@@ -416,7 +416,7 @@ class _MarketplaceScreenState extends State<MarketplaceScreen>
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: Colors.grey.withValues(alpha: 0.2)),
+                border: Border.all(color: Colors.grey.withOpacity(0.2)),
               ),
               child: Column(
                 children: [
@@ -428,8 +428,8 @@ class _MarketplaceScreenState extends State<MarketplaceScreen>
                         const Text('AR Preview'),
                       ],
                     ),
-                    value: provider.showAROnly,
-                    onChanged: provider.toggleARFilter,
+                    value: provider.showAROnly ?? false, // Fixed: Added null safety
+                    onChanged: (value) => provider.toggleARFilter(value ?? false),
                     controlAffinity: ListTileControlAffinity.leading,
                     contentPadding: EdgeInsets.zero,
                     activeColor: Theme.of(context).primaryColor,
@@ -442,8 +442,8 @@ class _MarketplaceScreenState extends State<MarketplaceScreen>
                         const Text('In Stock'),
                       ],
                     ),
-                    value: provider.showInStockOnly,
-                    onChanged: provider.toggleStockFilter,
+                    value: provider.showInStockOnly ?? false, // Fixed: Added null safety
+                    onChanged: (value) => provider.toggleStockFilter(value ?? false),
                     controlAffinity: ListTileControlAffinity.leading,
                     contentPadding: EdgeInsets.zero,
                     activeColor: Theme.of(context).primaryColor,
@@ -456,8 +456,8 @@ class _MarketplaceScreenState extends State<MarketplaceScreen>
                         const Text('Fair Trade'),
                       ],
                     ),
-                    value: provider.showFairTradeOnly,
-                    onChanged: provider.toggleFairTradeFilter,
+                    value: provider.showFairTradeOnly ?? false, // Fixed: Added null safety
+                    onChanged: (value) => provider.toggleFairTradeFilter(value ?? false),
                     controlAffinity: ListTileControlAffinity.leading,
                     contentPadding: EdgeInsets.zero,
                     activeColor: Theme.of(context).primaryColor,
@@ -491,8 +491,8 @@ class _MarketplaceScreenState extends State<MarketplaceScreen>
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            Theme.of(context).primaryColor.withValues(alpha: 0.1),
-            Theme.of(context).primaryColor.withValues(alpha: 0.05),
+            Theme.of(context).primaryColor.withOpacity(0.1),
+            Theme.of(context).primaryColor.withOpacity(0.05),
           ],
         ),
         borderRadius: BorderRadius.circular(16),
