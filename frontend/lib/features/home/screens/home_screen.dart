@@ -431,9 +431,9 @@ class _HomeScreenState extends State<HomeScreen> {
         controller: _searchController,
         onSubmitted: _performSearch,
         suggestions: const [
-          'Ubuntu Village Experience',
-          'Traditional Zulu Dancing',
-          'Ndebele Art Workshop',
+          'Tsitsikamma National Park',
+          ' eMakhosini Ophathe Heritage Park',
+          'Robben Island',
           'Cultural Heritage Tour',
           'Museum AR Experience',
         ],
@@ -1164,24 +1164,24 @@ class _HomeScreenState extends State<HomeScreen> {
     return [
       {
         'id': '1',
-        'title': 'Ubuntu Village Experience',
+        'title': 'Tsitsikamma National Park',
         'location': 'Eastern Cape',
         'price': 450,
-        'image': null,
+        'image': 'assets/images/tsistsikama.png',
       },
       {
         'id': '2',
-        'title': 'Traditional Zulu Dancing',
+        'title': ' eMakhosini Ophathe Heritage Park',
         'location': 'KwaZulu-Natal',
         'price': 280,
-        'image': null,
+        'image': 'assets/images/kingshakagrave.png',
       },
       {
         'id': '3',
-        'title': 'Ndebele Art Workshop',
-        'location': 'Mpumalanga',
+        'title': 'Robben Island',
+        'location': 'Western Cape',
         'price': 320,
-        'image': null,
+        'image': 'assets/images/robbenisland.png',
       },
     ];
   }
