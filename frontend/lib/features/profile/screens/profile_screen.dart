@@ -794,7 +794,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return [
       {
         'icon': Icons.local_activity,
-        'title': 'Completed Ubuntu Village Experience',
+        'title': 'Completed Tsitsikamma National Park',
         'date': '3 days ago',
         'color': Colors.orange,
       },

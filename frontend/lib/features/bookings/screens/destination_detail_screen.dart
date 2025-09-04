@@ -115,7 +115,7 @@ class _DestinationDetailScreenState extends State<DestinationDetailScreen> {
               image: DecorationImage(
                 image: widget.destination['image'] != null
                     ? NetworkImage(widget.destination['image'])
-                    : const AssetImage('assets/images/bantus_cultural.jpg') as ImageProvider,
+                    : const AssetImage('assets/images/tsistsikama.png') as ImageProvider,
                 fit: BoxFit.cover,
               ),
             ),
@@ -188,7 +188,7 @@ class _DestinationDetailScreenState extends State<DestinationDetailScreen> {
             image: DecorationImage(
               image: widget.destination['image'] != null
                   ? NetworkImage(widget.destination['image'])
-                  : const AssetImage('assets/images/bantus_cultural.jpg') as ImageProvider,
+                  : const AssetImage('assets/images/tsistsikama.png') as ImageProvider,
               fit: BoxFit.cover,
             ),
           ),
