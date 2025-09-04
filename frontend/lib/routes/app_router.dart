@@ -194,6 +194,7 @@ class AppRouter {
         path: '/settings',
         name: 'settings',
         builder: (context, state) => _buildPlaceholderScreen(
+          context,
           'Settings',
           'Manage your account settings and preferences',
           Icons.settings,
@@ -203,6 +204,7 @@ class AppRouter {
         path: '/notifications',
         name: 'notifications',
         builder: (context, state) => _buildPlaceholderScreen(
+          context,
           'Notifications',
           'View your latest notifications and updates',
           Icons.notifications,
@@ -212,6 +214,7 @@ class AppRouter {
         path: '/support',
         name: 'support',
         builder: (context, state) => _buildPlaceholderScreen(
+          context,
           'Support',
           'Get help and contact customer support',
           Icons.help_outline,
@@ -221,6 +224,7 @@ class AppRouter {
         path: '/privacy',
         name: 'privacy',
         builder: (context, state) => _buildPlaceholderScreen(
+          context,
           'Privacy Policy',
           'Read our privacy policy and terms of service',
           Icons.privacy_tip,
@@ -230,6 +234,7 @@ class AppRouter {
         path: '/payments',
         name: 'payments',
         builder: (context, state) => _buildPlaceholderScreen(
+          context,
           'Payment Methods',
           'Manage your payment methods and billing',
           Icons.payment,
@@ -239,6 +244,7 @@ class AppRouter {
         path: '/wishlist',
         name: 'wishlist',
         builder: (context, state) => _buildPlaceholderScreen(
+          context,
           'My Wishlist',
           'Your saved accommodations and experiences',
           Icons.favorite,
@@ -248,6 +254,7 @@ class AppRouter {
         path: '/reviews',
         name: 'reviews',
         builder: (context, state) => _buildPlaceholderScreen(
+          context,
           'My Reviews',
           'Reviews you have written',
           Icons.star,
@@ -258,10 +265,8 @@ class AppRouter {
     errorBuilder: (context, state) => _buildErrorScreen(context, state),
   );
 
-  static BuildContext? get context => null;
-
   // Helper method to build placeholder screens
-  static Widget _buildPlaceholderScreen(String title, String description, IconData icon) {
+  static Widget _buildPlaceholderScreen(BuildContext context, String title, String description, IconData icon) {
     return Scaffold(
       appBar: AppBar(
         title: Text(title),
@@ -296,7 +301,7 @@ class AppRouter {
             ),
             const SizedBox(height: 32),
             ElevatedButton.icon(
-              onPressed: () => GoRouter.of(context!).go('/home'),
+              onPressed: () => context.go('/home'),
               icon: const Icon(Icons.home),
               label: const Text('Go to Home'),
             ),

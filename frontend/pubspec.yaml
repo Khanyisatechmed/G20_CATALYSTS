@@ -27,7 +27,7 @@ dependencies:
   intl: ^0.20.2
 
   # Maps
-  google_maps_flutter: ^2.12.3
+  google_maps_flutter: ^2.10.1
 
   # Web plugin glue (safe to keep, does nothing on mobile)
   flutter_web_plugins:
