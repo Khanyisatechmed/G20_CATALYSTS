@@ -370,7 +370,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           const SizedBox(height: 4),
           const Text(
-            'Discover Ubuntu experiences',
+            'Discover Wandersexperiences',
             style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
@@ -400,7 +400,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text(
-                        'Ubuntu Philosophy',
+                        'WandersPhilosophy',
                         style: TextStyle(
                           fontWeight: FontWeight.w600,
                           fontSize: 14,
@@ -445,7 +445,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final actions = [
       {
         'title': 'Book Stay',
-        'subtitle': 'Ubuntu Homestays',
+        'subtitle': 'WandersHomestays',
         'icon': Icons.hotel_outlined,
         'gradient': [Colors.blue.shade400, Colors.blue.shade600],
         'route': '/accommodation',
@@ -770,7 +770,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    experience['title'] ?? 'Ubuntu Experience',
+                    experience['title'] ?? 'WandersExperience',
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 16,
@@ -922,7 +922,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     const SizedBox(width: 8),
                     const Text(
-                      'Ubuntu Stories',
+                      'WandersStories',
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -932,7 +932,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 const SizedBox(height: 12),
                 const Text(
-                  'Discover the philosophy of Ubuntu - "I am because we are" - through authentic South African cultural experiences that celebrate our shared humanity and interconnectedness.',
+                  'Discover the philosophy of Wanders- "I am because we are" - through authentic South African cultural experiences that celebrate our shared humanity and interconnectedness.',
                   style: TextStyle(
                     fontSize: 14,
                     height: 1.5,
@@ -1005,7 +1005,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildRecentActivityList() {
     final activities = [
-      'Booked Ubuntu Village Stay',
+      'Booked WandersVillage Stay',
       'Explored AR Museum Tour',
       'Purchased Ndebele Artwork',
       'Joined Traditional Dance Class',
@@ -1048,7 +1048,7 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             CircularProgressIndicator(),
             SizedBox(height: 16),
-            Text('Loading Ubuntu experiences...'),
+            Text('Loading Wandersexperiences...'),
           ],
         ),
       ),
@@ -1232,7 +1232,7 @@ class _HomeScreenState extends State<HomeScreen> {
       },
       {
         'title': 'Book Your First Stay',
-        'description': 'Experience authentic Ubuntu hospitality',
+        'description': 'Experience authentic Wandershospitality',
         'icon': Icons.hotel,
         'color': Colors.green,
         'route': '/accommodation',

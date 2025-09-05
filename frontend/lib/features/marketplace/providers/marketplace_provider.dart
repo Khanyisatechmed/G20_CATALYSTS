@@ -90,8 +90,8 @@ class MarketplaceProvider with ChangeNotifier {
           'price': 350.0,
           'originalPrice': 400.0,
           'currency': 'ZAR',
-          'imageUrl': '',
-          'images': ['', '', ''],
+          'imageUrl': 'https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.metmuseum.org%2Fart%2Fcollection%2Fsearch%2F318684&psig=AOvVaw3r8lVk3KVP5o6RVj_47B8l&ust=1757193490979000&source=images&cd=vfe&opi=89978449&ved=0CBUQjRxqFwoTCODz34DGwo8DFQAAAAAdAAAAABAE',
+          'images': 'assets/images/zulubasket.png',
           'hasAR': true,
           'rating': 4.8,
           'reviewCount': 23,
@@ -120,13 +120,13 @@ class MarketplaceProvider with ChangeNotifier {
         },
         {
           'id': 2,
-          'title': 'Authentic Mokorotlo Hat',
+          'title': 'The King Shaka Shield',
           'artisan': 'Sipho Dlamini',
           'vendor_id': 'vendor_002',
           'price': 280.0,
           'currency': 'ZAR',
-          'imageUrl': '',
-          'images': ['', ''],
+          'imageUrl': 'https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.luangisa.com%2Fproducts%2Fzulu-shield-xl-with-spear-and-club-01-model-walking&psig=AOvVaw0-IhOK-NAZWmk9IH_16aZQ&ust=1757193408776000&source=images&cd=vfe&opi=89978449&ved=0CBUQjRxqFwoTCNCo09rFwo8DFQAAAAAdAAAAABA2',
+          'images': 'assets/images/zulushield.png',
           'hasAR': true,
           'rating': 4.6,
           'reviewCount': 15,
@@ -139,7 +139,7 @@ class MarketplaceProvider with ChangeNotifier {
           'isUbuntu': true,
           'isHandmade': true,
           'materials': ['Mohair', 'Wool'],
-          'culturalSignificance': 'The conical hat symbolizes the mountains of Lesotho and represents protection from the elements.',
+          'culturalSignificance': 'The historic shield symbolizes the King Shaka war shield and represents protection from the elements.',
           'description': 'Traditional conical hat worn by Basotho people, hand-knitted using authentic patterns.',
           'dimensions': {'diameter': 35, 'height': 20, 'unit': 'cm'},
           'weight': 0.3,
@@ -159,8 +159,8 @@ class MarketplaceProvider with ChangeNotifier {
           'vendor_id': 'vendor_003',
           'price': 180.0,
           'currency': 'ZAR',
-          'imageUrl': '',
-          'images': [''],
+          'imageUrl': 'https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.djembe4all.com%2Fproduct-page%2Fsouth-african-zulu-necklace&psig=AOvVaw0ZsAzKl3REM6EiXueEZxBN&ust=1757193326941000&source=images&cd=vfe&opi=89978449&ved=0CBUQjRxqFwoTCKD-_rbFwo8DFQAAAAAdAAAAABAf',
+          'images': 'assets/images/zulunecklace.png',
           'hasAR': true,
           'rating': 4.9,
           'reviewCount': 31,
@@ -188,13 +188,13 @@ class MarketplaceProvider with ChangeNotifier {
         },
         {
           'id': 4,
-          'title': 'Traditional Pot Bread Experience',
+          'title': 'Traditional Pot Experience',
           'artisan': 'Gogo Mkhize',
           'vendor_id': 'vendor_004',
           'price': 120.0,
           'currency': 'ZAR',
-          'imageUrl': '',
-          'images': [''],
+          'imageUrl': 'https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.orienthouse.com.au%2Fproducts%2Fround-ilalu-palm-zulu-basket-south-africa&psig=AOvVaw218emt8PqRZb_wD_vKcntv&ust=1757193070317000&source=images&cd=vfe&opi=89978449&ved=0CBUQjRxqFwoTCJCz08fEwo8DFQAAAAAdAAAAABAT',
+          'images': 'assets/images/zulupot.png',
           'hasAR': false,
           'rating': 4.7,
           'reviewCount': 18,
@@ -223,13 +223,13 @@ class MarketplaceProvider with ChangeNotifier {
         },
         {
           'id': 5,
-          'title': 'Drakensberg Clay Pottery Set',
+          'title': 'The Ladies Hat',
           'artisan': 'Mandla Mthembu',
           'vendor_id': 'vendor_005',
           'price': 450.0,
           'currency': 'ZAR',
-          'imageUrl': '',
-          'images': ['', '', ''],
+          'imageUrl': 'https://www.google.com/url?sa=i&url=https%3A%2F%2Fzulubeads.com%2Fproducts%2Fdouble-frame-beaded-zulu-hat-in-medium&psig=AOvVaw2FCGjC0vvIhGdccH-1fph1&ust=1757193220098000&source=images&cd=vfe&opi=89978449&ved=0CBUQjRxqFwoTCPj4tILFwo8DFQAAAAAdAAAAABAt',
+          'images': 'assets/images/zuluhat.png',
           'hasAR': true,
           'rating': 4.5,
           'reviewCount': 12,
@@ -384,7 +384,7 @@ class MarketplaceProvider with ChangeNotifier {
         return false;
       }
 
-      // Ubuntu filter
+      // Wandersfilter
       if (_showUbuntuOnly && product['isUbuntu'] != true) {
         return false;
       }

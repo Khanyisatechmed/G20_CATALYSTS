@@ -1,4 +1,5 @@
-// features/marketplace/widgets/product_card.dart
+// Fix for ProductCard overflow issues
+// features/marketplace/widgets/product_card_fixed.dart
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../../core/utils/responsive_helper.dart';
@@ -75,9 +76,20 @@ class _ProductCardState extends State<ProductCard>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _buildImageHeader(context),
-                    _buildContent(context),
-                    _buildActionButtons(context),
+                    // Fixed height for image to prevent overflow
+                    SizedBox(
+                      height: ResponsiveHelper.isMobile(context) ? 140 : 160,
+                      child: _buildImageHeader(context),
+                    ),
+                    // Use Expanded to allow content to flex
+                    Expanded(
+                      child: _buildContent(context),
+                    ),
+                    // Fixed height for action buttons
+                    SizedBox(
+                      height: 60,
+                      child: _buildActionButtons(context),
+                    ),
                   ],
                 ),
               ),
@@ -105,18 +117,16 @@ class _ProductCardState extends State<ProductCard>
 
     return Stack(
       children: [
-        SizedBox(
-          height: ResponsiveHelper.isMobile(context) ? 140 : 160,
-          width: double.infinity,
+        Positioned.fill(
           child: _buildImage(imageUrl),
         ),
-        // Gradient overlay for better text readability
+        // Gradient overlay
         Positioned(
           bottom: 0,
           left: 0,
           right: 0,
           child: Container(
-            height: 40,
+            height: 30,
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topCenter,
@@ -132,37 +142,26 @@ class _ProductCardState extends State<ProductCard>
         // AR Badge
         if (widget.product['hasAR'] == true)
           Positioned(
-            top: 12,
-            right: 12,
+            top: 8,
+            right: 8,
             child: GestureDetector(
               onTap: widget.onARTap,
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
                 decoration: BoxDecoration(
                   color: Colors.purple,
-                  borderRadius: BorderRadius.circular(12),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.purple.withValues(alpha: 0.3),
-                      blurRadius: 4,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
+                  borderRadius: BorderRadius.circular(10),
                 ),
-                child: Row(
+                child: const Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(
-                      Icons.view_in_ar,
-                      color: Colors.white,
-                      size: 14,
-                    ),
-                    const SizedBox(width: 4),
-                    const Text(
+                    Icon(Icons.view_in_ar, color: Colors.white, size: 12),
+                    SizedBox(width: 2),
+                    Text(
                       'AR',
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 12,
+                        fontSize: 10,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -173,27 +172,20 @@ class _ProductCardState extends State<ProductCard>
           ),
         // Wishlist button
         Positioned(
-          top: 12,
-          left: 12,
+          top: 8,
+          left: 8,
           child: GestureDetector(
             onTap: widget.onFavorite,
             child: Container(
-              padding: const EdgeInsets.all(8),
+              padding: const EdgeInsets.all(6),
               decoration: BoxDecoration(
                 color: Colors.white.withValues(alpha: 0.9),
                 shape: BoxShape.circle,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.1),
-                    blurRadius: 4,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
               ),
               child: Icon(
                 widget.isWishlisted ? Icons.favorite : Icons.favorite_border,
                 color: widget.isWishlisted ? Colors.red : Colors.grey[600],
-                size: 18,
+                size: 16,
               ),
             ),
           ),
@@ -209,63 +201,14 @@ class _ProductCardState extends State<ProductCard>
                   topRight: Radius.circular(16),
                 ),
               ),
-              child: Center(
-                child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  decoration: BoxDecoration(
-                    color: Colors.red,
-                    borderRadius: BorderRadius.all(Radius.circular(20)),
+              child: const Center(
+                child: Text(
+                  'OUT OF STOCK',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
                   ),
-                  child: Text(
-                    'OUT OF STOCK',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        // Discount badge
-        if (widget.product['discount'] != null && widget.product['discount'] > 0)
-          Positioned(
-            bottom: 12,
-            left: 12,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              decoration: BoxDecoration(
-                color: Colors.red,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Text(
-                '-${widget.product['discount']}%',
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          ),
-        // Ubuntu/Fair Trade badge
-        if (widget.product['isFairTrade'] == true || widget.product['isUbuntu'] == true)
-          Positioned(
-            bottom: 12,
-            right: 12,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
-              decoration: BoxDecoration(
-                color: Colors.green,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Text(
-                widget.product['isUbuntu'] == true ? 'UBUNTU' : 'FAIR TRADE',
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 8,
-                  fontWeight: FontWeight.bold,
                 ),
               ),
             ),
@@ -283,28 +226,18 @@ class _ProductCardState extends State<ProductCard>
           children: [
             Icon(
               _getCategoryIcon(),
-              size: 48,
+              size: 32,
               color: Colors.grey[400],
-            ),
-            const SizedBox(height: 8),
-            Text(
-              _getCategoryName().toUpperCase(),
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-                color: Colors.grey[500],
-                letterSpacing: 0.5,
-              ),
             ),
             const SizedBox(height: 4),
             Text(
-              'HANDCRAFTED',
+              _getCategoryName().toUpperCase(),
               style: TextStyle(
                 fontSize: 10,
-                fontWeight: FontWeight.w400,
-                color: Colors.grey[400],
-                letterSpacing: 0.3,
+                fontWeight: FontWeight.w600,
+                color: Colors.grey[500],
               ),
+              textAlign: TextAlign.center,
             ),
           ],
         ),
@@ -317,10 +250,7 @@ class _ProductCardState extends State<ProductCard>
       placeholder: (context, url) => Container(
         color: Colors.grey[100],
         child: const Center(
-          child: CircularProgressIndicator(
-            strokeWidth: 2,
-            valueColor: AlwaysStoppedAnimation<Color>(Colors.orange),
-          ),
+          child: CircularProgressIndicator(strokeWidth: 2),
         ),
       ),
       errorWidget: (context, url, error) => Container(
@@ -328,19 +258,16 @@ class _ProductCardState extends State<ProductCard>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              _getCategoryIcon(),
-              size: 48,
-              color: Colors.grey[400],
-            ),
-            const SizedBox(height: 8),
+            Icon(_getCategoryIcon(), size: 32, color: Colors.grey[400]),
+            const SizedBox(height: 4),
             Text(
               _getCategoryName().toUpperCase(),
               style: TextStyle(
-                fontSize: 12,
+                fontSize: 10,
                 fontWeight: FontWeight.w600,
                 color: Colors.grey[500],
               ),
+              textAlign: TextAlign.center,
             ),
           ],
         ),
@@ -349,39 +276,39 @@ class _ProductCardState extends State<ProductCard>
   }
 
   Widget _buildContent(BuildContext context) {
-    return Expanded(
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Product title
-            Text(
+    return Padding(
+      padding: const EdgeInsets.all(8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Product title - Fixed height to prevent overflow
+          SizedBox(
+            height: 32,
+            child: Text(
               widget.product['title'] ?? widget.product['name'] ?? 'Ubuntu Handcraft',
               style: const TextStyle(
-                fontSize: 16,
+                fontSize: 14,
                 fontWeight: FontWeight.bold,
-                height: 1.2,
+                height: 1.1,
               ),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
-            const SizedBox(height: 6),
+          ),
+          const SizedBox(height: 4),
 
-            // Artisan name
-            Row(
+          // Artisan name - Fixed height
+          SizedBox(
+            height: 16,
+            child: Row(
               children: [
-                Icon(
-                  Icons.person,
-                  size: 14,
-                  color: Colors.grey[600],
-                ),
-                const SizedBox(width: 4),
+                Icon(Icons.person, size: 12, color: Colors.grey[600]),
+                const SizedBox(width: 2),
                 Expanded(
                   child: Text(
                     'by ${widget.product['artisan'] ?? widget.product['maker'] ?? 'Local Artisan'}',
                     style: TextStyle(
-                      fontSize: 12,
+                      fontSize: 11,
                       color: Colors.grey[600],
                       fontStyle: FontStyle.italic,
                     ),
@@ -391,47 +318,33 @@ class _ProductCardState extends State<ProductCard>
                 ),
               ],
             ),
-            const SizedBox(height: 8),
+          ),
+          const SizedBox(height: 4),
 
-            // Rating and location
-            Row(
+          // Rating and location - Fixed height
+          SizedBox(
+            height: 16,
+            child: Row(
               children: [
-                Icon(
-                  Icons.star,
-                  size: 14,
-                  color: Colors.amber,
-                ),
+                const Icon(Icons.star, size: 12, color: Colors.amber),
                 const SizedBox(width: 2),
                 Text(
                   '${widget.product['rating'] ?? 4.5}',
-                  style: const TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600),
                 ),
                 const SizedBox(width: 4),
                 Text(
                   '(${widget.product['reviewCount'] ?? widget.product['reviews'] ?? 0})',
-                  style: TextStyle(
-                    fontSize: 10,
-                    color: Colors.grey[500],
-                  ),
+                  style: TextStyle(fontSize: 9, color: Colors.grey[500]),
                 ),
                 const Spacer(),
                 if (widget.product['location'] != null) ...[
-                  Icon(
-                    Icons.location_on,
-                    size: 12,
-                    color: Colors.grey[600],
-                  ),
+                  Icon(Icons.location_on, size: 10, color: Colors.grey[600]),
                   const SizedBox(width: 2),
                   Expanded(
                     child: Text(
                       widget.product['location'],
-                      style: TextStyle(
-                        fontSize: 10,
-                        color: Colors.grey[600],
-                      ),
+                      style: TextStyle(fontSize: 9, color: Colors.grey[600]),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -439,33 +352,21 @@ class _ProductCardState extends State<ProductCard>
                 ],
               ],
             ),
-            const SizedBox(height: 8),
+          ),
 
-            // Description (if available)
-            if (widget.product['description'] != null) ...[
-              Text(
-                widget.product['description'],
-                style: TextStyle(
-                  fontSize: 11,
-                  color: Colors.grey[700],
-                  height: 1.3,
-                ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-              const SizedBox(height: 8),
-            ],
-
-            const Spacer(),
-
-            // Price section
-            _buildPriceSection(),
-
-            // Features row
-            const SizedBox(height: 8),
-            _buildFeaturesRow(),
-          ],
-        ),
+          // Use remaining space for price and features
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const SizedBox(height: 4),
+                _buildPriceSection(),
+                const SizedBox(height: 4),
+                _buildFeaturesRow(),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -477,86 +378,68 @@ class _ProductCardState extends State<ProductCard>
     final discount = widget.product['discount'] ?? 0;
 
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.end,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (originalPrice != null && originalPrice > price) ...[
-              Text(
-                '$currency ${originalPrice.toStringAsFixed(0)}',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey[500],
-                  decoration: TextDecoration.lineThrough,
-                  decorationColor: Colors.grey[500],
-                ),
-              ),
-              const SizedBox(height: 2),
-            ],
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.baseline,
-              textBaseline: TextBaseline.alphabetic,
-              children: [
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (originalPrice != null && originalPrice > price)
                 Text(
-                  '$currency ${price.toStringAsFixed(0)}',
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.orange,
-                  ),
-                ),
-                if (discount > 0) ...[
-                  const SizedBox(width: 4),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
-                    decoration: BoxDecoration(
-                      color: Colors.red,
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: Text(
-                      '-$discount%',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 8,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ],
-              ],
-            ),
-          ],
-        ),
-        const Spacer(),
-        if (widget.product['isInStock'] != false)
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-            decoration: BoxDecoration(
-              color: Colors.green.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(
-                color: Colors.green.withValues(alpha: 0.3),
-              ),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  Icons.check_circle,
-                  size: 12,
-                  color: Colors.green[700],
-                ),
-                const SizedBox(width: 4),
-                Text(
-                  'In Stock',
+                  '$currency ${originalPrice.toStringAsFixed(0)}',
                   style: TextStyle(
                     fontSize: 10,
-                    color: Colors.green[700],
-                    fontWeight: FontWeight.w600,
+                    color: Colors.grey[500],
+                    decoration: TextDecoration.lineThrough,
                   ),
                 ),
-              ],
+              Row(
+                children: [
+                  Text(
+                    '$currency ${price.toStringAsFixed(0)}',
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.orange,
+                    ),
+                  ),
+                  if (discount > 0) ...[
+                    const SizedBox(width: 4),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 1),
+                      decoration: BoxDecoration(
+                        color: Colors.red,
+                        borderRadius: BorderRadius.circular(3),
+                      ),
+                      child: Text(
+                        '-$discount%',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 8,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ],
+          ),
+        ),
+        if (widget.product['isInStock'] != false)
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+            decoration: BoxDecoration(
+              color: Colors.green.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(6),
+            ),
+            child: Text(
+              'In Stock',
+              style: TextStyle(
+                fontSize: 9,
+                color: Colors.green[700],
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
       ],
@@ -569,15 +452,9 @@ class _ProductCardState extends State<ProductCard>
     if (widget.product['hasAR'] == true) {
       features.add(_buildFeatureBadge('AR', Colors.purple));
     }
-
-    if (widget.product['isHandmade'] == true) {
-      features.add(_buildFeatureBadge('Handmade', Colors.brown));
-    }
-
     if (widget.product['isUbuntu'] == true) {
       features.add(_buildFeatureBadge('Ubuntu', Colors.orange));
     }
-
     if (widget.product['isFairTrade'] == true) {
       features.add(_buildFeatureBadge('Fair Trade', Colors.green));
     }
@@ -587,21 +464,19 @@ class _ProductCardState extends State<ProductCard>
     }
 
     return Wrap(
-      spacing: 4,
-      runSpacing: 4,
-      children: features,
+      spacing: 3,
+      runSpacing: 3,
+      children: features.take(2).toList(), // Limit to 2 features to prevent overflow
     );
   }
 
   Widget _buildFeatureBadge(String text, Color color) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(6),
-        border: Border.all(
-          color: color.withValues(alpha: 0.3),
-        ),
+        borderRadius: BorderRadius.circular(4),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
       child: Text(
         text,
@@ -616,57 +491,41 @@ class _ProductCardState extends State<ProductCard>
 
   Widget _buildActionButtons(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
       child: Row(
         children: [
           if (widget.onARTap != null && widget.product['hasAR'] == true) ...[
             Expanded(
-              child: OutlinedButton.icon(
+              child: OutlinedButton(
                 onPressed: widget.onARTap,
-                icon: const Icon(Icons.view_in_ar, size: 16),
-                label: const Text(
-                  'AR View',
-                  style: TextStyle(fontSize: 12),
-                ),
                 style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  padding: const EdgeInsets.symmetric(vertical: 4),
                   side: const BorderSide(color: Colors.purple),
                   foregroundColor: Colors.purple,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
+                  minimumSize: const Size(0, 32),
                 ),
+                child: const Text('AR', style: TextStyle(fontSize: 11)),
               ),
             ),
-            const SizedBox(width: 8),
+            const SizedBox(width: 6),
           ],
           Expanded(
-            flex: widget.onARTap != null && widget.product['hasAR'] == true ? 2 : 1,
-            child: ElevatedButton.icon(
+            flex: 2,
+            child: ElevatedButton(
               onPressed: widget.product['isInStock'] != false ? widget.onAddToCart : null,
-              icon: Icon(
-                widget.product['isInStock'] != false
-                  ? Icons.add_shopping_cart
-                  : Icons.remove_shopping_cart,
-                size: 16,
-              ),
-              label: Text(
-                widget.product['isInStock'] != false ? 'Add to Cart' : 'Out of Stock',
-                style: const TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
               style: ElevatedButton.styleFrom(
                 backgroundColor: widget.product['isInStock'] != false
                   ? Theme.of(context).primaryColor
                   : Colors.grey,
                 foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                elevation: widget.product['isInStock'] != false ? 2 : 0,
+                padding: const EdgeInsets.symmetric(vertical: 4),
+                minimumSize: const Size(0, 32),
+              ),
+              child: Text(
+                widget.product['isInStock'] != false ? 'Add to Cart' : 'Out of Stock',
+                style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
             ),
           ),
@@ -688,8 +547,6 @@ class _ProductCardState extends State<ProductCard>
         return 'Food';
       case 'jewelry':
         return 'Jewelry';
-      case 'woodwork':
-        return 'Woodwork';
       default:
         return 'Handcraft';
     }
@@ -708,8 +565,6 @@ class _ProductCardState extends State<ProductCard>
         return Icons.restaurant;
       case 'jewelry':
         return Icons.diamond;
-      case 'woodwork':
-        return Icons.carpenter;
       default:
         return Icons.handyman;
     }

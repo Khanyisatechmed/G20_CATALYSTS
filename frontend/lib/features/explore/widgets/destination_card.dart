@@ -96,7 +96,7 @@ class DestinationCard extends StatelessWidget {
             ),
           ),
         ),
-        // Ubuntu feature indicator
+        // Wandersfeature indicator
         if (destination['hasUbuntuExperience'] == true)
           Positioned(
             bottom: 12,
@@ -186,7 +186,7 @@ class DestinationCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            destination['title'] ?? destination['name'] ?? 'Ubuntu Experience',
+            destination['title'] ?? destination['name'] ?? 'WandersExperience',
             style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,

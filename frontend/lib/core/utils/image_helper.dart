@@ -10,7 +10,7 @@ class ImageHelper {
 
   // Network image placeholder colors
   static const List<Color> gradientColors = [
-    Color(0xFFE67E22), // Ubuntu orange
+    Color(0xFFE67E22), // Wandersorange
     Color(0xFFD68910), // Golden orange
     Color(0xFFE74C3C), // Red
     Color(0xFF8E44AD), // Purple
@@ -116,7 +116,7 @@ class ImageHelper {
     );
   }
 
-  // Ubuntu logo widget with text fallback
+  // Wanderslogo widget with text fallback
   static Widget ubuntuLogoWidget({
     double? width,
     double? height,

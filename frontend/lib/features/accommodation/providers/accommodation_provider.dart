@@ -79,8 +79,8 @@ class AccommodationProvider with ChangeNotifier {
       _accommodations = [
         {
           'id': '1',
-          'name': 'Ubuntu Village Homestay',
-          'description': 'Experience authentic Ubuntu hospitality in this traditional homestead. Wake up to the sound of birdsong and enjoy home-cooked meals with your host family.',
+          'name': 'WandersVillage Homestay',
+          'description': 'Experience authentic Wandershospitality in this traditional homestead. Wake up to the sound of birdsong and enjoy home-cooked meals with your host family.',
           'location': 'Eastern Cape, South Africa',
           'price': 450.0,
           'pricePerNight': 450.0,

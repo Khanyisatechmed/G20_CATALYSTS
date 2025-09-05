@@ -49,6 +49,8 @@ class AppColors {
     Color(0xFFFF8A65),
     Color(0xFFFFAB7A),
   ];
+
+  static MaterialColor? get primarySwatch => null;
 }
 
 // core/constants/app_strings.dart

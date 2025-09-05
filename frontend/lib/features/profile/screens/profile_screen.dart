@@ -47,7 +47,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       backgroundColor: Theme.of(context).primaryColor,
       foregroundColor: Colors.white,
       title: Text(
-        'My Ubuntu Profile',
+        'My WandersProfile',
         style: TextStyle(
           fontWeight: FontWeight.bold,
           fontSize: ResponsiveHelper.isMobile(context) ? 20 : 24,
@@ -306,7 +306,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               const SizedBox(height: 16),
               Text(
-                provider.user?.displayName ?? 'Ubuntu Explorer',
+                provider.user?.displayName ?? 'WandersExplorer',
                 style: const TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
@@ -347,7 +347,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
-                  provider.user?.membershipLevel ?? 'Ubuntu Explorer',
+                  provider.user?.membershipLevel ?? 'WandersExplorer',
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
@@ -512,7 +512,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               if (provider.user?.interests?.isEmpty ?? true) ...[
                 const SizedBox(height: 16),
                 Text(
-                  'Add interests to get personalized Ubuntu experience recommendations',
+                  'Add interests to get personalized Wandersexperience recommendations',
                   style: TextStyle(
                     fontSize: 14,
                     color: Colors.grey[600],
@@ -546,7 +546,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
-            'Recent Ubuntu Activities',
+            'Recent WandersActivities',
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -639,7 +639,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             child: ElevatedButton.icon(
               onPressed: () => Navigator.pushNamed(context, '/explore'),
               icon: const Icon(Icons.explore),
-              label: const Text('Discover Ubuntu Experiences'),
+              label: const Text('Discover WandersExperiences'),
             ),
           ),
           const SizedBox(height: 12),
@@ -782,7 +782,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   List<String> _getDefaultInterests() {
     return [
       'Traditional Dance',
-      'Ubuntu Philosophy',
+      'WandersPhilosophy',
       'Local Cuisine',
       'Handcraft Art',
       'Storytelling',
@@ -800,7 +800,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       },
       {
         'icon': Icons.star,
-        'title': 'Earned Ubuntu Ambassador Badge',
+        'title': 'Earned WandersAmbassador Badge',
         'date': '1 week ago',
         'color': Colors.purple,
       },

@@ -100,7 +100,7 @@ class _AccommodationScreenState extends State<AccommodationScreen> {
       foregroundColor: Colors.white,
       flexibleSpace: FlexibleSpaceBar(
         title: const Text(
-          'Ubuntu Accommodations',
+          'WandersAccommodations',
           style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 20,
@@ -125,7 +125,7 @@ class _AccommodationScreenState extends State<AccommodationScreen> {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   const Text(
-                    'Find Your Ubuntu Home',
+                    'Find Your WandersHome',
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 16,
@@ -168,7 +168,7 @@ class _AccommodationScreenState extends State<AccommodationScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              'Ubuntu Accommodations',
+              'WandersAccommodations',
               style: TextStyle(
                 color: Colors.white,
                 fontSize: 32,

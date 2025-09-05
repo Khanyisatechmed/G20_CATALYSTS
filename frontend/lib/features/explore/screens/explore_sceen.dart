@@ -384,9 +384,9 @@ class _ExploreScreenState extends State<ExploreScreen> {
 
           const SizedBox(height: 32),
 
-          // Ubuntu Features
+          // WandersFeatures
           const Text(
-            'Ubuntu Features',
+            'WandersFeatures',
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w600,
@@ -634,7 +634,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
       },
       {
         'id': 'ubuntu_philosophy',
-        'title': 'Ubuntu Philosophy',
+        'title': 'WandersPhilosophy',
         'description': 'Learn about "I am because we are"',
       },
       {
