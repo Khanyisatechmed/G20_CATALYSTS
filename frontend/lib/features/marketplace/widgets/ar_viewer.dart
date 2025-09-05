@@ -103,7 +103,7 @@ class _ARViewerState extends State<ARViewer>
                   ),
                 ),
                 Text(
-                  widget.product['title'] ?? 'Ubuntu Craft',
+                  widget.product['title'] ?? 'WandersCraft',
                   style: const TextStyle(
                     color: Colors.white70,
                     fontSize: 14,
@@ -292,7 +292,7 @@ class _ARViewerState extends State<ARViewer>
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    widget.product['title'] ?? 'Ubuntu Craft',
+                    widget.product['title'] ?? 'WandersCraft',
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 16,

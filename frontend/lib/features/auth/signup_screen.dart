@@ -106,7 +106,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   ),
                   SizedBox(height: 24),
                   Text(
-                    'Join Ubuntu Community',
+                    'Join WandersCommunity',
                     style: TextStyle(
                       fontSize: 32,
                       fontWeight: FontWeight.bold,

@@ -96,7 +96,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   SizedBox(height: 24),
                   Text(
-                    'Ubuntu Destinations',
+                    'Catalystic Wanders',
                     style: TextStyle(
                       fontSize: 32,
                       fontWeight: FontWeight.bold,

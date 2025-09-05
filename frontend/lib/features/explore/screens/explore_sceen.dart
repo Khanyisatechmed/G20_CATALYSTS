@@ -384,9 +384,9 @@ class _ExploreScreenState extends State<ExploreScreen> {
 
           const SizedBox(height: 32),
 
-          // Ubuntu Features
+          // WandersFeatures
           const Text(
-            'Ubuntu Features',
+            'WandersFeatures',
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w600,
@@ -432,7 +432,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
           children: [
             CircularProgressIndicator(),
             SizedBox(height: 16),
-            Text('Loading Ubuntu destinations...'),
+            Text('Loading Catalystic Wanders...'),
           ],
         ),
       );
@@ -541,7 +541,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
     showDialog(
       context: context,
       builder: (BuildContext context) => AlertDialog(
-        title: const Text('Search Ubuntu Destinations'),
+        title: const Text('Search Catalystic Wanders'),
         content: TextField(
           onChanged: (value) => provider.updateSearchQuery(value),
           decoration: const InputDecoration(
@@ -634,7 +634,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
       },
       {
         'id': 'ubuntu_philosophy',
-        'title': 'Ubuntu Philosophy',
+        'title': 'WandersPhilosophy',
         'description': 'Learn about "I am because we are"',
       },
       {

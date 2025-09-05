@@ -386,7 +386,7 @@ class _BookingsScreenState extends State<BookingsScreen>
                 title: booking['accommodation_name'] as String? ??
                        booking['experience_name'] as String? ??
                        booking['title'] as String? ??
-                       'Ubuntu Experience',
+                       'WandersExperience',
                 location: booking['location'] as String? ?? 'South Africa',
                 date: booking['check_in_date'] != null
                     ? DateTime.parse(booking['check_in_date'])

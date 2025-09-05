@@ -49,17 +49,19 @@ class AppColors {
     Color(0xFFFF8A65),
     Color(0xFFFFAB7A),
   ];
+
+  static MaterialColor? get primarySwatch => null;
 }
 
 // core/constants/app_strings.dart
 class AppStrings {
   // App Info
-  static const String appName = 'Ubuntu Destinations';
+  static const String appName = 'Catalystic Wanders';
   static const String appTagline = 'Discover Authentic South African Culture';
   static const String version = '1.0.0';
 
   // Welcome Screen
-  static const String welcomeTitle = 'Welcome to Ubuntu Destinations';
+  static const String welcomeTitle = 'Welcome to Catalystic Wanders';
   static const String welcomeSubtitle = 'Discover authentic South African cultural experiences';
   static const String continueWithEmail = 'Continue with email';
   static const String continueWithGoogle = 'Continue with Google';
@@ -291,7 +293,7 @@ class ApiEndpoints {
 // core/constants/app_constants.dart
 class AppConstants {
   // App Configuration
-  static const String appName = 'Ubuntu Destinations';
+  static const String appName = 'Catalystic Wanders';
   static const String packageName = 'com.ubuntu.destinations';
   static const bool isDebugMode = true;
 

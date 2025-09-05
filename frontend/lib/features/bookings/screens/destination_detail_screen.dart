@@ -217,7 +217,7 @@ class _DestinationDetailScreenState extends State<DestinationDetailScreen> {
         Text(
           widget.destination['title'] ??
           widget.destination['name'] ??
-          'Ubuntu Cultural Experience',
+          'WandersCultural Experience',
           style: TextStyle(
             fontSize: ResponsiveHelper.isMobile(context) ? 28 : 32,
             fontWeight: FontWeight.bold,
@@ -321,7 +321,7 @@ class _DestinationDetailScreenState extends State<DestinationDetailScreen> {
         const SizedBox(height: 12),
         Text(
           widget.destination['description'] ??
-          'Discover the hidden heart of South Africa where breathtaking landscapes meet the warmth of Ubuntu hospitality. In the rural communities, locals share their rich cultural heritage through traditional dance, storytelling, beadwork, pottery, wood carving, and weaving. Experience authentic Ubuntu philosophy - "I am because we are" - through meaningful cultural exchanges that celebrate our shared humanity.',
+          'Discover the hidden heart of South Africa where breathtaking landscapes meet the warmth of Wandershospitality. In the rural communities, locals share their rich cultural heritage through traditional dance, storytelling, beadwork, pottery, wood carving, and weaving. Experience authentic Wandersphilosophy - "I am because we are" - through meaningful cultural exchanges that celebrate our shared humanity.',
           style: TextStyle(
             fontSize: 16,
             color: Colors.grey[700],
@@ -370,7 +370,7 @@ class _DestinationDetailScreenState extends State<DestinationDetailScreen> {
           const SizedBox(height: 16),
           Text(
             widget.destination['culturalSignificance'] ??
-            'Ubuntu is a Nguni Bantu term meaning "humanity" and is often translated as "I am because we are" or "humanity towards others". This philosophy emphasizes the interconnectedness of all people and the belief that a person\'s well-being is tied to the well-being of others.\n\nThrough this cultural experience, you\'ll witness how Ubuntu principles shape daily life, community interactions, and traditional practices that have been passed down through generations.',
+            'Wandersis a Nguni Bantu term meaning "humanity" and is often translated as "I am because we are" or "humanity towards others". This philosophy emphasizes the interconnectedness of all people and the belief that a person\'s well-being is tied to the well-being of others.\n\nThrough this cultural experience, you\'ll witness how Wandersprinciples shape daily life, community interactions, and traditional practices that have been passed down through generations.',
             style: TextStyle(
               fontSize: 15,
               color: Colors.grey[700],
@@ -386,7 +386,7 @@ class _DestinationDetailScreenState extends State<DestinationDetailScreen> {
               _buildCulturalTag('Storytelling'),
               _buildCulturalTag('Beadwork'),
               _buildCulturalTag('Pottery'),
-              _buildCulturalTag('Ubuntu Philosophy'),
+              _buildCulturalTag('WandersPhilosophy'),
             ],
           ),
         ],
@@ -618,7 +618,7 @@ class _DestinationDetailScreenState extends State<DestinationDetailScreen> {
   void _shareDestination() {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Sharing "${widget.destination['title'] ?? 'Ubuntu Experience'}"...'),
+        content: Text('Sharing "${widget.destination['title'] ?? 'WandersExperience'}"...'),
         backgroundColor: Theme.of(context).primaryColor,
       ),
     );
@@ -627,7 +627,7 @@ class _DestinationDetailScreenState extends State<DestinationDetailScreen> {
   void _addToWishlist() {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Added "${widget.destination['title'] ?? 'Ubuntu Experience'}" to your wishlist'),
+        content: Text('Added "${widget.destination['title'] ?? 'WandersExperience'}" to your wishlist'),
         backgroundColor: Colors.green,
       ),
     );

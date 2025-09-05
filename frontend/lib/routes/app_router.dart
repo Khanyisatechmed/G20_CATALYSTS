@@ -1,4 +1,4 @@
-// routes/app_router.dart
+// routes/app_router.dart - FINAL FIXED VERSION
 import 'package:frontend/features/bookings/screens/booking_detail_screen.dart';
 import 'package:frontend/features/explore/screens/explore_sceen.dart';
 import 'package:go_router/go_router.dart';
@@ -75,7 +75,7 @@ class AppRouter {
         builder: (context, state) => const ExploreScreen(),
       ),
 
-      // Destination detail route (under bookings since that's where you have it)
+      // Destination detail route
       GoRoute(
         path: '/destination/:id',
         name: 'destination-detail',
@@ -86,13 +86,14 @@ class AppRouter {
             destination: destinationData ?? {
               'id': destinationId,
               'name': 'Ubuntu Destination',
-              'location': 'South Africa',
-              'description': 'Experience authentic Ubuntu culture',
+              'location': 'KwaZulu-Natal, South Africa',
+              'description': 'Experience authentic Ubuntu culture and heritage',
               'images': [],
               'rating': 4.5,
               'price': 150,
               'currency': 'ZAR',
-            }, destinationId: '',
+            },
+            destinationId: destinationId,
           );
         },
       ),
@@ -103,7 +104,7 @@ class AppRouter {
         builder: (context, state) => const BookingsScreen(),
       ),
 
-      // Booking detail route (under bookings as per your structure)
+      // Booking detail route
       GoRoute(
         path: '/booking/:id',
         name: 'booking-detail',
@@ -125,11 +126,14 @@ class AppRouter {
         },
       ),
 
+      // Marketplace Routes
       GoRoute(
         path: '/marketplace',
         name: 'marketplace',
         builder: (context, state) => const MarketplaceScreen(),
       ),
+
+      // Product detail route
       GoRoute(
         path: '/product/:id',
         name: 'product-detail',
@@ -144,16 +148,129 @@ class AppRouter {
               'currency': 'ZAR',
               'isInStock': true,
               'artisan': 'Local Artisan',
-              'category': 'Crafts',
+              'category': 'crafts',
               'description': 'Beautiful handcrafted item representing Ubuntu culture',
               'images': [],
               'rating': 4.5,
               'reviewCount': 10,
+              'location': 'KZN, South Africa',
+              'hasAR': true,
+              'isFairTrade': true,
+              'isUbuntu': true,
             },
             productId: productId,
           );
         },
       ),
+
+      // Collection route
+      GoRoute(
+        path: '/collection/:id',
+        name: 'collection',
+        builder: (context, state) {
+          final collectionId = state.pathParameters['id'] ?? '';
+          return CollectionScreen(collectionId: collectionId);
+        },
+      ),
+
+      // Vendor profile route
+      GoRoute(
+        path: '/vendor/:id',
+        name: 'vendor-profile',
+        builder: (context, state) {
+          final vendorData = state.extra as Map<String, dynamic>?;
+          final vendorId = state.pathParameters['id'] ?? '';
+          return VendorProfileScreen(
+            vendor: vendorData ?? {
+              'id': vendorId,
+              'name': 'Ubuntu Artisan',
+              'bio': 'Traditional craftsperson preserving Ubuntu heritage',
+              'location': 'KZN, South Africa',
+              'verified': true,
+              'rating': 4.8,
+              'totalSales': 150,
+              'yearsActive': 10,
+              'specialty': 'Traditional crafts',
+              'contactInfo': {
+                'phone': '+27 58 713 0126',
+                'email': 'artisan@ubuntu.co.za'
+              },
+              'paymentMethods': ['cash', 'snapscan', 'zapper'],
+            },
+          );
+        },
+      ),
+
+      // Vendor products route
+      GoRoute(
+        path: '/vendor/:vendorId/products',
+        name: 'vendor-products',
+        builder: (context, state) {
+          final vendorId = state.pathParameters['vendorId'] ?? '';
+          return VendorProductsScreen(vendorId: vendorId);
+        },
+      ),
+
+      // Cart route
+      GoRoute(
+        path: '/cart',
+        name: 'cart',
+        builder: (context, state) => const CartScreen(),
+      ),
+
+      // Wishlist route
+      GoRoute(
+        path: '/wishlist',
+        name: 'wishlist',
+        builder: (context, state) => const WishlistScreen(),
+      ),
+
+      // Experience routes - FIXED: Using single consistent route
+      GoRoute(
+        path: '/experience/:id',
+        name: 'experience-detail',
+        builder: (context, state) {
+          final experienceData = state.extra as Map<String, dynamic>?;
+          final experienceId = state.pathParameters['id'] ?? '';
+          return ExperienceDetailScreen(
+            experience: experienceData ?? {
+              'id': experienceId,
+              'title': 'Ubuntu Cultural Experience',
+              'description': 'Immersive cultural experience',
+              'price': 380,
+              'currency': 'ZAR',
+              'duration': '4 hours',
+              'maxParticipants': 20,
+              'location': 'KZN, South Africa',
+              'rating': 4.7,
+              'reviewCount': 89,
+            },
+          );
+        },
+      ),
+
+      // Experience booking route
+      GoRoute(
+        path: '/book-experience/:id',
+        name: 'book-experience',
+        builder: (context, state) {
+          final experienceData = state.extra as Map<String, dynamic>?;
+          final experienceId = state.pathParameters['id'] ?? '';
+          return BookExperienceScreen(
+            experience: experienceData ?? {
+              'id': experienceId,
+              'title': 'Ubuntu Cultural Experience',
+              'price': 380,
+              'currency': 'ZAR',
+              'duration': '4 hours',
+              'maxParticipants': 20,
+              'location': 'KZN, South Africa',
+            },
+          );
+        },
+      ),
+
+      // Accommodation Routes
       GoRoute(
         path: '/accommodation',
         name: 'accommodation',
@@ -169,7 +286,7 @@ class AppRouter {
             accommodation: accommodationData ?? {
               'id': accommodationId,
               'name': 'Ubuntu Village Homestay',
-              'location': 'Eastern Cape, South Africa',
+              'location': 'KwaZulu-Natal, South Africa',
               'price': 120,
               'currency': 'ZAR',
               'maxGuests': 4,
@@ -179,10 +296,13 @@ class AppRouter {
               'images': [],
               'rating': 4.8,
               'host': 'Mama Nomsa',
-            }, accommodationId: '',
+            },
+            accommodationId: accommodationId,
           );
         },
       ),
+
+      // Profile route
       GoRoute(
         path: '/profile',
         name: 'profile',
@@ -238,16 +358,6 @@ class AppRouter {
           'Payment Methods',
           'Manage your payment methods and billing',
           Icons.payment,
-        ),
-      ),
-      GoRoute(
-        path: '/wishlist',
-        name: 'wishlist',
-        builder: (context, state) => _buildPlaceholderScreen(
-          context,
-          'My Wishlist',
-          'Your saved accommodations and experiences',
-          Icons.favorite,
         ),
       ),
       GoRoute(
@@ -367,6 +477,290 @@ class AppRouter {
                   label: const Text('Go Back'),
                 ),
               ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// Placeholder screen classes - keeping the same as before
+class CollectionScreen extends StatelessWidget {
+  final String collectionId;
+  const CollectionScreen({super.key, required this.collectionId});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(_getCollectionName(collectionId)),
+        backgroundColor: Theme.of(context).primaryColor,
+        foregroundColor: Colors.white,
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.collections, size: 80, color: Colors.grey[400]),
+            const SizedBox(height: 24),
+            Text(
+              _getCollectionName(collectionId),
+              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 12),
+            const Text(
+              'Collection screen coming soon!',
+              style: TextStyle(fontSize: 16, color: Colors.grey),
+            ),
+            const SizedBox(height: 24),
+            ElevatedButton(
+              onPressed: () => context.go('/marketplace'),
+              child: const Text('Back to Marketplace'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  String _getCollectionName(String collectionId) {
+    switch (collectionId) {
+      case 'zulu_heritage': return 'Zulu Heritage Collection';
+      case 'beadwork_masters': return 'Beadwork Masters';
+      case 'drakensberg_crafts': return 'Drakensberg Mountain Crafts';
+      case 'coastal_creations': return 'Coastal Creations';
+      default: return 'Cultural Collection';
+    }
+  }
+}
+
+class VendorProfileScreen extends StatelessWidget {
+  final Map<String, dynamic> vendor;
+  const VendorProfileScreen({super.key, required this.vendor});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(vendor['name'] ?? 'Vendor Profile'),
+        backgroundColor: Theme.of(context).primaryColor,
+        foregroundColor: Colors.white,
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.store, size: 80, color: Colors.grey[400]),
+            const SizedBox(height: 24),
+            Text(
+              vendor['name'] ?? 'Ubuntu Vendor',
+              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 12),
+            const Text(
+              'Vendor profile screen coming soon!',
+              style: TextStyle(fontSize: 16, color: Colors.grey),
+            ),
+            const SizedBox(height: 24),
+            ElevatedButton(
+              onPressed: () => context.go('/marketplace'),
+              child: const Text('Back to Marketplace'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class VendorProductsScreen extends StatelessWidget {
+  final String vendorId;
+  const VendorProductsScreen({super.key, required this.vendorId});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Vendor Products'),
+        backgroundColor: Theme.of(context).primaryColor,
+        foregroundColor: Colors.white,
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.inventory, size: 80, color: Colors.grey[400]),
+            const SizedBox(height: 24),
+            const Text(
+              'Vendor Products',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 12),
+            const Text(
+              'Vendor products screen coming soon!',
+              style: TextStyle(fontSize: 16, color: Colors.grey),
+            ),
+            const SizedBox(height: 24),
+            ElevatedButton(
+              onPressed: () => context.go('/marketplace'),
+              child: const Text('Back to Marketplace'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class CartScreen extends StatelessWidget {
+  const CartScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Shopping Cart'),
+        backgroundColor: Theme.of(context).primaryColor,
+        foregroundColor: Colors.white,
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.shopping_cart, size: 80, color: Colors.grey[400]),
+            const SizedBox(height: 24),
+            const Text(
+              'Shopping Cart',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 12),
+            const Text(
+              'Cart screen coming soon!',
+              style: TextStyle(fontSize: 16, color: Colors.grey),
+            ),
+            const SizedBox(height: 24),
+            ElevatedButton(
+              onPressed: () => context.go('/marketplace'),
+              child: const Text('Continue Shopping'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class WishlistScreen extends StatelessWidget {
+  const WishlistScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('My Wishlist'),
+        backgroundColor: Theme.of(context).primaryColor,
+        foregroundColor: Colors.white,
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.favorite, size: 80, color: Colors.grey[400]),
+            const SizedBox(height: 24),
+            const Text(
+              'My Wishlist',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 12),
+            const Text(
+              'Wishlist screen coming soon!',
+              style: TextStyle(fontSize: 16, color: Colors.grey),
+            ),
+            const SizedBox(height: 24),
+            ElevatedButton(
+              onPressed: () => context.go('/marketplace'),
+              child: const Text('Continue Shopping'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class BookExperienceScreen extends StatelessWidget {
+  final Map<String, dynamic> experience;
+  const BookExperienceScreen({super.key, required this.experience});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Book Experience'),
+        backgroundColor: Theme.of(context).primaryColor,
+        foregroundColor: Colors.white,
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.tour, size: 80, color: Colors.grey[400]),
+            const SizedBox(height: 24),
+            Text(
+              experience['title'] ?? 'Ubuntu Experience',
+              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 12),
+            const Text(
+              'Experience booking coming soon!',
+              style: TextStyle(fontSize: 16, color: Colors.grey),
+            ),
+            const SizedBox(height: 24),
+            ElevatedButton(
+              onPressed: () => context.go('/marketplace'),
+              child: const Text('Back to Marketplace'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class ExperienceDetailScreen extends StatelessWidget {
+  final Map<String, dynamic> experience;
+  const ExperienceDetailScreen({super.key, required this.experience});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(experience['title'] ?? 'Experience'),
+        backgroundColor: Theme.of(context).primaryColor,
+        foregroundColor: Colors.white,
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.explore, size: 80, color: Colors.grey[400]),
+            const SizedBox(height: 24),
+            Text(
+              experience['title'] ?? 'Ubuntu Experience',
+              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 12),
+            const Text(
+              'Experience details coming soon!',
+              style: TextStyle(fontSize: 16, color: Colors.grey),
+            ),
+            const SizedBox(height: 24),
+            ElevatedButton(
+              onPressed: () => context.go('/marketplace'),
+              child: const Text('Back to Marketplace'),
             ),
           ],
         ),

@@ -1,6 +1,6 @@
 // core/constants/api_endpoints.dart
 
-/// API endpoints for Ubuntu Destinations app
+/// API endpoints for Catalystic Wandersapp
 class ApiEndpoints {
   // Base URLs
   static const String baseUrl = 'http://localhost:8000/api/v1';
