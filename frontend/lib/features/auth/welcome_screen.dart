@@ -73,7 +73,7 @@ class WelcomeScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     Text(
-                      'Welcome to Ubuntu Destinations',
+                      'Welcome to Catalystic Wanders',
                       style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: Theme.of(context).primaryColor,
@@ -139,7 +139,7 @@ class _WelcomeContent extends StatelessWidget {
               children: [
                 const SizedBox(height: 20),
                 Text(
-                  'Welcome to Ubuntu Destinations',
+                  'Welcome to Catalystic Wanders',
                   style: ResponsiveHelper.isMobile(context)
                       ? Theme.of(context).textTheme.headlineMedium?.copyWith(
                           fontWeight: FontWeight.bold,

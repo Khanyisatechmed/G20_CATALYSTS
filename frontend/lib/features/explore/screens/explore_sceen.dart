@@ -432,7 +432,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
           children: [
             CircularProgressIndicator(),
             SizedBox(height: 16),
-            Text('Loading Ubuntu destinations...'),
+            Text('Loading Catalystic Wanders...'),
           ],
         ),
       );
@@ -541,7 +541,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
     showDialog(
       context: context,
       builder: (BuildContext context) => AlertDialog(
-        title: const Text('Search Ubuntu Destinations'),
+        title: const Text('Search Catalystic Wanders'),
         content: TextField(
           onChanged: (value) => provider.updateSearchQuery(value),
           decoration: const InputDecoration(

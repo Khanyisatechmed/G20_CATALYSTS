@@ -409,7 +409,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           tile.SettingsTile(
             icon: Icons.help_outline,
             title: 'Help & Support',
-            subtitle: 'Get help with Ubuntu Destinations',
+            subtitle: 'Get help with Catalystic Wanders',
             onTap: () => _navigateToSupport(),
           ),
           tile.SettingsTile(
@@ -733,14 +733,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void _showAboutDialog() {
     showAboutDialog(
       context: context,
-      applicationName: 'Ubuntu Destinations',
+      applicationName: 'Catalystic Wanders',
       applicationVersion: '1.0.0',
-      applicationLegalese: '© 2024 Ubuntu Destinations. All rights reserved.',
+      applicationLegalese: '© 2024 Catalystic Wanders. All rights reserved.',
       children: [
         const Padding(
           padding: EdgeInsets.only(top: 16),
           child: Text(
-            'Ubuntu Destinations celebrates the philosophy of "I am because we are" through authentic South African cultural experiences.',
+            'Catalystic Wanderscelebrates the philosophy of "I am because we are" through authentic South African cultural experiences.',
           ),
         ),
       ],

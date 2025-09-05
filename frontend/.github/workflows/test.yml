@@ -1,5 +1,5 @@
 # .github/workflows/test.yml - Additional testing workflow
-name: Test Ubuntu Destinations
+name: Test Catalystic Wanders
 
 on:
   pull_request:

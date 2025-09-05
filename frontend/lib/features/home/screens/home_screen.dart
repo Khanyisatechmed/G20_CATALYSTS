@@ -298,7 +298,7 @@ class _HomeScreenState extends State<HomeScreen> {
             Row(
               children: [
                 const Text(
-                  'Ubuntu Destinations',
+                  'Catalystic Wanders',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 32,
