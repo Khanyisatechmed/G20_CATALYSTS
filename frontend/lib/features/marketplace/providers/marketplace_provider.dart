@@ -105,6 +105,43 @@ class MarketplaceProvider with ChangeNotifier {
       // Enhanced mock data with better variety
       _products = [
         {
+          'id': 2,
+          'title': 'Traditional Zulu Hat ( I-nke-hle )',
+          'artisan': 'Sipho Dlamini',
+          'vendor_id': 'vendor_002',
+          'price': 280.0,
+          'currency': 'ZAR',
+          'imageUrl': 'assets/images/zuluhat.png',
+          'images': ['assets/images/zuluhat.png'],
+          'hasAR': true,
+          'rating': 4.6,
+          'reviewCount': 15,
+          'isInStock': true,
+          'stockQuantity': 3,
+          'category': 'textile',
+          'region': 'drakensberg',
+          'location': 'Bergville, KZN',
+          'isFairTrade': true,
+          'isUbuntu': true,
+          'isHandmade': true,
+          'materials': ['Mohair', 'Wool'],
+          'culturalSignificance':
+              'The traditional conical hat represents protection from the elements and connection to mountain heritage.',
+          'description':
+              'Traditional conical hat worn by Basotho people, hand-knitted using authentic patterns and techniques.',
+          'dimensions': {'diameter': 35, 'height': 20, 'unit': 'cm'},
+          'weight': 0.3,
+          'tags': ['traditional', 'basotho', 'headwear', 'mountain'],
+          'vendor': {
+            'name': 'Sipho Dlamini',
+            'bio':
+                'Traditional textile artist specializing in Basotho cultural garments.',
+            'location': 'Bergville',
+            'verified': true,
+            'rating': 4.7
+          }
+        },
+        {
           'id': 1,
           'title': 'Handwoven Zulu Basket (u-bha-ske-di)',
           'artisan': 'Nomsa Mthembu',
@@ -144,43 +181,6 @@ class MarketplaceProvider with ChangeNotifier {
             'location': 'Nongoma',
             'verified': true,
             'rating': 4.9
-          }
-        },
-        {
-          'id': 2,
-          'title': 'Traditional Zulu Hat ( I-nke-hle )',
-          'artisan': 'Sipho Dlamini',
-          'vendor_id': 'vendor_002',
-          'price': 280.0,
-          'currency': 'ZAR',
-          'imageUrl': 'assets/images/zuluhat.png',
-          'images': ['assets/images/zuluhat.png'],
-          'hasAR': true,
-          'rating': 4.6,
-          'reviewCount': 15,
-          'isInStock': true,
-          'stockQuantity': 3,
-          'category': 'textile',
-          'region': 'drakensberg',
-          'location': 'Bergville, KZN',
-          'isFairTrade': true,
-          'isUbuntu': true,
-          'isHandmade': true,
-          'materials': ['Mohair', 'Wool'],
-          'culturalSignificance':
-              'The traditional conical hat represents protection from the elements and connection to mountain heritage.',
-          'description':
-              'Traditional conical hat worn by Basotho people, hand-knitted using authentic patterns and techniques.',
-          'dimensions': {'diameter': 35, 'height': 20, 'unit': 'cm'},
-          'weight': 0.3,
-          'tags': ['traditional', 'basotho', 'headwear', 'mountain'],
-          'vendor': {
-            'name': 'Sipho Dlamini',
-            'bio':
-                'Traditional textile artist specializing in Basotho cultural garments.',
-            'location': 'Bergville',
-            'verified': true,
-            'rating': 4.7
           }
         },
         {
