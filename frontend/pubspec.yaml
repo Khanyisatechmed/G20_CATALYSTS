@@ -15,6 +15,9 @@ dependencies:
   # State management
   provider: ^6.1.2
 
+  # 3D model viewer
+  model_viewer_plus: ^1.9.3
+
   # HTTP and networking
   dio: ^5.9.0
 
@@ -52,6 +55,8 @@ flutter:
     - assets/images/
     - assets/videos/
     - assets/videos/hologram.mp4
+    - assets/models/
+    - assets/models/ZuluHat.glb
   #   - assets/images/backgrounds/
   #   - assets/images/icons/
   #   - assets/images/products/
