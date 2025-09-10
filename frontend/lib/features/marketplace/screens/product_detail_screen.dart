@@ -845,52 +845,78 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   }
 
   Widget _buildActionButtons() {
-    final totalPrice = (widget.product['price']?.toDouble() ?? 200.0) * _quantity;
+  final totalPrice =
+      (widget.product['price']?.toDouble() ?? 200.0) * _quantity;
 
-    return Column(
-      children: [
+  final hasAR = widget.product['modelUrl'] != null; // check if product has AR
+
+  return Column(
+    children: [
+      // Add to Cart
+      SizedBox(
+        width: double.infinity,
+        child: ElevatedButton.icon(
+          onPressed: widget.product['isInStock'] == true ? _addToCart : null,
+          icon: const Icon(Icons.shopping_cart),
+          label: Text(
+            'Add to Cart • ${widget.product['currency'] ?? 'ZAR'} ${totalPrice.toInt()}',
+          ),
+          style: ElevatedButton.styleFrom(
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            backgroundColor: Theme.of(context).primaryColor,
+            disabledBackgroundColor: Colors.grey[300],
+          ),
+        ),
+      ),
+      const SizedBox(height: 12),
+
+      // Wishlist + Contact
+      Row(
+        children: [
+          Expanded(
+            child: OutlinedButton.icon(
+              onPressed: _addToWishlist,
+              icon: Icon(_isFavorite ? Icons.favorite : Icons.favorite_border),
+              label: const Text('Wishlist'),
+              style: OutlinedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: OutlinedButton.icon(
+              onPressed: _contactArtisan,
+              icon: const Icon(Icons.message),
+              label: const Text('Contact'),
+              style: OutlinedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+              ),
+            ),
+          ),
+        ],
+      ),
+      const SizedBox(height: 12),
+
+      // ✅ View in AR (only if product has AR model)
+      if (hasAR)
         SizedBox(
           width: double.infinity,
-          child: ElevatedButton.icon(
-            onPressed: widget.product['isInStock'] == true ? _addToCart : null,
-            icon: const Icon(Icons.shopping_cart),
-            label: Text('Add to Cart • ${widget.product['currency'] ?? 'ZAR'} ${totalPrice.toInt()}'),
-            style: ElevatedButton.styleFrom(
+          child: OutlinedButton.icon(
+            onPressed: _launchARViewer,
+            icon: const Icon(Icons.view_in_ar),
+            label: const Text('View in AR'),
+            style: OutlinedButton.styleFrom(
               padding: const EdgeInsets.symmetric(vertical: 16),
-              backgroundColor: Theme.of(context).primaryColor,
-              disabledBackgroundColor: Colors.grey[300],
+              foregroundColor: Colors.deepPurple,
+              side: const BorderSide(color: Colors.deepPurple, width: 1.5),
             ),
           ),
         ),
-        const SizedBox(height: 12),
-        Row(
-          children: [
-            Expanded(
-              child: OutlinedButton.icon(
-                onPressed: _addToWishlist,
-                icon: Icon(_isFavorite ? Icons.favorite : Icons.favorite_border),
-                label: const Text('Wishlist'),
-                style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                ),
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: OutlinedButton.icon(
-                onPressed: _contactArtisan,
-                icon: const Icon(Icons.message),
-                label: const Text('Contact'),
-                style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ],
-    );
-  }
+    ],
+  );
+}
+
 
   Widget _buildReviewsSection() {
     return Container(

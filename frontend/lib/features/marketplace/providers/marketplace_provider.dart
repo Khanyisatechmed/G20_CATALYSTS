@@ -47,46 +47,45 @@ class MarketplaceProvider with ChangeNotifier {
   String get searchQuery => _searchQuery;
   String get selectedRegion => _selectedRegion;
   String get sortBy => _sortBy;
-  int get cartItemCount => _cart.fold(0, (sum, item) => sum + (item['quantity'] as int? ?? 1));
-  double get cartTotal => _cart.fold(0.0, (sum, item) =>
-    sum + ((item['price'] as num? ?? 0) * (item['quantity'] as int? ?? 1)));
+  int get cartItemCount =>
+      _cart.fold(0, (sum, item) => sum + (item['quantity'] as int? ?? 1));
+  double get cartTotal => _cart.fold(
+      0.0,
+      (sum, item) =>
+          sum +
+          ((item['price'] as num? ?? 0) * (item['quantity'] as int? ?? 1)));
 
   // Enhanced getters with better data
   List<String> get kznRegions => [
-    'all',
-    'durban',
-    'pietermaritzburg',
-    'drakensberg',
-    'zululand',
-    'south_coast',
-    'north_coast',
-    'midlands',
-    'ukhahlamba'
-  ];
+        'all',
+        'durban',
+        'pietermaritzburg',
+        'drakensberg',
+        'zululand',
+        'south_coast',
+        'north_coast',
+        'midlands',
+        'ukhahlamba'
+      ];
 
   List<String> get culturalCategories => [
-    'all',
-    'zulu_heritage',
-    'beadwork',
-    'pottery',
-    'traditional_food',
-    'storytelling',
-    'dance_music',
-    'crafts',
-    'experiences'
-  ];
+        'all',
+        'zulu_heritage',
+        'beadwork',
+        'pottery',
+        'traditional_food',
+        'storytelling',
+        'dance_music',
+        'crafts',
+        'experiences'
+      ];
 
-  List<String> get productCategories => [
-    'all',
-    'crafts',
-    'textile',
-    'pottery',
-    'food',
-    'jewelry'
-  ];
+  List<String> get productCategories =>
+      ['all', 'crafts', 'textile', 'pottery', 'food', 'jewelry'];
 
   // Filtered products getter
-  List<Map<String, dynamic>> get filteredProducts => getProductsByCategory(_selectedCategory);
+  List<Map<String, dynamic>> get filteredProducts =>
+      getProductsByCategory(_selectedCategory);
 
   Future<void> _initializeData() async {
     await loadProducts();
@@ -99,7 +98,8 @@ class MarketplaceProvider with ChangeNotifier {
     _error = null;
 
     try {
-      final response = await _apiService.get(api_endpoints.ApiEndpoints.products);
+      final response =
+          await _apiService.get(api_endpoints.ApiEndpoints.products);
       _products = List<Map<String, dynamic>>.from(response.data['products']);
     } catch (e) {
       // Enhanced mock data with better variety
@@ -113,7 +113,10 @@ class MarketplaceProvider with ChangeNotifier {
           'originalPrice': 400.0,
           'currency': 'ZAR',
           'imageUrl': 'assets/images/zulubasket.png',
-          'images': ['assets/images/zulubasket.png', 'assets/images/zulubasket.png'],
+          'images': [
+            'assets/images/zulubasket.png',
+            'assets/images/zulubasket.png'
+          ],
           'hasAR': true,
           'rating': 4.8,
           'reviewCount': 23,
@@ -126,15 +129,18 @@ class MarketplaceProvider with ChangeNotifier {
           'isUbuntu': true,
           'isHandmade': true,
           'materials': ['Ilala palm', 'Natural dyes'],
-          'culturalSignificance': 'Traditional Zulu baskets carry deep meaning, with patterns telling stories of family heritage and clan identity.',
-          'description': 'Beautifully handwoven basket using traditional Zulu techniques passed down through generations. Each pattern tells a unique story of heritage and cultural identity.',
+          'culturalSignificance':
+              'Traditional Zulu baskets carry deep meaning, with patterns telling stories of family heritage and clan identity.',
+          'description':
+              'Beautifully handwoven basket using traditional Zulu techniques passed down through generations. Each pattern tells a unique story of heritage and cultural identity.',
           'dimensions': {'length': 30, 'width': 30, 'height': 25, 'unit': 'cm'},
           'weight': 0.8,
           'discount': 12,
           'tags': ['traditional', 'handmade', 'zulu', 'heritage'],
           'vendor': {
             'name': 'Nomsa Mthembu',
-            'bio': 'Master weaver with 25 years of experience, teaching young women traditional basket weaving.',
+            'bio':
+                'Master weaver with 25 years of experience, teaching young women traditional basket weaving.',
             'location': 'Nongoma',
             'verified': true,
             'rating': 4.9
@@ -147,7 +153,7 @@ class MarketplaceProvider with ChangeNotifier {
           'vendor_id': 'vendor_002',
           'price': 280.0,
           'currency': 'ZAR',
-          'imageUrl': 'assets/images/zuluhat.png ',
+          'imageUrl': 'assets/images/zuluhat.png',
           'images': ['assets/images/zuluhat.png'],
           'hasAR': true,
           'rating': 4.6,
@@ -161,14 +167,17 @@ class MarketplaceProvider with ChangeNotifier {
           'isUbuntu': true,
           'isHandmade': true,
           'materials': ['Mohair', 'Wool'],
-          'culturalSignificance': 'The traditional conical hat represents protection from the elements and connection to mountain heritage.',
-          'description': 'Traditional conical hat worn by Basotho people, hand-knitted using authentic patterns and techniques.',
+          'culturalSignificance':
+              'The traditional conical hat represents protection from the elements and connection to mountain heritage.',
+          'description':
+              'Traditional conical hat worn by Basotho people, hand-knitted using authentic patterns and techniques.',
           'dimensions': {'diameter': 35, 'height': 20, 'unit': 'cm'},
           'weight': 0.3,
           'tags': ['traditional', 'basotho', 'headwear', 'mountain'],
           'vendor': {
             'name': 'Sipho Dlamini',
-            'bio': 'Traditional textile artist specializing in Basotho cultural garments.',
+            'bio':
+                'Traditional textile artist specializing in Basotho cultural garments.',
             'location': 'Bergville',
             'verified': true,
             'rating': 4.7
@@ -181,9 +190,15 @@ class MarketplaceProvider with ChangeNotifier {
           'vendor_id': 'vendor_003',
           'price': 180.0,
           'currency': 'ZAR',
-          'imageUrl': 'assets/images/zulunecklace.png ',
-          'images': ['assets/images/zulunecklace.png ', 'assets/images/zulunecklace.png '],
+          'imageUrl': 'assets/images/zulunecklace.png',
+          'images': [
+            'assets/images/zulunecklace.png',
+            'assets/images/zulunecklace.png'
+          ],
           'hasAR': true,
+          // Add 3D model URLs for your custom models
+          'modelUrl': 'assets/models/ZuluHat.glb', // Your GLB model
+          'iosModelUrl': 'assets/models/zulu_basket.usdz',
           'rating': 4.9,
           'reviewCount': 31,
           'isInStock': true,
@@ -195,14 +210,17 @@ class MarketplaceProvider with ChangeNotifier {
           'isUbuntu': true,
           'isHandmade': true,
           'materials': ['Glass beads', 'Cotton thread'],
-          'culturalSignificance': 'Each color and pattern tells a story - age, marital status, clan affiliation, and personal achievements.',
-          'description': 'Intricate beadwork necklace with traditional Zulu color patterns and deep cultural symbolism.',
+          'culturalSignificance':
+              'Each color and pattern tells a story - age, marital status, clan affiliation, and personal achievements.',
+          'description':
+              'Intricate beadwork necklace with traditional Zulu color patterns and deep cultural symbolism.',
           'dimensions': {'length': 45, 'width': 3, 'unit': 'cm'},
           'weight': 0.15,
           'tags': ['jewelry', 'beadwork', 'zulu', 'ceremonial'],
           'vendor': {
             'name': 'Thandi Ngcobo',
-            'bio': 'Fourth-generation beadwork artist from Umlazi, preserving traditional Zulu jewelry techniques.',
+            'bio':
+                'Fourth-generation beadwork artist from Umlazi, preserving traditional Zulu jewelry techniques.',
             'location': 'Umlazi',
             'verified': true,
             'rating': 4.8
@@ -229,15 +247,18 @@ class MarketplaceProvider with ChangeNotifier {
           'isFairTrade': true,
           'isUbuntu': true,
           'isHandmade': true,
-          'culturalSignificance': 'Pot bread baking is a communal activity that brings families together and preserves traditional cooking methods.',
-          'description': 'Learn to bake traditional South African pot bread over an open fire with Gogo Mkhize. A hands-on cultural experience.',
+          'culturalSignificance':
+              'Pot bread baking is a communal activity that brings families together and preserves traditional cooking methods.',
+          'description':
+              'Learn to bake traditional South African pot bread over an open fire with Gogo Mkhize. A hands-on cultural experience.',
           'duration': '3 hours',
           'includes': ['Ingredients', 'Recipe card', 'Bread to take home'],
           'maxParticipants': 8,
           'tags': ['cooking', 'experience', 'traditional', 'bread'],
           'vendor': {
             'name': 'Gogo Mkhize',
-            'bio': 'Traditional cook and grandmother sharing 40 years of indigenous cooking knowledge.',
+            'bio':
+                'Traditional cook and grandmother sharing 40 years of indigenous cooking knowledge.',
             'location': 'Howick',
             'verified': true,
             'rating': 4.9
@@ -264,14 +285,17 @@ class MarketplaceProvider with ChangeNotifier {
           'isUbuntu': true,
           'isHandmade': true,
           'materials': ['Local clay', 'Natural glazes'],
-          'culturalSignificance': 'Pottery making connects us to the earth and represents the nurturing spirit of Ubuntu.',
-          'description': 'Set of 4 hand-thrown pottery pieces using clay from the Drakensberg foothills. Perfect for traditional and modern homes.',
+          'culturalSignificance':
+              'Pottery making connects us to the earth and represents the nurturing spirit of Ubuntu.',
+          'description':
+              'Set of 4 hand-thrown pottery pieces using clay from the Drakensberg foothills. Perfect for traditional and modern homes.',
           'dimensions': {'various': 'Bowl: 15cm, Cups: 8cm each'},
           'weight': 1.2,
           'tags': ['pottery', 'set', 'drakensberg', 'clay'],
           'vendor': {
             'name': 'Mandla Mthembu',
-            'bio': 'Potter and ceramicist using traditional firing techniques with modern design sensibilities.',
+            'bio':
+                'Potter and ceramicist using traditional firing techniques with modern design sensibilities.',
             'location': 'Underberg',
             'verified': true,
             'rating': 4.6
@@ -299,14 +323,17 @@ class MarketplaceProvider with ChangeNotifier {
           'isUbuntu': false,
           'isHandmade': true,
           'materials': ['Canvas', 'Acrylic paint', 'Natural pigments'],
-          'culturalSignificance': 'Ndebele geometric patterns represent the mathematical precision and artistic heritage of South African culture.',
-          'description': 'Vibrant geometric wall art inspired by traditional Ndebele house paintings.',
+          'culturalSignificance':
+              'Ndebele geometric patterns represent the mathematical precision and artistic heritage of South African culture.',
+          'description':
+              'Vibrant geometric wall art inspired by traditional Ndebele house paintings.',
           'dimensions': {'length': 60, 'width': 40, 'unit': 'cm'},
           'weight': 1.5,
           'tags': ['art', 'geometric', 'ndebele', 'wall'],
           'vendor': {
             'name': 'Sibongile Radebe',
-            'bio': 'Contemporary artist blending traditional Ndebele patterns with modern techniques.',
+            'bio':
+                'Contemporary artist blending traditional Ndebele patterns with modern techniques.',
             'location': 'Port Shepstone',
             'verified': true,
             'rating': 4.8
@@ -326,7 +353,8 @@ class MarketplaceProvider with ChangeNotifier {
         {
           'id': 'vendor_001',
           'name': 'Nomsa Mthembu',
-          'bio': 'Master weaver with 25 years of experience, teaching young women traditional basket weaving.',
+          'bio':
+              'Master weaver with 25 years of experience, teaching young women traditional basket weaving.',
           'location': 'Nongoma, KZN',
           'region': 'zululand',
           'specialty': 'Traditional Zulu baskets and weaving',
@@ -363,7 +391,8 @@ class MarketplaceProvider with ChangeNotifier {
         {
           'id': 'exp_001',
           'title': 'Zulu Cultural Village Experience',
-          'description': 'Immersive half-day experience in traditional Zulu culture',
+          'description':
+              'Immersive half-day experience in traditional Zulu culture',
           'location': 'Shakaland, KZN',
           'region': 'zululand',
           'duration': '4 hours',
@@ -372,7 +401,12 @@ class MarketplaceProvider with ChangeNotifier {
           'rating': 4.7,
           'reviewCount': 89,
           'maxParticipants': 20,
-          'includes': ['Traditional meal', 'Dance performance', 'Village tour', 'Craft demonstration'],
+          'includes': [
+            'Traditional meal',
+            'Dance performance',
+            'Village tour',
+            'Craft demonstration'
+          ],
           'languages': ['English', 'isiZulu'],
           'category': 'cultural_experience',
           'hasAR': true,
@@ -398,7 +432,8 @@ class MarketplaceProvider with ChangeNotifier {
         final title = product['title']?.toLowerCase() ?? '';
         final artisan = product['artisan']?.toLowerCase() ?? '';
         final description = product['description']?.toLowerCase() ?? '';
-        final tags = (product['tags'] as List<dynamic>?)?.join(' ').toLowerCase() ?? '';
+        final tags =
+            (product['tags'] as List<dynamic>?)?.join(' ').toLowerCase() ?? '';
 
         if (!title.contains(searchLower) &&
             !artisan.contains(searchLower) &&
@@ -445,13 +480,16 @@ class MarketplaceProvider with ChangeNotifier {
     // Apply sorting
     switch (_sortBy) {
       case 'price_low':
-        filteredProducts.sort((a, b) => (a['price'] ?? 0).compareTo(b['price'] ?? 0));
+        filteredProducts
+            .sort((a, b) => (a['price'] ?? 0).compareTo(b['price'] ?? 0));
         break;
       case 'price_high':
-        filteredProducts.sort((a, b) => (b['price'] ?? 0).compareTo(a['price'] ?? 0));
+        filteredProducts
+            .sort((a, b) => (b['price'] ?? 0).compareTo(a['price'] ?? 0));
         break;
       case 'rating':
-        filteredProducts.sort((a, b) => (b['rating'] ?? 0).compareTo(a['rating'] ?? 0));
+        filteredProducts
+            .sort((a, b) => (b['rating'] ?? 0).compareTo(a['rating'] ?? 0));
         break;
       case 'newest':
         filteredProducts.sort((a, b) => (b['id'] ?? 0).compareTo(a['id'] ?? 0));
@@ -543,11 +581,13 @@ class MarketplaceProvider with ChangeNotifier {
 
   // Cart methods with improved functionality
   void addToCart(Map<String, dynamic> product, {int quantity = 1}) {
-    final existingIndex = _cart.indexWhere((item) => item['id'] == product['id']);
+    final existingIndex =
+        _cart.indexWhere((item) => item['id'] == product['id']);
 
     if (existingIndex >= 0) {
       // Update quantity if product already in cart
-      _cart[existingIndex]['quantity'] = (_cart[existingIndex]['quantity'] ?? 1) + quantity;
+      _cart[existingIndex]['quantity'] =
+          (_cart[existingIndex]['quantity'] ?? 1) + quantity;
     } else {
       // Add new product to cart
       final cartItem = Map<String, dynamic>.from(product);
@@ -641,7 +681,9 @@ class MarketplaceProvider with ChangeNotifier {
   }
 
   List<Map<String, dynamic>> getProductsByVendor(String vendorId) {
-    return _products.where((product) => product['vendor_id'] == vendorId).toList();
+    return _products
+        .where((product) => product['vendor_id'] == vendorId)
+        .toList();
   }
 
   // Statistics with better calculations

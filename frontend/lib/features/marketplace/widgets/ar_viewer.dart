@@ -1,5 +1,6 @@
 // features/marketplace/widgets/ar_viewer.dart
 import 'package:flutter/material.dart';
+import 'package:model_viewer_plus/model_viewer_plus.dart';
 
 class ARViewer extends StatefulWidget {
   final Map<String, dynamic> product;
@@ -175,174 +176,80 @@ class _ARViewerState extends State<ARViewer>
     );
   }
 
-  Widget _buildARView() {
-    return Container(
-      margin: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.black,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: Colors.purple.withValues(alpha: 0.3),
-          width: 2,
-        ),
+///////////////
+//////////////
+  ///
+  // Inside _buildARView()
+  // Replace your _buildARView() method with this:
+// Update your _buildARView() method to properly load local assets
+Widget _buildARView() {
+  // For web, construct the asset URL properly
+  String modelUrl = widget.product['modelUrl'] as String? ?? '';
+  
+  if (modelUrl.isEmpty) {
+    // Default local asset - this is the correct format for Flutter web
+    modelUrl = 'assets/models/ZuluHat.glb';
+  }
+  
+  // Remove any leading slash if present
+  if (modelUrl.startsWith('/')) {
+    modelUrl = modelUrl.substring(1);
+  }
+
+  return Container(
+    margin: const EdgeInsets.all(16),
+    decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(12),
+      border: Border.all(
+        color: Colors.purple.withOpacity(0.3),
+        width: 2,
       ),
+    ),
+    child: ClipRRect(
+      borderRadius: BorderRadius.circular(12),
       child: Stack(
         children: [
-          // Simulated AR background
-          Container(
-            width: double.infinity,
-            height: double.infinity,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              gradient: RadialGradient(
-                center: Alignment.center,
-                colors: [
-                  Colors.grey[800]!,
-                  Colors.black,
-                ],
-              ),
-            ),
+          ModelViewer(
+            src: modelUrl,
+            alt: widget.product['title'] ?? '3D Model',
+            ar: false, // Keep AR disabled for web
+            autoRotate: true,
+            cameraControls: true,
+            backgroundColor: Colors.grey.shade50,
+            loading: Loading.eager,
+            interactionPrompt: InteractionPrompt.auto,
+            debugLogging: true,
+            onWebViewCreated: (controller) {
+              debugPrint('Loading model from: $modelUrl');
+            },
           ),
-          // AR grid overlay
-          CustomPaint(
-            size: Size.infinite,
-            painter: ARGridPainter(),
-          ),
-          // 3D object representation
-          Center(
-            child: AnimatedBuilder(
-              animation: _animationController,
-              builder: (context, child) {
-                return Transform(
-                  alignment: Alignment.center,
-                  transform: Matrix4.identity()
-                    ..setEntry(3, 2, 0.001)
-                    ..rotateX(0.3)
-                    ..rotateY(_animationController.value * 2.0 * 3.14159),
-                  child: Container(
-                    width: 120,
-                    height: 120,
-                    decoration: BoxDecoration(
-                      color: Colors.orange.withValues(alpha: 0.8),
-                      borderRadius: BorderRadius.circular(12),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.purple.withValues(alpha: 0.5),
-                          blurRadius: 20,
-                          spreadRadius: 5,
-                        ),
-                      ],
-                    ),
-                    child: Icon(
-                      _getProductIcon(),
-                      size: 60,
-                      color: Colors.white,
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
-          // AR indicators
+          
+          // Add a fallback message if model fails to load
           Positioned(
-            top: 16,
-            left: 16,
+            bottom: 8,
+            left: 8,
+            right: 8,
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: Colors.green,
-                borderRadius: BorderRadius.circular(8),
+                color: Colors.black.withOpacity(0.7),
+                borderRadius: BorderRadius.circular(6),
               ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    width: 8,
-                    height: 8,
-                    decoration: const BoxDecoration(
-                      color: Colors.white,
-                      shape: BoxShape.circle,
-                    ),
-                  ),
-                  const SizedBox(width: 6),
-                  const Text(
-                    'AR ACTIVE',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          // Product info overlay
-          Positioned(
-            bottom: 16,
-            left: 16,
-            right: 16,
-            child: Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Colors.black.withValues(alpha: 0.7),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    widget.product['title'] ?? 'Wanders Craft',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'by ${widget.product['artisan'] ?? 'Local Artisan'}',
-                    style: const TextStyle(
-                      color: Colors.white70,
-                      fontSize: 12,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      Text(
-                        '${widget.product['currency'] ?? 'ZAR'} ${(widget.product['price'] ?? 200).toStringAsFixed(0)}',
-                        style: const TextStyle(
-                          color: Colors.orange,
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const Spacer(),
-                      const Icon(
-                        Icons.touch_app,
-                        color: Colors.white70,
-                        size: 16,
-                      ),
-                      const SizedBox(width: 4),
-                      const Text(
-                        'Tap to interact',
-                        style: TextStyle(
-                          color: Colors.white70,
-                          fontSize: 10,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
+              child: Text(
+                'Drag to rotate • Scroll to zoom',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 12,
+                ),
+                textAlign: TextAlign.center,
               ),
             ),
           ),
         ],
       ),
-    );
-  }
-
+    ),
+  );
+}
   Widget _buildControls() {
     return Container(
       padding: const EdgeInsets.all(16),
@@ -375,7 +282,8 @@ class _ARViewerState extends State<ARViewer>
                 widget.onClose?.call();
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
-                    content: Text('${widget.product['title'] ?? 'Product'} added to cart'),
+                    content: Text(
+                        '${widget.product['title'] ?? 'Product'} added to cart'),
                     backgroundColor: Colors.green,
                   ),
                 );
