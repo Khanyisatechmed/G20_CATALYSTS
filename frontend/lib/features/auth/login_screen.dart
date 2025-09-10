@@ -1,11 +1,9 @@
+// features/auth/login_screen.dart - CORRECTED VERSION
 import 'package:flutter/material.dart';
 import 'package:frontend/core/utils/responsive_helper.dart';
 import 'package:frontend/features/auth/providers/auth_provider.dart';
 import 'package:provider/provider.dart';
-import 'package:go_router/go_router.dart'; // Import GoRouter
-import '../../../core/utils/responsive_helper.dart';
-import '../../../shared/widgets/responsive_layout.dart';
-import 'signup_screen.dart';
+import 'package:go_router/go_router.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -31,37 +29,95 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
+      appBar: ResponsiveHelper.isMobile(context) ? AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios, color: Colors.black87),
-          // Use context.pop() for back navigation with GoRouter
           onPressed: () => context.pop(),
         ),
-      ),
-      body: ResponsiveLayoutBuilder(
-        mobile: (context, constraints) => _buildMobileLayout(),
-        tablet: (context, constraints) => _buildTabletLayout(),
-        desktop: (context, constraints) => _buildDesktopLayout(),
-      ),
+      ) : null,
+      body: _buildResponsiveLayout(),
     );
   }
 
+  Widget _buildResponsiveLayout() {
+    if (ResponsiveHelper.isDesktop(context)) {
+      return _buildDesktopLayout();
+    } else if (ResponsiveHelper.isTablet(context)) {
+      return _buildTabletLayout();
+    } else {
+      return _buildMobileLayout();
+    }
+  }
+
   Widget _buildMobileLayout() {
-    return SingleChildScrollView(
-      padding: ResponsiveHelper.getResponsivePadding(context),
-      child: _buildLoginForm(),
+    return SafeArea(
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          return SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                minHeight: constraints.maxHeight,
+              ),
+              child: IntrinsicHeight(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    // Logo section - flexible height
+                    const Flexible(
+                      flex: 2,
+                      child: Center(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            SizedBox(height: 20),
+
+                            SizedBox(height: 20),
+                          ],
+                        ),
+                      ),
+                    ),
+
+                    // Form section - takes remaining space
+                    Flexible(
+                      flex: 3,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          _buildLoginForm(),
+                        ],
+                      ),
+                    ),
+
+                    // Bottom spacing
+                    const SizedBox(height: 20),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
+      ),
     );
   }
 
   Widget _buildTabletLayout() {
-    return Center(
-      child: Container(
-        constraints: const BoxConstraints(maxWidth: 500),
-        padding: ResponsiveHelper.getResponsivePadding(context),
+    return SafeArea(
+      child: Center(
         child: SingleChildScrollView(
-          child: _buildLoginForm(),
+          padding: const EdgeInsets.all(40),
+          child: Container(
+            constraints: const BoxConstraints(maxWidth: 500),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const SizedBox(height: 40),
+                _buildLoginForm(),
+              ],
+            ),
+          ),
         ),
       ),
     );
@@ -80,33 +136,33 @@ class _LoginScreenState extends State<LoginScreen> {
                 end: Alignment.bottomRight,
                 colors: [
                   Theme.of(context).primaryColor,
-                  // ignore: deprecated_member_use
                   Theme.of(context).primaryColor.withOpacity(0.8),
                 ],
               ),
             ),
             child: const Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.explore,
-                    size: 80,
-                    color: Colors.white,
-                  ),
-                  SizedBox(height: 24),
-                  Text(
-                    'Catalystic Wanders',
-                    style: TextStyle(
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
+              child: Padding(
+                padding: EdgeInsets.all(40),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.explore,
+                      size: 80,
                       color: Colors.white,
                     ),
-                  ),
-                  SizedBox(height: 16),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 48),
-                    child: Text(
+                    SizedBox(height: 24),
+                    Text(
+                      'Catalystic Wanders',
+                      style: TextStyle(
+                        fontSize: 32,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    SizedBox(height: 16),
+                    Text(
                       'Discover authentic South African cultural experiences',
                       textAlign: TextAlign.center,
                       style: TextStyle(
@@ -114,8 +170,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         color: Colors.white70,
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
@@ -126,9 +182,18 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Container(
             padding: const EdgeInsets.all(48),
             child: Center(
-              child: Container(
-                constraints: const BoxConstraints(maxWidth: 400),
-                child: _buildLoginForm(),
+              child: SingleChildScrollView(
+                child: Container(
+                  constraints: const BoxConstraints(maxWidth: 400),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+
+                      const SizedBox(height: 40),
+                      _buildLoginForm(),
+                    ],
+                  ),
+                ),
               ),
             ),
           ),
@@ -142,79 +207,82 @@ class _LoginScreenState extends State<LoginScreen> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisSize: MainAxisSize.min,
       children: [
-        // Tab bar
-        Row(
-          children: [
-            Expanded(
-              child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                decoration: BoxDecoration(
-                  border: Border(
-                    bottom: BorderSide(
-                      color: Theme.of(context).primaryColor,
-                      width: 2,
-                    ),
-                  ),
-                ),
-                child: Text(
-                  'Log in',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Theme.of(context).primaryColor,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-            ),
-            Expanded(
-              child: GestureDetector(
-                onTap: () => _navigateToSignUp(),
+        // Tab bar - Fixed height to prevent overflow
+        SizedBox(
+          height: 60,
+          child: Row(
+            children: [
+              Expanded(
                 child: Container(
                   padding: const EdgeInsets.symmetric(vertical: 16),
                   decoration: BoxDecoration(
                     border: Border(
                       bottom: BorderSide(
-                        // ignore: deprecated_member_use
-                        color: Colors.grey.withOpacity(0.3),
-                        width: 1,
+                        color: Theme.of(context).primaryColor,
+                        width: 2,
                       ),
                     ),
                   ),
-                  child: const Text(
-                    'Sign up',
+                  child: Text(
+                    'Log in',
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      color: Colors.grey,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w500,
+                      color: Theme.of(context).primaryColor,
+                      fontSize: ResponsiveHelper.isMobile(context) ? 16 : 18,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),
               ),
-            ),
-          ],
+              Expanded(
+                child: GestureDetector(
+                  onTap: () => _navigateToSignUp(),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    decoration: BoxDecoration(
+                      border: Border(
+                        bottom: BorderSide(
+                          color: Colors.grey.withOpacity(0.3),
+                          width: 1,
+                        ),
+                      ),
+                    ),
+                    child: Text(
+                      'Sign up',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Colors.grey,
+                        fontSize: ResponsiveHelper.isMobile(context) ? 16 : 18,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
 
-        const SizedBox(height: 40),
+        SizedBox(height: ResponsiveHelper.isMobile(context) ? 24 : 40),
 
-        // Title
-        const Text(
+        // Title - Responsive font size
+        Text(
           'Log in to continue',
           style: TextStyle(
-            fontSize: 24,
+            fontSize: ResponsiveHelper.isMobile(context) ? 20 : 24,
             fontWeight: FontWeight.bold,
             color: Colors.black87,
           ),
         ),
 
-        const SizedBox(height: 32),
+        SizedBox(height: ResponsiveHelper.isMobile(context) ? 20 : 32),
 
-        // Form
+        // Form - Fixed to prevent overflow
         Form(
           key: _formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisSize: MainAxisSize.min,
             children: [
               // Email field
               _buildTextField(
@@ -225,7 +293,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 validator: _validateEmail,
               ),
 
-              const SizedBox(height: 24),
+              SizedBox(height: ResponsiveHelper.isMobile(context) ? 16 : 24),
 
               // Password field
               _buildTextField(
@@ -249,30 +317,35 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
 
-              const SizedBox(height: 16),
+              SizedBox(height: ResponsiveHelper.isMobile(context) ? 8 : 16),
 
-              // Password requirements
-              Text(
-                'Password length must be at least 8 characters',
-                style: TextStyle(
-                  color: Colors.grey[600],
-                  fontSize: 14,
+              // Password requirements - Flexible text
+              Flexible(
+                child: Text(
+                  'Password length must be at least 8 characters',
+                  style: TextStyle(
+                    color: Colors.grey[600],
+                    fontSize: ResponsiveHelper.isMobile(context) ? 12 : 14,
+                  ),
                 ),
               ),
 
-              const SizedBox(height: 32),
+              SizedBox(height: ResponsiveHelper.isMobile(context) ? 20 : 32),
 
-              // Login button
-              AuthButton(
-                text: 'Log in',
-                onPressed: _isLoading ? null : _handleLogin,
-                isLoading: _isLoading,
-                isPrimary: true,
+              // Login button - Fixed height
+              SizedBox(
+                height: ResponsiveHelper.isMobile(context) ? 48 : 56,
+                child: AuthButton(
+                  text: 'Log in',
+                  onPressed: _isLoading ? null : _handleLogin,
+                  isLoading: _isLoading,
+                  isPrimary: true,
+                ),
               ),
 
-              const SizedBox(height: 16),
+              SizedBox(height: ResponsiveHelper.isMobile(context) ? 12 : 16),
 
-              // Forgot password
+              // Forgot password - Center and flexible
               Center(
                 child: TextButton(
                   onPressed: _handleForgotPassword,
@@ -281,6 +354,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     style: TextStyle(
                       color: Theme.of(context).primaryColor,
                       fontWeight: FontWeight.w500,
+                      fontSize: ResponsiveHelper.isMobile(context) ? 14 : 16,
                     ),
                   ),
                 ),
@@ -301,42 +375,56 @@ class _LoginScreenState extends State<LoginScreen> {
     String? Function(String?)? validator,
     Widget? suffixIcon,
   }) {
+    final isMobile = ResponsiveHelper.isMobile(context);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
       children: [
         Text(
           label,
           style: TextStyle(
             color: Theme.of(context).primaryColor,
-            fontSize: 16,
+            fontSize: isMobile ? 14 : 16,
             fontWeight: FontWeight.w500,
           ),
         ),
-        const SizedBox(height: 8),
-        TextFormField(
-          controller: controller,
-          keyboardType: keyboardType,
-          obscureText: obscureText,
-          validator: validator,
-          decoration: InputDecoration(
-            hintText: hint,
-            suffixIcon: suffixIcon,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              // ignore: deprecated_member_use
-              borderSide: BorderSide(color: Colors.grey.withOpacity(0.3)),
+        SizedBox(height: isMobile ? 6 : 8),
+        SizedBox(
+          height: isMobile ? 48 : 56,
+          child: TextFormField(
+            controller: controller,
+            keyboardType: keyboardType,
+            obscureText: obscureText,
+            validator: validator,
+            style: TextStyle(
+              fontSize: isMobile ? 14 : 16,
             ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              // ignore: deprecated_member_use
-              borderSide: BorderSide(color: Colors.grey.withOpacity(0.3)),
+            decoration: InputDecoration(
+              hintText: hint,
+              hintStyle: TextStyle(
+                fontSize: isMobile ? 14 : 16,
+                color: Colors.grey[500],
+              ),
+              suffixIcon: suffixIcon,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(color: Colors.grey.withOpacity(0.3)),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(color: Colors.grey.withOpacity(0.3)),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(color: Theme.of(context).primaryColor),
+              ),
+              contentPadding: EdgeInsets.symmetric(
+                horizontal: isMobile ? 12 : 16,
+                vertical: isMobile ? 12 : 16,
+              ),
+              isDense: isMobile,
             ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide(color: Theme.of(context).primaryColor),
-            ),
-            contentPadding:
-                const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
           ),
         ),
       ],
@@ -364,7 +452,6 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _navigateToSignUp() {
-    // Navigate using GoRouter
     context.goNamed('signup');
   }
 
@@ -381,7 +468,6 @@ class _LoginScreenState extends State<LoginScreen> {
       );
 
       if (mounted && authProvider.isAuthenticated) {
-        // Use GoRouter to navigate to the home route and remove the login route
         context.goNamed('home');
       }
     } catch (e) {
@@ -390,6 +476,10 @@ class _LoginScreenState extends State<LoginScreen> {
           SnackBar(
             content: Text(e.toString()),
             backgroundColor: Colors.red,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
           ),
         );
       }
@@ -401,10 +491,10 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   void _handleForgotPassword() {
-    // Implement forgot password logic
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
         content: Text('Forgot password feature coming soon'),
+        behavior: SnackBarBehavior.floating,
       ),
     );
   }
@@ -429,27 +519,27 @@ class AuthButton extends StatelessWidget {
     return ElevatedButton(
       onPressed: isLoading ? null : onPressed,
       style: ElevatedButton.styleFrom(
-        padding: const EdgeInsets.symmetric(vertical: 16),
         backgroundColor:
             isPrimary ? Theme.of(context).primaryColor : Colors.grey[300],
         foregroundColor: isPrimary ? Colors.white : Colors.black87,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),
         ),
+        elevation: isPrimary ? 2 : 0,
       ),
       child: isLoading
-          ? const SizedBox(
-              width: 24,
-              height: 24,
-              child: CircularProgressIndicator(
+          ? SizedBox(
+              width: ResponsiveHelper.isMobile(context) ? 20 : 24,
+              height: ResponsiveHelper.isMobile(context) ? 20 : 24,
+              child: const CircularProgressIndicator(
                 strokeWidth: 2,
                 valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
               ),
             )
           : Text(
               text,
-              style: const TextStyle(
-                fontSize: 16,
+              style: TextStyle(
+                fontSize: ResponsiveHelper.isMobile(context) ? 14 : 16,
                 fontWeight: FontWeight.w600,
               ),
             ),

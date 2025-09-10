@@ -1,5 +1,7 @@
-// features/home/widgets/ar_package_card.dart
+// features/home/widgets/ar_package_card.dart - FIXED VERSION
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import '../../../core/utils/responsive_helper.dart';
 
 class ARPackageCard extends StatelessWidget {
   final Map<String, dynamic> package;
@@ -13,6 +15,8 @@ class ARPackageCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isMobile = ResponsiveHelper.isMobile(context);
+
     return Card(
       elevation: 4,
       clipBehavior: Clip.antiAlias,
@@ -22,184 +26,123 @@ class ARPackageCard extends StatelessWidget {
       child: InkWell(
         onTap: onTap,
         child: Container(
-          height: 260, // Fixed height to prevent overflow
+          height: isMobile ? 220 : 270, // Fixed height to prevent overflow
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Image/Icon section - Fixed height
+              // Image section with fixed height
               Container(
-                height: 120,
+                height: isMobile ? 120 : 150,
                 width: double.infinity,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: _getGradientColors(),
-                  ),
-                ),
-                child: Stack(
-                  children: [
-                    // AR Icon
-                    Center(
-                      child: Container(
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.2),
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(
-                          Icons.view_in_ar,
-                          size: 32,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                    // AR Badge
-                    Positioned(
-                      top: 12,
-                      right: 12,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: Colors.purple,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: const Text(
-                          'AR',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ),
-                    // Type Badge
-                    Positioned(
-                      top: 12,
-                      left: 12,
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: _getTypeColor(),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Text(
-                          _getTypeLabel(),
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 10,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+                child: _buildImageSection(context),
               ),
-
-              // Content section - Flexible but controlled
+              // Content section with flexible height
               Expanded(
                 child: Padding(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(12),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
                     children: [
-                      // Title
-                      Text(
-                        package['title'] ?? 'AR Experience',
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      const SizedBox(height: 6),
-
-                      // Location
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.location_on,
-                            size: 14,
-                            color: Colors.grey[600],
-                          ),
-                          const SizedBox(width: 4),
-                          Expanded(
-                            child: Text(
-                              package['location'] ?? 'Virtual',
+                      // Title and description with constrained height
+                      Expanded(
+                        flex: 3,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              package['title'] ?? 'Product',
                               style: TextStyle(
-                                fontSize: 12,
-                                color: Colors.grey[600],
+                                fontSize: isMobile ? 14 : 16,
+                                fontWeight: FontWeight.bold,
                               ),
-                              maxLines: 1,
+                              maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                             ),
-                          ),
-                        ],
+                            const SizedBox(height: 4),
+                            Flexible(
+                              child: Text(
+                                package['description'] ?? 'Description',
+                                style: TextStyle(
+                                  fontSize: isMobile ? 11 : 12,
+                                  color: Colors.grey[600],
+                                ),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                      const SizedBox(height: 8),
-
-                      // Rating and Duration
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.star,
-                            size: 14,
-                            color: Colors.orange,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            '${package['rating'] ?? 4.5}',
-                            style: const TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
+                      // Bottom section with price and rating
+                      Container(
+                        height: isMobile ? 44 : 50, // Fixed height for bottom section
+                        child: Column(
+                          children: [
+                            // Artisan info
+                            if (package['artisan'] != null) ...[
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.person,
+                                    size: isMobile ? 12 : 14,
+                                    color: Colors.grey[500],
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Expanded(
+                                    child: Text(
+                                      package['artisan'],
+                                      style: TextStyle(
+                                        fontSize: isMobile ? 10 : 11,
+                                        color: Colors.grey[600],
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 6),
+                            ],
+                            // Price and rating row
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                // Price
+                                Flexible(
+                                  child: Text(
+                                    package['price'] ?? 'R 0',
+                                    style: TextStyle(
+                                      fontSize: isMobile ? 14 : 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: const Color(0xFF8B5CF6),
+                                    ),
+                                  ),
+                                ),
+                                // Rating
+                                if (package['rating'] != null)
+                                  Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(
+                                        Icons.star,
+                                        color: Colors.amber,
+                                        size: isMobile ? 14 : 16,
+                                      ),
+                                      const SizedBox(width: 2),
+                                      Text(
+                                        '${package['rating']}',
+                                        style: TextStyle(
+                                          fontSize: isMobile ? 11 : 12,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                              ],
                             ),
-                          ),
-                          const SizedBox(width: 12),
-                          Icon(
-                            Icons.access_time,
-                            size: 14,
-                            color: Colors.grey[600],
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            '${package['duration'] ?? 30}min',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey[600],
-                            ),
-                          ),
-                        ],
-                      ),
-
-                      // Spacer to push price to bottom
-                      const Spacer(),
-
-                      // Price
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            package['price'] == 0
-                                ? 'FREE'
-                                : 'ZAR ${package['price'] ?? 100}',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: package['price'] == 0
-                                  ? Colors.green
-                                  : Theme.of(context).primaryColor,
-                            ),
-                          ),
-                          Icon(
-                            Icons.arrow_forward_ios,
-                            size: 16,
-                            color: Colors.grey[400],
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ],
                   ),
@@ -212,42 +155,84 @@ class ARPackageCard extends StatelessWidget {
     );
   }
 
-  List<Color> _getGradientColors() {
-    switch (package['type']?.toString().toLowerCase()) {
-      case 'museum':
-        return [Colors.blue.shade400, Colors.blue.shade600];
-      case 'cultural':
-        return [Colors.orange.shade400, Colors.deepOrange.shade600];
-      case 'historical':
-        return [Colors.brown.shade400, Colors.brown.shade600];
-      default:
-        return [Colors.purple.shade400, Colors.purple.shade600];
-    }
+  Widget _buildImageSection(BuildContext context) {
+    final isMobile = ResponsiveHelper.isMobile(context);
+
+    return Stack(
+      children: [
+        // Background image or placeholder
+        Container(
+          width: double.infinity,
+          height: double.infinity,
+          child: package['image'] != null
+              ? CachedNetworkImage(
+                  imageUrl: package['image'],
+                  fit: BoxFit.cover,
+                  placeholder: (context, url) => _buildPlaceholder(),
+                  errorWidget: (context, url, error) => _buildPlaceholder(),
+                )
+              : _buildPlaceholder(),
+        ),
+        // Gradient overlay
+        Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                Colors.transparent,
+                Colors.black.withOpacity(0.3),
+              ],
+            ),
+          ),
+        ),
+        // Type badge
+        if (package['type'] != null)
+          Positioned(
+            top: 8,
+            left: 8,
+            child: Container(
+              padding: EdgeInsets.symmetric(
+                horizontal: isMobile ? 6 : 8,
+                vertical: isMobile ? 2 : 4,
+              ),
+              decoration: BoxDecoration(
+                color: const Color(0xFF8B5CF6).withOpacity(0.9),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Text(
+                package['type'],
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: isMobile ? 9 : 10,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+      ],
+    );
   }
 
-  Color _getTypeColor() {
-    switch (package['type']?.toString().toLowerCase()) {
-      case 'museum':
-        return Colors.blue;
-      case 'cultural':
-        return Colors.orange;
-      case 'historical':
-        return Colors.brown;
-      default:
-        return Colors.purple;
-    }
-  }
-
-  String _getTypeLabel() {
-    switch (package['type']?.toString().toLowerCase()) {
-      case 'museum':
-        return 'MUSEUM';
-      case 'cultural':
-        return 'CULTURAL';
-      case 'historical':
-        return 'HISTORICAL';
-      default:
-        return 'AR TOUR';
-    }
+  Widget _buildPlaceholder() {
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            Color(0xFF8B5CF6),
+            Color(0xFF3B82F6),
+          ],
+        ),
+      ),
+      child: const Center(
+        child: Icon(
+          Icons.image,
+          color: Colors.white,
+          size: 48,
+        ),
+      ),
+    );
   }
 }
