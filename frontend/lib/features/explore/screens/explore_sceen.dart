@@ -386,7 +386,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
 
           // WandersFeatures
           const Text(
-            'WandersFeatures',
+            'Wanders Features',
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.w600,
@@ -634,7 +634,7 @@ class _ExploreScreenState extends State<ExploreScreen> {
       },
       {
         'id': 'ubuntu_philosophy',
-        'title': 'WandersPhilosophy',
+        'title': 'Wanders Philosophy',
         'description': 'Learn about "I am because we are"',
       },
       {

@@ -257,7 +257,7 @@ class AuthProvider with ChangeNotifier {
       'avatar_url': '',
       'phone': '+27 11 123 4567',
       'location': 'Johannesburg, South Africa',
-      'bio': 'Passionate about Wandersphilosophy and South African culture.',
+      'bio': 'Passionate about Wanders philosophy and South African culture.',
     };
 
     final mockToken = 'mock_token_${DateTime.now().millisecondsSinceEpoch}';

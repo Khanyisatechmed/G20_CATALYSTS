@@ -100,7 +100,7 @@ class UbuntuDestinationsApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
-      title: 'Ubuntu Destinations',
+      title: 'WandersDestinations',
       debugShowCheckedModeBanner: false,
       routerConfig: AppRouter.router,
       theme: ThemeData(

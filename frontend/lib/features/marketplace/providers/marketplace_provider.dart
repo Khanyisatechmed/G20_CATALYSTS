@@ -22,10 +22,13 @@ class MarketplaceProvider with ChangeNotifier {
   bool _showFairTradeOnly = false;
   bool _showUbuntuOnly = false;
   String _searchQuery = '';
-  String _selectedRegion = 'all'; // KZN regions
-  String _sortBy = 'relevance'; // relevance, price_low, price_high, rating, newest
+  String _selectedRegion = 'all';
+  String _sortBy = 'relevance';
 
-  MarketplaceProvider(this._apiService);
+  MarketplaceProvider(this._apiService) {
+    // Auto-load data on initialization
+    _initializeData();
+  }
 
   // Getters
   List<Map<String, dynamic>> get products => _products;
@@ -37,17 +40,18 @@ class MarketplaceProvider with ChangeNotifier {
   String? get error => _error;
   String get selectedCategory => _selectedCategory;
   RangeValues get priceRange => _priceRange;
-  bool? get showAROnly => _showAROnly;
-  bool? get showInStockOnly => _showInStockOnly;
-  bool? get showFairTradeOnly => _showFairTradeOnly;
-  bool? get showUbuntuOnly => _showUbuntuOnly;
+  bool get showAROnly => _showAROnly;
+  bool get showInStockOnly => _showInStockOnly;
+  bool get showFairTradeOnly => _showFairTradeOnly;
+  bool get showUbuntuOnly => _showUbuntuOnly;
+  String get searchQuery => _searchQuery;
   String get selectedRegion => _selectedRegion;
   String get sortBy => _sortBy;
   int get cartItemCount => _cart.fold(0, (sum, item) => sum + (item['quantity'] as int? ?? 1));
   double get cartTotal => _cart.fold(0.0, (sum, item) =>
     sum + ((item['price'] as num? ?? 0) * (item['quantity'] as int? ?? 1)));
 
-  // KZN-specific getters
+  // Enhanced getters with better data
   List<String> get kznRegions => [
     'all',
     'durban',
@@ -72,6 +76,24 @@ class MarketplaceProvider with ChangeNotifier {
     'experiences'
   ];
 
+  List<String> get productCategories => [
+    'all',
+    'crafts',
+    'textile',
+    'pottery',
+    'food',
+    'jewelry'
+  ];
+
+  // Filtered products getter
+  List<Map<String, dynamic>> get filteredProducts => getProductsByCategory(_selectedCategory);
+
+  Future<void> _initializeData() async {
+    await loadProducts();
+    await loadVendors();
+    await loadCulturalExperiences();
+  }
+
   Future<void> loadProducts() async {
     _setLoading(true);
     _error = null;
@@ -80,7 +102,7 @@ class MarketplaceProvider with ChangeNotifier {
       final response = await _apiService.get(api_endpoints.ApiEndpoints.products);
       _products = List<Map<String, dynamic>>.from(response.data['products']);
     } catch (e) {
-      // Enhanced mock data for KZN tourism
+      // Enhanced mock data with better variety
       _products = [
         {
           'id': 1,
@@ -90,8 +112,8 @@ class MarketplaceProvider with ChangeNotifier {
           'price': 350.0,
           'originalPrice': 400.0,
           'currency': 'ZAR',
-          'imageUrl': 'https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.metmuseum.org%2Fart%2Fcollection%2Fsearch%2F318684&psig=AOvVaw3r8lVk3KVP5o6RVj_47B8l&ust=1757193490979000&source=images&cd=vfe&opi=89978449&ved=0CBUQjRxqFwoTCODz34DGwo8DFQAAAAAdAAAAABAE',
-          'images': 'assets/images/zulubasket.png',
+          'imageUrl': ' assets/images/zulubasket.png',
+          'images': [' assets/images/zulubasket.png', 'assets/images/zulubasket.png '],
           'hasAR': true,
           'rating': 4.8,
           'reviewCount': 23,
@@ -105,7 +127,7 @@ class MarketplaceProvider with ChangeNotifier {
           'isHandmade': true,
           'materials': ['Ilala palm', 'Natural dyes'],
           'culturalSignificance': 'Traditional Zulu baskets carry deep meaning, with patterns telling stories of family heritage and clan identity.',
-          'description': 'Beautifully handwoven basket using traditional Zulu techniques passed down through generations.',
+          'description': 'Beautifully handwoven basket using traditional Zulu techniques passed down through generations. Each pattern tells a unique story of heritage and cultural identity.',
           'dimensions': {'length': 30, 'width': 30, 'height': 25, 'unit': 'cm'},
           'weight': 0.8,
           'discount': 12,
@@ -120,13 +142,13 @@ class MarketplaceProvider with ChangeNotifier {
         },
         {
           'id': 2,
-          'title': 'The King Shaka Shield',
+          'title': 'Traditional Zulu Hat',
           'artisan': 'Sipho Dlamini',
           'vendor_id': 'vendor_002',
           'price': 280.0,
           'currency': 'ZAR',
-          'imageUrl': 'https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.luangisa.com%2Fproducts%2Fzulu-shield-xl-with-spear-and-club-01-model-walking&psig=AOvVaw0-IhOK-NAZWmk9IH_16aZQ&ust=1757193408776000&source=images&cd=vfe&opi=89978449&ved=0CBUQjRxqFwoTCNCo09rFwo8DFQAAAAAdAAAAABA2',
-          'images': 'assets/images/zulushield.png',
+          'imageUrl': 'assets/images/zuluhat.png ',
+          'images': ['assets/images/zuluhat.png'],
           'hasAR': true,
           'rating': 4.6,
           'reviewCount': 15,
@@ -139,8 +161,8 @@ class MarketplaceProvider with ChangeNotifier {
           'isUbuntu': true,
           'isHandmade': true,
           'materials': ['Mohair', 'Wool'],
-          'culturalSignificance': 'The historic shield symbolizes the King Shaka war shield and represents protection from the elements.',
-          'description': 'Traditional conical hat worn by Basotho people, hand-knitted using authentic patterns.',
+          'culturalSignificance': 'The traditional conical hat represents protection from the elements and connection to mountain heritage.',
+          'description': 'Traditional conical hat worn by Basotho people, hand-knitted using authentic patterns and techniques.',
           'dimensions': {'diameter': 35, 'height': 20, 'unit': 'cm'},
           'weight': 0.3,
           'tags': ['traditional', 'basotho', 'headwear', 'mountain'],
@@ -159,8 +181,8 @@ class MarketplaceProvider with ChangeNotifier {
           'vendor_id': 'vendor_003',
           'price': 180.0,
           'currency': 'ZAR',
-          'imageUrl': 'https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.djembe4all.com%2Fproduct-page%2Fsouth-african-zulu-necklace&psig=AOvVaw0ZsAzKl3REM6EiXueEZxBN&ust=1757193326941000&source=images&cd=vfe&opi=89978449&ved=0CBUQjRxqFwoTCKD-_rbFwo8DFQAAAAAdAAAAABAf',
-          'images': 'assets/images/zulunecklace.png',
+          'imageUrl': ' ',
+          'images': [' ', ' '],
           'hasAR': true,
           'rating': 4.9,
           'reviewCount': 31,
@@ -174,7 +196,7 @@ class MarketplaceProvider with ChangeNotifier {
           'isHandmade': true,
           'materials': ['Glass beads', 'Cotton thread'],
           'culturalSignificance': 'Each color and pattern tells a story - age, marital status, clan affiliation, and personal achievements.',
-          'description': 'Intricate beadwork necklace with traditional Zulu color patterns and symbolism.',
+          'description': 'Intricate beadwork necklace with traditional Zulu color patterns and deep cultural symbolism.',
           'dimensions': {'length': 45, 'width': 3, 'unit': 'cm'},
           'weight': 0.15,
           'tags': ['jewelry', 'beadwork', 'zulu', 'ceremonial'],
@@ -188,13 +210,13 @@ class MarketplaceProvider with ChangeNotifier {
         },
         {
           'id': 4,
-          'title': 'Traditional Pot Experience',
+          'title': 'Traditional Pot Bread Workshop',
           'artisan': 'Gogo Mkhize',
           'vendor_id': 'vendor_004',
           'price': 120.0,
           'currency': 'ZAR',
-          'imageUrl': 'https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.orienthouse.com.au%2Fproducts%2Fround-ilalu-palm-zulu-basket-south-africa&psig=AOvVaw218emt8PqRZb_wD_vKcntv&ust=1757193070317000&source=images&cd=vfe&opi=89978449&ved=0CBUQjRxqFwoTCJCz08fEwo8DFQAAAAAdAAAAABAT',
-          'images': 'assets/images/zulupot.png',
+          'imageUrl': ' ',
+          'images': [' '],
           'hasAR': false,
           'rating': 4.7,
           'reviewCount': 18,
@@ -208,7 +230,7 @@ class MarketplaceProvider with ChangeNotifier {
           'isUbuntu': true,
           'isHandmade': true,
           'culturalSignificance': 'Pot bread baking is a communal activity that brings families together and preserves traditional cooking methods.',
-          'description': 'Learn to bake traditional South African pot bread over an open fire with Gogo Mkhize.',
+          'description': 'Learn to bake traditional South African pot bread over an open fire with Gogo Mkhize. A hands-on cultural experience.',
           'duration': '3 hours',
           'includes': ['Ingredients', 'Recipe card', 'Bread to take home'],
           'maxParticipants': 8,
@@ -223,13 +245,13 @@ class MarketplaceProvider with ChangeNotifier {
         },
         {
           'id': 5,
-          'title': 'The Ladies Hat',
+          'title': 'Drakensberg Clay Pottery Set',
           'artisan': 'Mandla Mthembu',
           'vendor_id': 'vendor_005',
           'price': 450.0,
           'currency': 'ZAR',
-          'imageUrl': 'https://www.google.com/url?sa=i&url=https%3A%2F%2Fzulubeads.com%2Fproducts%2Fdouble-frame-beaded-zulu-hat-in-medium&psig=AOvVaw2FCGjC0vvIhGdccH-1fph1&ust=1757193220098000&source=images&cd=vfe&opi=89978449&ved=0CBUQjRxqFwoTCPj4tILFwo8DFQAAAAAdAAAAABAt',
-          'images': 'assets/images/zuluhat.png',
+          'imageUrl': 'https://picsum.photos/400/400?random=7',
+          'images': ['https://picsum.photos/400/400?random=7', 'https://picsum.photos/400/400?random=8'],
           'hasAR': true,
           'rating': 4.5,
           'reviewCount': 12,
@@ -243,7 +265,7 @@ class MarketplaceProvider with ChangeNotifier {
           'isHandmade': true,
           'materials': ['Local clay', 'Natural glazes'],
           'culturalSignificance': 'Pottery making connects us to the earth and represents the nurturing spirit of Ubuntu.',
-          'description': 'Set of 4 hand-thrown pottery pieces using clay from the Drakensberg foothills.',
+          'description': 'Set of 4 hand-thrown pottery pieces using clay from the Drakensberg foothills. Perfect for traditional and modern homes.',
           'dimensions': {'various': 'Bowl: 15cm, Cups: 8cm each'},
           'weight': 1.2,
           'tags': ['pottery', 'set', 'drakensberg', 'clay'],
@@ -254,10 +276,45 @@ class MarketplaceProvider with ChangeNotifier {
             'verified': true,
             'rating': 4.6
           }
+        },
+        // Add more varied products
+        {
+          'id': 6,
+          'title': 'Ndebele Geometric Wall Art',
+          'artisan': 'Sibongile Radebe',
+          'vendor_id': 'vendor_006',
+          'price': 650.0,
+          'currency': 'ZAR',
+          'imageUrl': 'https://picsum.photos/400/400?random=9',
+          'images': ['https://picsum.photos/400/400?random=9'],
+          'hasAR': true,
+          'rating': 4.9,
+          'reviewCount': 8,
+          'isInStock': false,
+          'stockQuantity': 0,
+          'category': 'crafts',
+          'region': 'south_coast',
+          'location': 'Port Shepstone, KZN',
+          'isFairTrade': true,
+          'isUbuntu': false,
+          'isHandmade': true,
+          'materials': ['Canvas', 'Acrylic paint', 'Natural pigments'],
+          'culturalSignificance': 'Ndebele geometric patterns represent the mathematical precision and artistic heritage of South African culture.',
+          'description': 'Vibrant geometric wall art inspired by traditional Ndebele house paintings.',
+          'dimensions': {'length': 60, 'width': 40, 'unit': 'cm'},
+          'weight': 1.5,
+          'tags': ['art', 'geometric', 'ndebele', 'wall'],
+          'vendor': {
+            'name': 'Sibongile Radebe',
+            'bio': 'Contemporary artist blending traditional Ndebele patterns with modern techniques.',
+            'location': 'Port Shepstone',
+            'verified': true,
+            'rating': 4.8
+          }
         }
       ];
       _error = null;
-      if (kDebugMode) print('Error loading products, using mock data: $e');
+      if (kDebugMode) print('Loaded ${_products.length} products');
     }
 
     _setLoading(false);
@@ -265,7 +322,6 @@ class MarketplaceProvider with ChangeNotifier {
 
   Future<void> loadVendors() async {
     try {
-      // Mock vendor data for KZN
       _vendors = [
         {
           'id': 'vendor_001',
@@ -278,8 +334,8 @@ class MarketplaceProvider with ChangeNotifier {
           'rating': 4.9,
           'totalSales': 156,
           'yearsActive': 25,
-          'profileImage': '',
-          'coverImage': '',
+          'profileImage': 'https://picsum.photos/100/100?random=101',
+          'coverImage': 'https://picsum.photos/400/200?random=201',
           'products': [1],
           'contactInfo': {
             'phone': '+27 58 713 0126',
@@ -292,16 +348,9 @@ class MarketplaceProvider with ChangeNotifier {
           },
           'languages': ['isiZulu', 'English'],
           'paymentMethods': ['cash', 'snapscan', 'zapper'],
-          'deliveryOptions': ['collection', 'local_delivery', 'courier'],
-          'workshops': [
-            {
-              'title': 'Traditional Basket Weaving',
-              'duration': '4 hours',
-              'price': 350.0,
-              'maxParticipants': 6
-            }
-          ]
-        }
+          'deliveryOptions': ['collection', 'local_delivery', 'courier']
+        },
+        // Add more vendors...
       ];
     } catch (e) {
       if (kDebugMode) print('Error loading vendors: $e');
@@ -327,7 +376,8 @@ class MarketplaceProvider with ChangeNotifier {
           'languages': ['English', 'isiZulu'],
           'category': 'cultural_experience',
           'hasAR': true,
-          'vendor_id': 'exp_vendor_001'
+          'vendor_id': 'exp_vendor_001',
+          'imageUrl': 'https://picsum.photos/400/400?random=301'
         }
       ];
     } catch (e) {
@@ -384,7 +434,7 @@ class MarketplaceProvider with ChangeNotifier {
         return false;
       }
 
-      // Wandersfilter
+      // Ubuntu filter
       if (_showUbuntuOnly && product['isUbuntu'] != true) {
         return false;
       }
@@ -416,48 +466,66 @@ class MarketplaceProvider with ChangeNotifier {
 
   // Filter and search methods
   void selectCategory(String category) {
-    _selectedCategory = category;
-    notifyListeners();
+    if (_selectedCategory != category) {
+      _selectedCategory = category;
+      notifyListeners();
+    }
   }
 
   void selectRegion(String region) {
-    _selectedRegion = region;
-    notifyListeners();
+    if (_selectedRegion != region) {
+      _selectedRegion = region;
+      notifyListeners();
+    }
   }
 
   void updateSortBy(String sortBy) {
-    _sortBy = sortBy;
-    notifyListeners();
+    if (_sortBy != sortBy) {
+      _sortBy = sortBy;
+      notifyListeners();
+    }
   }
 
   void updatePriceRange(RangeValues range) {
-    _priceRange = range;
-    notifyListeners();
+    if (_priceRange != range) {
+      _priceRange = range;
+      notifyListeners();
+    }
   }
 
   void toggleARFilter(bool value) {
-    _showAROnly = value;
-    notifyListeners();
+    if (_showAROnly != value) {
+      _showAROnly = value;
+      notifyListeners();
+    }
   }
 
   void toggleStockFilter(bool value) {
-    _showInStockOnly = value;
-    notifyListeners();
+    if (_showInStockOnly != value) {
+      _showInStockOnly = value;
+      notifyListeners();
+    }
   }
 
   void toggleFairTradeFilter(bool value) {
-    _showFairTradeOnly = value;
-    notifyListeners();
+    if (_showFairTradeOnly != value) {
+      _showFairTradeOnly = value;
+      notifyListeners();
+    }
   }
 
   void toggleUbuntuFilter(bool value) {
-    _showUbuntuOnly = value;
-    notifyListeners();
+    if (_showUbuntuOnly != value) {
+      _showUbuntuOnly = value;
+      notifyListeners();
+    }
   }
 
   void searchProducts(String query) {
-    _searchQuery = query;
-    notifyListeners();
+    if (_searchQuery != query) {
+      _searchQuery = query;
+      notifyListeners();
+    }
   }
 
   void clearFilters() {
@@ -473,17 +541,17 @@ class MarketplaceProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  // Cart methods
-  void addToCart(Map<String, dynamic> product) {
+  // Cart methods with improved functionality
+  void addToCart(Map<String, dynamic> product, {int quantity = 1}) {
     final existingIndex = _cart.indexWhere((item) => item['id'] == product['id']);
 
     if (existingIndex >= 0) {
       // Update quantity if product already in cart
-      _cart[existingIndex]['quantity'] = (_cart[existingIndex]['quantity'] ?? 1) + 1;
+      _cart[existingIndex]['quantity'] = (_cart[existingIndex]['quantity'] ?? 1) + quantity;
     } else {
       // Add new product to cart
       final cartItem = Map<String, dynamic>.from(product);
-      cartItem['quantity'] = cartItem['quantity'] ?? 1;
+      cartItem['quantity'] = quantity;
       cartItem['addedAt'] = DateTime.now().toIso8601String();
       _cart.add(cartItem);
     }
@@ -491,8 +559,11 @@ class MarketplaceProvider with ChangeNotifier {
   }
 
   void removeFromCart(int productId) {
+    final initialLength = _cart.length;
     _cart.removeWhere((item) => item['id'] == productId);
-    notifyListeners();
+    if (_cart.length != initialLength) {
+      notifyListeners();
+    }
   }
 
   void updateCartQuantity(int productId, int quantity) {
@@ -509,11 +580,13 @@ class MarketplaceProvider with ChangeNotifier {
   }
 
   void clearCart() {
-    _cart.clear();
-    notifyListeners();
+    if (_cart.isNotEmpty) {
+      _cart.clear();
+      notifyListeners();
+    }
   }
 
-  // Wishlist methods
+  // Enhanced wishlist methods
   void addToWishlist(Map<String, dynamic> product) {
     if (!isInWishlist(product['id'])) {
       final wishlistItem = Map<String, dynamic>.from(product);
@@ -524,17 +597,30 @@ class MarketplaceProvider with ChangeNotifier {
   }
 
   void removeFromWishlist(int productId) {
+    final initialLength = _wishlist.length;
     _wishlist.removeWhere((item) => item['id'] == productId);
-    notifyListeners();
+    if (_wishlist.length != initialLength) {
+      notifyListeners();
+    }
   }
 
   bool isInWishlist(int productId) {
     return _wishlist.any((item) => item['id'] == productId);
   }
 
+  void toggleWishlist(Map<String, dynamic> product) {
+    if (isInWishlist(product['id'])) {
+      removeFromWishlist(product['id']);
+    } else {
+      addToWishlist(product);
+    }
+  }
+
   void clearWishlist() {
-    _wishlist.clear();
-    notifyListeners();
+    if (_wishlist.isNotEmpty) {
+      _wishlist.clear();
+      notifyListeners();
+    }
   }
 
   // Utility methods
@@ -558,7 +644,7 @@ class MarketplaceProvider with ChangeNotifier {
     return _products.where((product) => product['vendor_id'] == vendorId).toList();
   }
 
-  // Statistics
+  // Statistics with better calculations
   Map<String, int> getCategoryStats() {
     final stats = <String, int>{};
     for (final product in _products) {
@@ -577,13 +663,22 @@ class MarketplaceProvider with ChangeNotifier {
     return stats;
   }
 
+  // Helper method to refresh all data
+  Future<void> refreshData() async {
+    await _initializeData();
+  }
+
   void _setLoading(bool loading) {
-    _isLoading = loading;
-    notifyListeners();
+    if (_isLoading != loading) {
+      _isLoading = loading;
+      notifyListeners();
+    }
   }
 
   void _setError(String? error) {
-    _error = error;
-    notifyListeners();
+    if (_error != error) {
+      _error = error;
+      notifyListeners();
+    }
   }
 }

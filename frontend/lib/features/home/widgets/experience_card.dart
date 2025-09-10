@@ -213,7 +213,7 @@ class ExperienceCard extends StatelessWidget {
 
   Widget _buildTitleSection() {
     return Text(
-      experience['title'] ?? 'WandersExperience',
+      experience['title'] ?? 'Wanders Experience',
       style: const TextStyle(
         fontSize: 16,
         fontWeight: FontWeight.bold,

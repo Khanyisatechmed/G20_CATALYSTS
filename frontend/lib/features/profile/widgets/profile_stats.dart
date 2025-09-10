@@ -32,7 +32,7 @@ class ProfileStats extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
-            'WandersJourney',
+            'Wanders Journey',
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,

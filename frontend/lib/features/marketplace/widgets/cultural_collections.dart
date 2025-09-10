@@ -1,289 +1,173 @@
 // features/marketplace/widgets/cultural_collections.dart
 import 'package:flutter/material.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:provider/provider.dart';
+import '../providers/marketplace_provider.dart';
 import '../../../core/utils/responsive_helper.dart';
 
 class CulturalCollections extends StatelessWidget {
-  final List<Map<String, dynamic>> collections;
-  final Function(String) onCollectionTap;
-
-  const CulturalCollections({
-    super.key,
-    required this.collections,
-    required this.onCollectionTap,
-  });
+  const CulturalCollections({super.key});
 
   @override
   Widget build(BuildContext context) {
-    if (collections.isEmpty) return const SizedBox.shrink();
-
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 24),
+      padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
-            padding: ResponsiveHelper.getResponsivePadding(context),
-            child: Row(
-              children: [
-                Icon(
-                  Icons.auto_stories,
-                  color: Colors.orange[700],
-                  size: 28,
-                ),
-                const SizedBox(width: 12),
-                const Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Cultural Collections',
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      Text(
-                        'Discover authentic KZN heritage through curated collections',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                TextButton(
-                  onPressed: () => onCollectionTap('all'),
-                  child: const Text('View All'),
-                ),
-              ],
-            ),
-          ),
+          _buildHeader(context),
           const SizedBox(height: 16),
-          SizedBox(
-            height: ResponsiveHelper.isMobile(context) ? 200 : 240,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              padding: ResponsiveHelper.getResponsivePadding(context),
-              itemCount: collections.length,
-              itemBuilder: (context, index) {
-                final collection = collections[index];
-                return _buildCollectionCard(context, collection);
-              },
-            ),
-          ),
+          _buildCollectionsList(context),
         ],
       ),
     );
   }
 
-  Widget _buildCollectionCard(BuildContext context, Map<String, dynamic> collection) {
-    final isMobile = ResponsiveHelper.isMobile(context);
-    final cardWidth = isMobile ? 280.0 : 320.0;
-
-    return Container(
-      width: cardWidth,
-      margin: const EdgeInsets.only(right: 16),
-      child: Card(
-        elevation: 4,
-        clipBehavior: Clip.antiAlias,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
+  Widget _buildHeader(BuildContext context) {
+    return Row(
+      children: [
+        Icon(
+          Icons.auto_stories,
+          color: Theme.of(context).primaryColor,
+          size: 24,
         ),
-        child: InkWell(
-          onTap: () => onCollectionTap(collection['id']),
-          child: Stack(
-            children: [
-              // Background image
-              Positioned.fill(
-                child: _buildCollectionImage(collection['imageUrl']),
-              ),
-              // Gradient overlay
-              Positioned.fill(
-                child: Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        Colors.transparent,
-                        Colors.black.withValues(alpha: 0.7),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              // Content
-              Positioned(
-                bottom: 16,
-                left: 16,
-                right: 16,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      collection['title'] ?? 'Collection',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      collection['description'] ?? '',
-                      style: const TextStyle(
-                        color: Colors.white70,
-                        fontSize: 14,
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 12),
-                    Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: Colors.orange,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Text(
-                            '${collection['itemCount'] ?? 0} items',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
-                        const Spacer(),
-                        const Icon(
-                          Icons.arrow_forward_ios,
-                          color: Colors.white,
-                          size: 16,
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              // Heritage badge
-              if (collection['isHeritage'] == true)
-                Positioned(
-                  top: 16,
-                  right: 16,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: Colors.purple,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: const Text(
-                      'HERITAGE',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 10,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
-            ],
+        const SizedBox(width: 8),
+        const Text(
+          'Cultural Collections',
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
           ),
         ),
-      ),
+        const Spacer(),
+        TextButton(
+          onPressed: () {
+            // Navigate to full collections view
+          },
+          child: const Text('View All'),
+        ),
+      ],
     );
   }
 
-  Widget _buildCollectionImage(String? imageUrl) {
-    if (imageUrl == null || imageUrl.isEmpty) {
-      return Container(
-        color: Colors.orange.withValues(alpha: 0.2),
-        child: const Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.collections,
-              size: 64,
-              color: Colors.orange,
-            ),
-            SizedBox(height: 8),
-            Text(
-              'CULTURAL COLLECTION',
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.bold,
-                color: Colors.orange,
-              ),
-            ),
-          ],
+  Widget _buildCollectionsList(BuildContext context) {
+    final collections = [
+      {
+        'id': 'zulu_heritage',
+        'name': 'Zulu Heritage',
+        'description': 'Traditional Zulu crafts and cultural items',
+        'icon': Icons.account_balance,
+        'color': Colors.orange,
+        'itemCount': 12,
+      },
+      {
+        'id': 'beadwork',
+        'name': 'Beadwork',
+        'description': 'Intricate beadwork jewelry and accessories',
+        'icon': Icons.diamond,
+        'color': Colors.purple,
+        'itemCount': 8,
+      },
+      {
+        'id': 'pottery',
+        'name': 'Traditional Pottery',
+        'description': 'Handcrafted pottery from local artisans',
+        'icon': Icons.emoji_objects,
+        'color': Colors.brown,
+        'itemCount': 6,
+      },
+    ];
+
+    if (ResponsiveHelper.isMobile(context)) {
+      return SizedBox(
+        height: 120,
+        child: ListView.builder(
+          scrollDirection: Axis.horizontal,
+          itemCount: collections.length,
+          itemBuilder: (context, index) {
+            return Container(
+              width: 200,
+              margin: EdgeInsets.only(right: index < collections.length - 1 ? 16 : 0),
+              child: _buildCollectionCard(context, collections[index]),
+            );
+          },
         ),
       );
     }
 
-    return CachedNetworkImage(
-      imageUrl: imageUrl,
-      fit: BoxFit.cover,
-      placeholder: (context, url) => Container(
-        color: Colors.grey[200],
-        child: const Center(child: CircularProgressIndicator()),
-      ),
-      errorWidget: (context, url, error) => Container(
-        color: Colors.orange.withValues(alpha: 0.2),
-        child: const Icon(Icons.collections, size: 64, color: Colors.orange),
+    return Row(
+      children: collections.map((collection) {
+        return Expanded(
+          child: Container(
+            margin: const EdgeInsets.symmetric(horizontal: 8),
+            child: _buildCollectionCard(context, collection),
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _buildCollectionCard(BuildContext context, Map<String, dynamic> collection) {
+    return GestureDetector(
+      onTap: () => _onCollectionTap(context, collection),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: (collection['color'] as Color).withOpacity(0.1),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: (collection['color'] as Color).withOpacity(0.3),
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(
+                  collection['icon'] as IconData,
+                  color: collection['color'] as Color,
+                  size: 24,
+                ),
+                const Spacer(),
+                Text(
+                  '${collection['itemCount']} items',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey[600],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Text(
+              collection['name'] as String,
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              collection['description'] as String,
+              style: TextStyle(
+                fontSize: 12,
+                color: Colors.grey[600],
+              ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+        ),
       ),
     );
   }
-}
 
-// Mock data for cultural collections
-class CulturalCollectionsData {
-  static List<Map<String, dynamic>> getCollections() {
-    return [
-      {
-        'id': 'zulu_heritage',
-        'title': 'Zulu Heritage Collection',
-        'description': 'Traditional artifacts celebrating Zulu culture and history',
-        'imageUrl': '',
-        'itemCount': 23,
-        'isHeritage': true,
-        'region': 'zululand',
-        'tags': ['zulu', 'traditional', 'heritage'],
-      },
-      {
-        'id': 'beadwork_masters',
-        'title': 'Beadwork Masters',
-        'description': 'Intricate beadwork from renowned KZN artisans',
-        'imageUrl': '',
-        'itemCount': 18,
-        'isHeritage': true,
-        'region': 'all',
-        'tags': ['beadwork', 'jewelry', 'traditional'],
-      },
-      {
-        'id': 'drakensberg_crafts',
-        'title': 'Drakensberg Mountain Crafts',
-        'description': 'Handmade treasures from the mountain communities',
-        'imageUrl': '',
-        'itemCount': 15,
-        'isHeritage': false,
-        'region': 'drakensberg',
-        'tags': ['mountain', 'pottery', 'textiles'],
-      },
-      {
-        'id': 'coastal_creations',
-        'title': 'Coastal Creations',
-        'description': 'Ocean-inspired crafts from KZN coastal communities',
-        'imageUrl': '',
-        'itemCount': 12,
-        'isHeritage': false,
-        'region': 'south_coast',
-        'tags': ['coastal', 'ocean', 'crafts'],
-      },
-    ];
+  void _onCollectionTap(BuildContext context, Map<String, dynamic> collection) {
+    final provider = context.read<MarketplaceProvider>();
+    // Filter by collection category
+    provider.selectCategory(collection['id'] as String);
+
+    // Navigate to marketplace with filter applied
+    Navigator.pushNamed(context, '/marketplace');
   }
 }

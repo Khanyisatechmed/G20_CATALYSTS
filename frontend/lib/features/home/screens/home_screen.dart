@@ -370,7 +370,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           const SizedBox(height: 4),
           const Text(
-            'Discover Wandersexperiences',
+            'Discover Wanders experiences',
             style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
@@ -400,7 +400,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text(
-                        'WandersPhilosophy',
+                        'Wanders Philosophy',
                         style: TextStyle(
                           fontWeight: FontWeight.w600,
                           fontSize: 14,
@@ -445,7 +445,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final actions = [
       {
         'title': 'Book Stay',
-        'subtitle': 'WandersHomestays',
+        'subtitle': 'Wanders Homestays',
         'icon': Icons.hotel_outlined,
         'gradient': [Colors.blue.shade400, Colors.blue.shade600],
         'route': '/accommodation',
@@ -770,7 +770,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    experience['title'] ?? 'WandersExperience',
+                    experience['title'] ?? 'Wanders Experience',
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 16,
@@ -922,7 +922,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     const SizedBox(width: 8),
                     const Text(
-                      'WandersStories',
+                      'Wanders Stories',
                       style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
@@ -1005,7 +1005,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildRecentActivityList() {
     final activities = [
-      'Booked WandersVillage Stay',
+      'Booked Wanders Village Stay',
       'Explored AR Museum Tour',
       'Purchased Ndebele Artwork',
       'Joined Traditional Dance Class',
@@ -1048,7 +1048,7 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             CircularProgressIndicator(),
             SizedBox(height: 16),
-            Text('Loading Wandersexperiences...'),
+            Text('Loading Wanders experiences...'),
           ],
         ),
       ),
@@ -1232,7 +1232,7 @@ class _HomeScreenState extends State<HomeScreen> {
       },
       {
         'title': 'Book Your First Stay',
-        'description': 'Experience authentic Wandershospitality',
+        'description': 'Experience authentic Wanders hospitality',
         'icon': Icons.hotel,
         'color': Colors.green,
         'route': '/accommodation',

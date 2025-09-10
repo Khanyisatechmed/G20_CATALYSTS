@@ -106,7 +106,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   ),
                   SizedBox(height: 24),
                   Text(
-                    'Join WandersCommunity',
+                    'Join Wanders Community',
                     style: TextStyle(
                       fontSize: 32,
                       fontWeight: FontWeight.bold,

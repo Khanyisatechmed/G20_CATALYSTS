@@ -85,9 +85,9 @@ class AppRouter {
           return DestinationDetailScreen(
             destination: destinationData ?? {
               'id': destinationId,
-              'name': 'Ubuntu Destination',
+              'name': 'Wanders Destination',
               'location': 'KwaZulu-Natal, South Africa',
-              'description': 'Experience authentic Ubuntu culture and heritage',
+              'description': 'Experience authentic Wanders culture and heritage',
               'images': [],
               'rating': 4.5,
               'price': 150,
@@ -115,7 +115,7 @@ class AppRouter {
             booking: bookingData ?? {
               'id': bookingId,
               'type': 'accommodation',
-              'title': 'Ubuntu Experience',
+              'title': 'Wanders Experience',
               'date': DateTime.now().toIso8601String(),
               'status': 'confirmed',
               'total_amount': 150,
@@ -143,13 +143,13 @@ class AppRouter {
           return ProductDetailScreen(
             product: productData ?? {
               'id': productId,
-              'title': 'Ubuntu Craft Item',
+              'title': 'Wanders Craft Item',
               'price': 200,
               'currency': 'ZAR',
               'isInStock': true,
               'artisan': 'Local Artisan',
               'category': 'crafts',
-              'description': 'Beautiful handcrafted item representing Ubuntu culture',
+              'description': 'Beautiful handcrafted item representing Wanders culture',
               'images': [],
               'rating': 4.5,
               'reviewCount': 10,
@@ -183,8 +183,8 @@ class AppRouter {
           return VendorProfileScreen(
             vendor: vendorData ?? {
               'id': vendorId,
-              'name': 'Ubuntu Artisan',
-              'bio': 'Traditional craftsperson preserving Ubuntu heritage',
+              'name': 'Wanders Artisan',
+              'bio': 'Traditional craftsperson preserving Wanders heritage',
               'location': 'KZN, South Africa',
               'verified': true,
               'rating': 4.8,
@@ -235,7 +235,7 @@ class AppRouter {
           return ExperienceDetailScreen(
             experience: experienceData ?? {
               'id': experienceId,
-              'title': 'Ubuntu Cultural Experience',
+              'title': 'Wanders Cultural Experience',
               'description': 'Immersive cultural experience',
               'price': 380,
               'currency': 'ZAR',
@@ -259,7 +259,7 @@ class AppRouter {
           return BookExperienceScreen(
             experience: experienceData ?? {
               'id': experienceId,
-              'title': 'Ubuntu Cultural Experience',
+              'title': 'Wanders Cultural Experience',
               'price': 380,
               'currency': 'ZAR',
               'duration': '4 hours',
@@ -285,7 +285,7 @@ class AppRouter {
           return AccommodationBookingScreen(
             accommodation: accommodationData ?? {
               'id': accommodationId,
-              'name': 'Ubuntu Village Homestay',
+              'name': 'Wanders Village Homestay',
               'location': 'KwaZulu-Natal, South Africa',
               'price': 120,
               'currency': 'ZAR',
@@ -454,7 +454,7 @@ class AppRouter {
             ),
             const SizedBox(height: 8),
             Text(
-              'Let\'s get you back on track with your Ubuntu journey.',
+              'Let\'s get you back on track with your Wanders journey.',
               style: TextStyle(
                 fontSize: 14,
                 color: Colors.grey[500],
@@ -554,7 +554,7 @@ class VendorProfileScreen extends StatelessWidget {
             Icon(Icons.store, size: 80, color: Colors.grey[400]),
             const SizedBox(height: 24),
             Text(
-              vendor['name'] ?? 'Ubuntu Vendor',
+              vendor['name'] ?? 'Wanders Vendor',
               style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 12),
@@ -708,7 +708,7 @@ class BookExperienceScreen extends StatelessWidget {
             Icon(Icons.tour, size: 80, color: Colors.grey[400]),
             const SizedBox(height: 24),
             Text(
-              experience['title'] ?? 'Ubuntu Experience',
+              experience['title'] ?? 'Wanders Experience',
               style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               textAlign: TextAlign.center,
             ),
@@ -748,7 +748,7 @@ class ExperienceDetailScreen extends StatelessWidget {
             Icon(Icons.explore, size: 80, color: Colors.grey[400]),
             const SizedBox(height: 24),
             Text(
-              experience['title'] ?? 'Ubuntu Experience',
+              experience['title'] ?? 'Wanders Experience',
               style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               textAlign: TextAlign.center,
             ),

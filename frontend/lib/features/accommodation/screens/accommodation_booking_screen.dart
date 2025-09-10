@@ -350,7 +350,7 @@ class _AccommodationBookingScreenState extends State<AccommodationBookingScreen>
             ),
             const SizedBox(height: 16),
             Text(
-              widget.accommodation['description'] ?? 'Experience authentic Wandershospitality in this beautiful accommodation.',
+              widget.accommodation['description'] ?? 'Experience authentic Wanders hospitality in this beautiful accommodation.',
               style: TextStyle(color: Colors.grey[700]),
               maxLines: 3,
               overflow: TextOverflow.ellipsis,

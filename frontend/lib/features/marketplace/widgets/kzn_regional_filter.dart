@@ -1,220 +1,210 @@
-// features/marketplace/widgets/kzn_regional_filter.dart - FINAL FIXED VERSION
+// features/marketplace/widgets/kzn_regional_filter.dart
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../providers/marketplace_provider.dart';
 import '../../../core/utils/responsive_helper.dart';
 
-class KZNRegionalFilter extends StatelessWidget {
-  final String selectedRegion;
-  final Function(String) onRegionSelected;
-  final bool showCounts;
-  final Map<String, int>? regionCounts;
-
-  const KZNRegionalFilter({
-    super.key,
-    required this.selectedRegion,
-    required this.onRegionSelected,
-    this.showCounts = true,
-    this.regionCounts,
-  });
+class KznRegionalFilter extends StatelessWidget {
+  const KznRegionalFilter({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 8), // Reduced margin
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min, // FIXED: Use min size
-        children: [
-          Padding(
-            padding: ResponsiveHelper.getResponsivePadding(context),
-            child: Row(
-              children: [
-                Icon(
-                  Icons.location_on,
-                  color: Theme.of(context).primaryColor,
-                  size: 20, // Smaller icon
-                ),
-                const SizedBox(width: 8),
-                const Text(
-                  'Explore KZN Regions',
-                  style: TextStyle(
-                    fontSize: 16, // Smaller font
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
+    return Consumer<MarketplaceProvider>(
+      builder: (context, provider, child) {
+        return Container(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildHeader(context),
+              const SizedBox(height: 16),
+              _buildRegionChips(context, provider),
+            ],
           ),
-          const SizedBox(height: 8), // Reduced spacing
-          SizedBox(
-            height: 100, // Much smaller fixed height
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              padding: ResponsiveHelper.getResponsivePadding(context),
-              itemCount: _getRegions().length,
-              itemBuilder: (context, index) {
-                final region = _getRegions()[index];
-                return _buildRegionCard(context, region);
-              },
-            ),
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 
-  Widget _buildRegionCard(BuildContext context, Map<String, dynamic> region) {
-    final isSelected = selectedRegion == region['id'];
-    final count = regionCounts?[region['id']] ?? 0;
-
-    return Container(
-      width: 85, // Smaller width
-      margin: const EdgeInsets.only(right: 8), // Reduced margin
-      child: InkWell(
-        onTap: () => onRegionSelected(region['id']),
-        borderRadius: BorderRadius.circular(12),
-        child: Container(
-          decoration: BoxDecoration(
-            color: isSelected ? Theme.of(context).primaryColor : Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: isSelected
-                  ? Theme.of(context).primaryColor
-                  : Colors.grey.withValues(alpha: 0.3),
-              width: isSelected ? 2 : 1,
-            ),
-            boxShadow: [
-              if (isSelected)
-                BoxShadow(
-                  color: Theme.of(context).primaryColor.withValues(alpha: 0.3),
-                  blurRadius: 4,
-                  offset: const Offset(0, 2),
-                ),
-            ],
+  Widget _buildHeader(BuildContext context) {
+    return Row(
+      children: [
+        Icon(
+          Icons.location_on,
+          color: Theme.of(context).primaryColor,
+          size: 20,
+        ),
+        const SizedBox(width: 8),
+        const Text(
+          'KwaZulu-Natal Regions',
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
           ),
-          padding: const EdgeInsets.all(6), // Minimal padding
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min, // FIXED: Use min size
-            children: [
-              // Region icon - Very compact
+        ),
+      ],
+    );
+  }
+
+  Widget _buildRegionChips(BuildContext context, MarketplaceProvider provider) {
+    final regions = _getRegionsWithInfo();
+    final selectedRegion = provider.selectedRegion;
+
+    if (ResponsiveHelper.isMobile(context)) {
+      return SizedBox(
+        height: 40,
+        child: ListView.builder(
+          scrollDirection: Axis.horizontal,
+          itemCount: regions.length,
+          itemBuilder: (context, index) {
+            final region = regions[index];
+            final isSelected = selectedRegion == region['id'];
+
+            return Container(
+              margin: EdgeInsets.only(right: index < regions.length - 1 ? 8 : 0),
+              child: _buildRegionChip(context, region, isSelected, provider),
+            );
+          },
+        ),
+      );
+    }
+
+    return Wrap(
+      spacing: 8,
+      runSpacing: 8,
+      children: regions.map((region) {
+        final isSelected = selectedRegion == region['id'];
+        return _buildRegionChip(context, region, isSelected, provider);
+      }).toList(),
+    );
+  }
+
+  Widget _buildRegionChip(
+    BuildContext context,
+    Map<String, dynamic> region,
+    bool isSelected,
+    MarketplaceProvider provider
+  ) {
+    final productCount = provider.getRegionStats()[region['id']] ?? 0;
+
+    return GestureDetector(
+      onTap: () => provider.selectRegion(region['id'] as String),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? Theme.of(context).primaryColor
+              : Colors.transparent,
+          border: Border.all(
+            color: isSelected
+                ? Theme.of(context).primaryColor
+                : Colors.grey.withOpacity(0.5),
+          ),
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              region['icon'] as IconData,
+              size: 16,
+              color: isSelected
+                  ? Colors.white
+                  : Theme.of(context).primaryColor,
+            ),
+            const SizedBox(width: 6),
+            Text(
+              region['name'] as String,
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+                color: isSelected ? Colors.white : Colors.black87,
+              ),
+            ),
+            if (productCount > 0) ...[
+              const SizedBox(width: 4),
               Container(
-                width: 28, // Smaller icon container
-                height: 28,
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                 decoration: BoxDecoration(
                   color: isSelected
-                      ? Colors.white.withValues(alpha: 0.2)
-                      : region['color'].withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(8),
+                      ? Colors.white.withOpacity(0.3)
+                      : Theme.of(context).primaryColor.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(10),
                 ),
-                child: Icon(
-                  region['icon'],
-                  size: 16, // Much smaller icon
-                  color: isSelected ? Colors.white : region['color'],
-                ),
-              ),
-              const SizedBox(height: 4), // Minimal spacing
-
-              // Region name - Very compact
-              SizedBox(
-                height: 24, // Fixed small height
-                child: Center(
-                  child: Text(
-                    region['name'],
-                    style: TextStyle(
-                      fontSize: 9, // Very small font
-                      fontWeight: FontWeight.w600,
-                      color: isSelected ? Colors.white : Colors.black87,
-                      height: 1.0, // Tight line height
-                    ),
-                    textAlign: TextAlign.center,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-              ),
-
-              // Count badge - Very compact
-              if (showCounts && count > 0)
-                Container(
-                  height: 16, // Fixed small height
-                  padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
-                  decoration: BoxDecoration(
+                child: Text(
+                  '$productCount',
+                  style: TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
                     color: isSelected
-                        ? Colors.white.withValues(alpha: 0.2)
-                        : Colors.grey.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  child: Text(
-                    '$count',
-                    style: TextStyle(
-                      fontSize: 8, // Very small font
-                      color: isSelected ? Colors.white : Colors.grey[600],
-                      fontWeight: FontWeight.w600,
-                    ),
+                        ? Colors.white
+                        : Theme.of(context).primaryColor,
                   ),
                 ),
+              ),
             ],
-          ),
+          ],
         ),
       ),
     );
   }
 
-  List<Map<String, dynamic>> _getRegions() {
+  List<Map<String, dynamic>> _getRegionsWithInfo() {
     return [
       {
         'id': 'all',
         'name': 'All KZN',
         'icon': Icons.map,
-        'color': Colors.blue,
+        'description': 'All regions in KwaZulu-Natal',
       },
       {
         'id': 'durban',
         'name': 'eThekwini',
         'icon': Icons.location_city,
-        'color': Colors.orange,
+        'description': 'Durban metropolitan area',
       },
       {
         'id': 'zululand',
         'name': 'Zululand',
         'icon': Icons.account_balance,
-        'color': Colors.purple,
+        'description': 'Traditional Zulu heartland',
       },
       {
         'id': 'drakensberg',
         'name': 'Drakensberg',
         'icon': Icons.terrain,
-        'color': Colors.green,
+        'description': 'Mountain region',
       },
       {
         'id': 'south_coast',
         'name': 'South Coast',
         'icon': Icons.waves,
-        'color': Colors.cyan,
+        'description': 'Coastal region south of Durban',
       },
       {
         'id': 'midlands',
         'name': 'Midlands',
         'icon': Icons.grass,
-        'color': Colors.lightGreen,
+        'description': 'Central KZN region',
       },
       {
         'id': 'north_coast',
         'name': 'North Coast',
         'icon': Icons.beach_access,
-        'color': Colors.teal,
+        'description': 'Coastal region north of Durban',
       },
       {
         'id': 'pietermaritzburg',
         'name': 'PMB',
         'icon': Icons.business,
-        'color': Colors.indigo,
+        'description': 'Provincial capital',
       },
       {
         'id': 'ukhahlamba',
         'name': 'uKhahlamba',
         'icon': Icons.landscape,
-        'color': Colors.brown,
+        'description': 'World Heritage mountain region',
       },
     ];
   }

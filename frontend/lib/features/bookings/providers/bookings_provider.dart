@@ -148,7 +148,7 @@ class BookingProvider extends ChangeNotifier {
           'id': '1',
           'type': 'accommodation',
           'status': 'confirmed',
-          'accommodation_name': 'WandersVillage Homestay',
+          'accommodation_name': 'Wanders Village Homestay',
           'check_in_date': DateTime.now().add(const Duration(days: 7)).toIso8601String(),
           'check_out_date': DateTime.now().add(const Duration(days: 10)).toIso8601String(),
           'total_amount': 1200.0,
