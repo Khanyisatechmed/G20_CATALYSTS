@@ -1,4 +1,4 @@
-// features/auth/providers/auth_provider.dart
+// lib/features/auth/providers/auth_provider.dart
 import 'package:flutter/foundation.dart';
 import 'package:frontend/core/constants/app_colors.dart';
 import '../../../core/services/api_service.dart';
@@ -118,17 +118,7 @@ class AuthProvider with ChangeNotifier {
     } catch (e) {
       _setError('Registration failed: ${e.toString()}');
       if (kDebugMode) print('SignUp error: $e');
-
-      // Fallback to mock auth if API fails
-      if (!_useMockAuth) {
-        try {
-          await _mockSignUp(email, password, firstName, lastName, interests);
-        } catch (mockError) {
-          rethrow;
-        }
-      } else {
-        rethrow;
-      }
+      rethrow;
     } finally {
       _setLoading(false);
     }
@@ -136,33 +126,26 @@ class AuthProvider with ChangeNotifier {
 
   Future<void> logout() async {
     _setLoading(true);
-
     try {
       if (!_useMockAuth) {
         await _apiService.post(api.ApiEndpoints.logout);
       } else {
-        // Mock logout delay
         await Future.delayed(const Duration(milliseconds: 500));
       }
     } catch (e) {
-      // Continue with logout even if API call fails
       if (kDebugMode) print('Logout API error: $e');
     }
-
     await _storage.clearToken();
     await _storage.clearUserData();
-
     _token = null;
     _user = null;
     _isAuthenticated = false;
     _clearError();
-
     _setLoading(false);
   }
 
   Future<void> refreshToken() async {
     if (_useMockAuth) {
-      // Mock token refresh
       if (_token != null) {
         _token = 'mock_refreshed_token_${DateTime.now().millisecondsSinceEpoch}';
         await _storage.saveToken(_token!);
@@ -170,14 +153,11 @@ class AuthProvider with ChangeNotifier {
       }
       return;
     }
-
     try {
       final response = await _apiService.post(api.ApiEndpoints.refreshToken);
       final data = response.data;
-
       _token = data['access_token'];
       await _storage.saveToken(_token!);
-
       notifyListeners();
     } catch (e) {
       await logout();
@@ -188,12 +168,9 @@ class AuthProvider with ChangeNotifier {
   Future<void> updateProfile(Map<String, dynamic> profileData) async {
     _setLoading(true);
     _clearError();
-
     try {
       if (_useMockAuth) {
-        // Mock profile update
         await Future.delayed(const Duration(seconds: 1));
-
         _user = {..._user!, ...profileData};
         await _storage.saveUserData(_user!);
       } else {
@@ -212,10 +189,8 @@ class AuthProvider with ChangeNotifier {
   Future<void> forgotPassword(String email) async {
     _setLoading(true);
     _clearError();
-
     try {
       if (_useMockAuth) {
-        // Mock forgot password
         await Future.delayed(const Duration(seconds: 1));
         if (email.isEmpty || !email.contains('@')) {
           throw Exception('Please enter a valid email address');
@@ -233,16 +208,11 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
-  // Mock authentication methods
   Future<void> _mockLogin(String email, String password) async {
-    // Simulate API delay
     await Future.delayed(const Duration(seconds: 1));
-
     if (email.isEmpty || password.isEmpty) {
       throw Exception('Please enter email and password');
     }
-
-    // Mock user data
     final userData = {
       'id': '12345',
       'email': email,
@@ -259,17 +229,12 @@ class AuthProvider with ChangeNotifier {
       'location': 'Johannesburg, South Africa',
       'bio': 'Passionate about Wanders philosophy and South African culture.',
     };
-
     final mockToken = 'mock_token_${DateTime.now().millisecondsSinceEpoch}';
-
     _user = userData;
     _token = mockToken;
-
     await _storage.saveToken(_token!);
     await _storage.saveUserData(_user!);
-
     _isAuthenticated = true;
-
     if (kDebugMode) print('Mock login successful for: $email');
   }
 
@@ -280,18 +245,14 @@ class AuthProvider with ChangeNotifier {
     String lastName,
     List<String> interests
   ) async {
-    // Simulate API delay
     await Future.delayed(const Duration(seconds: 2));
-
     if (email.isEmpty || password.isEmpty || firstName.isEmpty || lastName.isEmpty) {
       throw Exception('All fields are required');
     }
-
-    if (password.length < 6) {
-      throw Exception('Password must be at least 6 characters');
+    if (password.length < 8) {
+      throw Exception('Password must be at least 8 characters');
     }
 
-    // Mock user data for new registration
     final userData = {
       'id': DateTime.now().millisecondsSinceEpoch.toString(),
       'email': email,
@@ -308,21 +269,15 @@ class AuthProvider with ChangeNotifier {
       'location': '',
       'bio': '',
     };
-
     final mockToken = 'mock_token_${DateTime.now().millisecondsSinceEpoch}';
-
     _user = userData;
     _token = mockToken;
-
     await _storage.saveToken(_token!);
     await _storage.saveUserData(_user!);
-
     _isAuthenticated = true;
-
     if (kDebugMode) print('Mock registration successful for: $email');
   }
 
-  // Helper methods
   void _setLoading(bool loading) {
     _isLoading = loading;
     notifyListeners();
@@ -342,6 +297,5 @@ class AuthProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  // Development helper to check which mode we're in
   bool get isUsingMockAuth => _useMockAuth;
 }

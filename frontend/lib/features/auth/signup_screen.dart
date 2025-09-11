@@ -1,9 +1,11 @@
+// features/auth/signup_screen.dart - CORRECTED VERSION
 import 'package:flutter/material.dart';
 import 'package:frontend/features/auth/providers/auth_provider.dart';
 import 'package:provider/provider.dart';
 import '../../../core/utils/responsive_helper.dart';
 import '../../../shared/widgets/responsive_layout.dart';
 import 'login_screen.dart';
+import 'package:go_router/go_router.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -90,7 +92,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
   Widget _buildDesktopLayout() {
     return Row(
       children: [
-        // Left side - Branding
         Expanded(
           flex: 3,
           child: Container(
@@ -139,7 +140,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
             ),
           ),
         ),
-        // Right side - Sign up form
         Expanded(
           flex: 2,
           child: Container(
@@ -161,7 +161,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisSize: MainAxisSize.min,
       children: [
-        // Tab bar
         Row(
           children: [
             Expanded(
@@ -213,10 +212,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             ),
           ],
         ),
-
         const SizedBox(height: 40),
-
-        // Title
         const Text(
           'Create your account',
           style: TextStyle(
@@ -225,16 +221,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
             color: Colors.black87,
           ),
         ),
-
         const SizedBox(height: 32),
-
-        // Form
         Form(
           key: _formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Email field
               _buildTextField(
                 controller: _emailController,
                 label: 'Email Address',
@@ -242,10 +234,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 keyboardType: TextInputType.emailAddress,
                 validator: _validateEmail,
               ),
-
               const SizedBox(height: 24),
-
-              // Password field
               _buildTextField(
                 controller: _passwordController,
                 label: 'Password',
@@ -266,10 +255,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   },
                 ),
               ),
-
               const SizedBox(height: 16),
-
-              // Password requirements
               Text(
                 'Password length must be at least 8 characters',
                 style: TextStyle(
@@ -277,10 +263,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   fontSize: 14,
                 ),
               ),
-
               const SizedBox(height: 24),
-
-              // Confirm Password field
               _buildTextField(
                 controller: _confirmPasswordController,
                 label: 'Confirm password',
@@ -301,10 +284,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   },
                 ),
               ),
-
               const SizedBox(height: 24),
-
-              // Name instruction
               Text(
                 'Please add your full name as it appears in your id',
                 style: TextStyle(
@@ -312,45 +292,30 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   fontSize: 14,
                 ),
               ),
-
               const SizedBox(height: 16),
-
-              // First Name field
               _buildTextField(
                 controller: _firstNameController,
                 label: 'First Name',
                 hint: 'Enter your first name',
                 validator: _validateFirstName,
               ),
-
               const SizedBox(height: 24),
-
-              // Last Name field
               _buildTextField(
                 controller: _lastNameController,
                 label: 'Last Name',
                 hint: 'Enter your last name',
                 validator: _validateLastName,
               ),
-
               const SizedBox(height: 32),
-
-              // Interests section
               _buildInterestsSection(),
-
               const SizedBox(height: 32),
-
-              // Continue button
               AuthButton(
                 text: 'Continue',
                 onPressed: _isLoading ? null : _handleSignUp,
                 isLoading: _isLoading,
                 isPrimary: true,
               ),
-
               const SizedBox(height: 24),
-
-              // NEW: Sign up as business link
               Center(
                 child: GestureDetector(
                   onTap: () {
@@ -558,7 +523,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   Future<void> _handleSignUp() async {
     if (!_formKey.currentState!.validate()) return;
-
     if (_selectedInterests.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -582,10 +546,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
       );
 
       if (mounted && authProvider.isAuthenticated) {
-        Navigator.of(context).pushNamedAndRemoveUntil(
-          '/home',
-          (route) => false,
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Sign up successful! Redirecting to home...'),
+            backgroundColor: Colors.green,
+          ),
         );
+        // Correct GoRouter navigation
+        context.goNamed('home');
       }
     } catch (e) {
       if (mounted) {
@@ -635,7 +603,6 @@ class Interest {
   Interest(this.name);
 }
 
-// NEW: Business Sign Up Screen
 class BusinessSignUpScreen extends StatelessWidget {
   const BusinessSignUpScreen({super.key});
 
