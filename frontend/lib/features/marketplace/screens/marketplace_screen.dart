@@ -89,7 +89,7 @@ class _MarketplaceScreenState extends State<MarketplaceScreen>
               return Stack(
                 children: [
                   IconButton(
-                    onPressed: () => Navigator.pushNamed(context, '/cart'),
+                    onPressed: () => Navigator.pushNamed(context, '/marketplace/cart'),
                     icon: const Icon(Icons.shopping_cart_outlined, color: Colors.white),
                     tooltip: 'Shopping Cart',
                   ),

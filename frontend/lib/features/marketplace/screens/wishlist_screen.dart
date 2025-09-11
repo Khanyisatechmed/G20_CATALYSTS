@@ -246,7 +246,7 @@ class WishlistScreen extends StatelessWidget {
         action: SnackBarAction(
           label: 'View Cart',
           textColor: Colors.white,
-          onPressed: () => Navigator.pushNamed(context, '/cart'),
+          onPressed: () => Navigator.pushNamed(context, '/marketplace/cart'),
         ),
       ),
     );
@@ -283,7 +283,7 @@ class WishlistScreen extends StatelessWidget {
         action: SnackBarAction(
           label: 'View Cart',
           textColor: Colors.white,
-          onPressed: () => Navigator.pushNamed(context, '/cart'),
+          onPressed: () => Navigator.pushNamed(context, '/marketplace/cart'),
         ),
       ),
     );

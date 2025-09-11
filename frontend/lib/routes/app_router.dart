@@ -213,7 +213,7 @@ class AppRouter {
 
       // Cart route
       GoRoute(
-        path: '/cart',
+        path: '/marketplace/cart',
         name: 'cart',
         builder: (context, state) => const CartScreen(),
       ),

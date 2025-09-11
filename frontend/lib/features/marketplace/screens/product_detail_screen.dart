@@ -1139,7 +1139,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         content: Text('${widget.product['title']} added to cart'),
         action: SnackBarAction(
           label: 'View Cart',
-          onPressed: () => Navigator.pushNamed(context, '/cart'),
+          onPressed: () => Navigator.pushNamed(context, '/marketplace/cart'),
         ),
       ),
     );
