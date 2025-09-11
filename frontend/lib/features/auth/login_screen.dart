@@ -1,4 +1,3 @@
-// features/auth/login_screen.dart - CORRECTED VERSION
 import 'package:flutter/material.dart';
 import 'package:frontend/core/utils/responsive_helper.dart';
 import 'package:frontend/features/auth/providers/auth_provider.dart';
@@ -65,7 +64,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    // Logo section - flexible height
                     const Flexible(
                       flex: 2,
                       child: Center(
@@ -73,14 +71,11 @@ class _LoginScreenState extends State<LoginScreen> {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             SizedBox(height: 20),
-
                             SizedBox(height: 20),
                           ],
                         ),
                       ),
                     ),
-
-                    // Form section - takes remaining space
                     Flexible(
                       flex: 3,
                       child: Column(
@@ -90,8 +85,6 @@ class _LoginScreenState extends State<LoginScreen> {
                         ],
                       ),
                     ),
-
-                    // Bottom spacing
                     const SizedBox(height: 20),
                   ],
                 ),
@@ -126,7 +119,6 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget _buildDesktopLayout() {
     return Row(
       children: [
-        // Left side - Branding
         Expanded(
           flex: 3,
           child: Container(
@@ -176,7 +168,6 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
         ),
-        // Right side - Login form
         Expanded(
           flex: 2,
           child: Container(
@@ -188,7 +179,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-
                       const SizedBox(height: 40),
                       _buildLoginForm(),
                     ],
@@ -207,7 +197,6 @@ class _LoginScreenState extends State<LoginScreen> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       mainAxisSize: MainAxisSize.min,
       children: [
-        // Tab bar - Fixed height to prevent overflow
         SizedBox(
           height: 60,
           child: Row(
@@ -262,10 +251,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ],
           ),
         ),
-
         SizedBox(height: ResponsiveHelper.isMobile(context) ? 24 : 40),
-
-        // Title - Responsive font size
         Text(
           'Log in to continue',
           style: TextStyle(
@@ -274,17 +260,13 @@ class _LoginScreenState extends State<LoginScreen> {
             color: Colors.black87,
           ),
         ),
-
         SizedBox(height: ResponsiveHelper.isMobile(context) ? 20 : 32),
-
-        // Form - Fixed to prevent overflow
         Form(
           key: _formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             mainAxisSize: MainAxisSize.min,
             children: [
-              // Email field
               _buildTextField(
                 controller: _emailController,
                 label: 'Email Address',
@@ -292,10 +274,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 keyboardType: TextInputType.emailAddress,
                 validator: _validateEmail,
               ),
-
               SizedBox(height: ResponsiveHelper.isMobile(context) ? 16 : 24),
-
-              // Password field
               _buildTextField(
                 controller: _passwordController,
                 label: 'Password',
@@ -316,10 +295,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   },
                 ),
               ),
-
               SizedBox(height: ResponsiveHelper.isMobile(context) ? 8 : 16),
-
-              // Password requirements - Flexible text
               Flexible(
                 child: Text(
                   'Password length must be at least 8 characters',
@@ -329,10 +305,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
               ),
-
               SizedBox(height: ResponsiveHelper.isMobile(context) ? 20 : 32),
-
-              // Login button - Fixed height
               SizedBox(
                 height: ResponsiveHelper.isMobile(context) ? 48 : 56,
                 child: AuthButton(
@@ -342,10 +315,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   isPrimary: true,
                 ),
               ),
-
               SizedBox(height: ResponsiveHelper.isMobile(context) ? 12 : 16),
-
-              // Forgot password - Center and flexible
               Center(
                 child: TextButton(
                   onPressed: _handleForgotPassword,
