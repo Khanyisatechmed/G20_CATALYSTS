@@ -114,6 +114,9 @@ class MarketplaceProvider with ChangeNotifier {
           'imageUrl': 'assets/images/zuluhat.png',
           'images': ['assets/images/zuluhat.png'],
           'hasAR': true,
+          // Add 3D model URLs for your custom models
+          'modelUrl': 'assets/models/ZuluHat.glb', // Your GLB model
+          'iosModelUrl': 'assets/models/ZuluHat.usdz',
           'rating': 4.6,
           'reviewCount': 15,
           'isInStock': true,
@@ -196,9 +199,6 @@ class MarketplaceProvider with ChangeNotifier {
             'assets/images/zulunecklace.png'
           ],
           'hasAR': true,
-          // Add 3D model URLs for your custom models
-          'modelUrl': 'assets/models/ZuluHat.glb', // Your GLB model
-          'iosModelUrl': 'assets/models/ZuluHat.usdz',
           'rating': 4.9,
           'reviewCount': 31,
           'isInStock': true,

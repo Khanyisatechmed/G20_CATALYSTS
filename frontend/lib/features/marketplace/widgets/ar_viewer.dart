@@ -1,6 +1,7 @@
 // features/marketplace/widgets/ar_viewer.dart
 import 'package:flutter/material.dart';
 import 'package:model_viewer_plus/model_viewer_plus.dart';
+import 'package:audioplayers/audioplayers.dart';
 
 class ARViewer extends StatefulWidget {
   final Map<String, dynamic> product;
@@ -22,6 +23,44 @@ class _ARViewerState extends State<ARViewer>
   late Animation<double> _rotationAnimation;
   bool _isLoading = true;
 
+  // 🎵 Audio
+  late AudioPlayer _audioPlayer;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _animationController = AnimationController(
+      duration: const Duration(seconds: 2),
+      vsync: this,
+    )..repeat();
+
+    _rotationAnimation = Tween<double>(
+      begin: 0,
+      end: 1,
+    ).animate(_animationController);
+
+    // 🎵 initialize audio
+    _audioPlayer = AudioPlayer();
+
+    // Simulate AR loading
+    Future.delayed(const Duration(seconds: 2), () {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    _audioPlayer.dispose(); // 🎵 cleanup audio
+    super.dispose();
+  }
+
+  /// 🎵 Show bottom sheet with product info
   void showModelInfoModal(BuildContext context, Map<String, dynamic> product) {
     showModalBottomSheet(
       context: context,
@@ -71,35 +110,6 @@ class _ARViewerState extends State<ARViewer>
         );
       },
     );
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _animationController = AnimationController(
-      duration: const Duration(seconds: 2),
-      vsync: this,
-    )..repeat();
-
-    _rotationAnimation = Tween<double>(
-      begin: 0,
-      end: 1,
-    ).animate(_animationController);
-
-    // Simulate AR loading
-    Future.delayed(const Duration(seconds: 2), () {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    _animationController.dispose();
-    super.dispose();
   }
 
   @override
@@ -155,7 +165,7 @@ class _ARViewerState extends State<ARViewer>
                   ),
                 ),
                 Text(
-                  widget.product['title'] ?? 'Wanders Craft',
+                  widget.product['title'] ?? 'Zulu Beaded Hat',
                   style: const TextStyle(
                     color: Colors.white70,
                     fontSize: 14,
@@ -227,12 +237,7 @@ class _ARViewerState extends State<ARViewer>
     );
   }
 
-///////////////
-//////////////
-  ///
-  // Inside _buildARView()
-  // Replace your _buildARView() method with this:
-// Update your _buildARView() method to properly load local assets
+  /// 🎵 Main AR View
   Widget _buildARView() {
     String modelUrl = widget.product['modelUrl'] as String? ?? '';
     if (modelUrl.isEmpty) modelUrl = 'assets/models/ZuluHat.glb';
@@ -271,7 +276,11 @@ class _ARViewerState extends State<ARViewer>
               child: Material(
                 color: Colors.transparent,
                 child: InkWell(
-                  onTap: () {
+                  onTap: () async {
+                    // 🎵 play audio
+                    await _audioPlayer
+                        .play(AssetSource('audio/zulu_hat_story.mp3'));
+                    // Show info modal
                     showModelInfoModal(context, widget.product);
                   },
                 ),
@@ -289,7 +298,7 @@ class _ARViewerState extends State<ARViewer>
                   borderRadius: BorderRadius.circular(6),
                 ),
                 child: const Text(
-                  'Drag to rotate • Scroll to zoom • Tap for details',
+                  'Drag to rotate • Scroll to zoom • Tap for story & details',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 12,
@@ -312,7 +321,6 @@ class _ARViewerState extends State<ARViewer>
           Expanded(
             child: OutlinedButton.icon(
               onPressed: () {
-                // Simulate taking AR screenshot
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
                     content: Text('AR Screenshot saved!'),
@@ -332,7 +340,6 @@ class _ARViewerState extends State<ARViewer>
           Expanded(
             child: ElevatedButton.icon(
               onPressed: () {
-                // Navigate to product detail or add to cart
                 widget.onClose?.call();
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
@@ -354,52 +361,4 @@ class _ARViewerState extends State<ARViewer>
       ),
     );
   }
-
-  IconData _getProductIcon() {
-    final category = widget.product['category']?.toString().toLowerCase() ?? '';
-    switch (category) {
-      case 'artwork':
-        return Icons.palette;
-      case 'textile':
-        return Icons.checkroom;
-      case 'pottery':
-        return Icons.emoji_objects;
-      case 'food':
-        return Icons.restaurant;
-      default:
-        return Icons.handyman;
-    }
-  }
-}
-
-class ARGridPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = Colors.cyan.withValues(alpha: 0.3)
-      ..strokeWidth = 1.0;
-
-    const gridSize = 20.0;
-
-    // Draw vertical lines
-    for (double x = 0; x < size.width; x += gridSize) {
-      canvas.drawLine(
-        Offset(x, 0),
-        Offset(x, size.height),
-        paint,
-      );
-    }
-
-    // Draw horizontal lines
-    for (double y = 0; y < size.height; y += gridSize) {
-      canvas.drawLine(
-        Offset(0, y),
-        Offset(size.width, y),
-        paint,
-      );
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

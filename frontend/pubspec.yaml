@@ -18,6 +18,9 @@ dependencies:
   # 3D model viewer
   model_viewer_plus: ^1.9.3
 
+  # Audio playback
+  audioplayers: ^6.5.1
+
   # HTTP and networking
   dio: ^5.9.0
 
@@ -57,6 +60,7 @@ flutter:
     - assets/videos/hologram.mp4
     - assets/models/
     - assets/models/ZuluHat.glb
+    - assets/audio/
   #   - assets/images/backgrounds/
   #   - assets/images/icons/
   #   - assets/images/products/
