@@ -25,8 +25,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
   bool _isLoading = false;
 
   final List<String> _availableInterests = [
-    'History', 'Culture', 'Art', 'Adventure', 'Food', 'Music',
-    'Dance', 'Crafts', 'Nature', 'Wildlife', 'Photography'
+    'History',
+    'Culture',
+    'Art',
+    'Adventure',
+    'Food',
+    'Music',
+    'Dance',
+    'Crafts',
+    'Nature',
+    'Wildlife',
+    'Photography'
   ];
   final Set<String> _selectedInterests = {};
 
@@ -245,7 +254,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 validator: _validatePassword,
                 suffixIcon: IconButton(
                   icon: Icon(
-                    _isPasswordVisible ? Icons.visibility_off : Icons.visibility,
+                    _isPasswordVisible
+                        ? Icons.visibility_off
+                        : Icons.visibility,
                     color: Colors.grey,
                   ),
                   onPressed: () {
@@ -278,7 +289,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 validator: _validateConfirmPassword,
                 suffixIcon: IconButton(
                   icon: Icon(
-                    _isConfirmPasswordVisible ? Icons.visibility_off : Icons.visibility,
+                    _isConfirmPasswordVisible
+                        ? Icons.visibility_off
+                        : Icons.visibility,
                     color: Colors.grey,
                   ),
                   onPressed: () {
@@ -334,6 +347,30 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 isLoading: _isLoading,
                 isPrimary: true,
               ),
+
+              const SizedBox(height: 24),
+
+              // NEW: Sign up as business link
+              Center(
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const BusinessSignUpScreen()),
+                    );
+                  },
+                  child: const Text(
+                    "Sign up as a business",
+                    style: TextStyle(
+                      color: Colors.blue,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      decoration: TextDecoration.underline,
+                    ),
+                  ),
+                ),
+              ),
             ],
           ),
         ),
@@ -382,7 +419,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
               borderRadius: BorderRadius.circular(8),
               borderSide: BorderSide(color: Theme.of(context).primaryColor),
             ),
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
           ),
         ),
       ],
@@ -566,7 +604,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 }
 
-class   InterestChip extends StatelessWidget {
+class InterestChip extends StatelessWidget {
   final String label;
   final bool isSelected;
   final VoidCallback onTap;
@@ -592,7 +630,27 @@ class   InterestChip extends StatelessWidget {
   }
 }
 
-class   Interest {
+class Interest {
   final String name;
   Interest(this.name);
+}
+
+// NEW: Business Sign Up Screen
+class BusinessSignUpScreen extends StatelessWidget {
+  const BusinessSignUpScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Business Sign Up"),
+      ),
+      body: const Center(
+        child: Text(
+          "Business Registration Form Coming Soon!",
+          style: TextStyle(fontSize: 20),
+        ),
+      ),
+    );
+  }
 }
