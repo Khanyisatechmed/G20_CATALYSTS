@@ -8,7 +8,7 @@ import 'package:frontend/features/auth/welcome_screen.dart';
 import 'package:frontend/features/auth/login_screen.dart';
 import 'package:frontend/features/auth/signup_screen.dart';
 import 'package:frontend/features/home/screens/home_screen.dart';
-import 'package:frontend/features/bookings/screens/bookings_screen.dart';
+import 'package:frontend/features/bookings/screens/hologram_hub_booking_screen.dart';
 import 'package:frontend/features/bookings/screens/destination_detail_screen.dart';
 import 'package:frontend/features/marketplace/screens/marketplace_screen.dart';
 import 'package:frontend/features/marketplace/screens/product_detail_screen.dart';
@@ -101,7 +101,7 @@ class AppRouter {
       GoRoute(
         path: '/bookings',
         name: 'bookings',
-        builder: (context, state) => const BookingsScreen(),
+        builder: (context, state) => const HologramHubBookingScreen(),
       ),
 
       // Booking detail route

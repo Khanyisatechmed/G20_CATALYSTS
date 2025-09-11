@@ -856,19 +856,13 @@ class _HomeScreenState extends State<HomeScreen> {
         'route': '/bookings',
       },
       {
-        'title': 'Heritage Tours',
-        'subtitle': 'Cultural Immersion',
-        'icon': Icons.account_balance_outlined,
-        'gradient': [const Color(0xFF059669), const Color(0xFF10B981)],
-        'route': '/explore',
-      },
-      {
         'title': 'Marketplace',
         'subtitle': 'KZN Artisans',
         'icon': Icons.shopping_bag_outlined,
         'gradient': [const Color(0xFFDC2626), const Color(0xFFF87171)],
         'route': '/marketplace',
       },
+
 
     ];
 
