@@ -114,6 +114,9 @@ class MarketplaceProvider with ChangeNotifier {
           'imageUrl': 'assets/images/zuluhat.png',
           'images': ['assets/images/zuluhat.png'],
           'hasAR': true,
+          // Add 3D model URLs for your custom models
+          'modelUrl': 'assets/models/ZuluHat.glb', // Your GLB model
+          'iosModelUrl': 'assets/models/ZuluHat.usdz',
           'rating': 4.6,
           'reviewCount': 15,
           'isInStock': true,
@@ -124,18 +127,18 @@ class MarketplaceProvider with ChangeNotifier {
           'isFairTrade': true,
           'isUbuntu': true,
           'isHandmade': true,
-          'materials': ['Mohair', 'Wool'],
+          'materials': ['Glass beads', 'Thread', 'straw base', 'Leather'],
           'culturalSignificance':
               'The traditional conical hat represents protection from the elements and connection to mountain heritage.',
           'description':
-              'Traditional conical hat worn by Basotho people, hand-knitted using authentic patterns and techniques.',
+              'Traditional Zulu beaded hat, handcrafted with intricate beadwork patterns, showcasing Zulu culture and craftsmanship.',
           'dimensions': {'diameter': 35, 'height': 20, 'unit': 'cm'},
           'weight': 0.3,
           'tags': ['traditional', 'basotho', 'headwear', 'mountain'],
           'vendor': {
             'name': 'Sipho Dlamini',
             'bio':
-                'Traditional textile artist specializing in Basotho cultural garments.',
+                'Traditional textile artist specializing in Zulu cultural garments.',
             'location': 'Bergville',
             'verified': true,
             'rating': 4.7
@@ -196,9 +199,6 @@ class MarketplaceProvider with ChangeNotifier {
             'assets/images/zulunecklace.png'
           ],
           'hasAR': true,
-          // Add 3D model URLs for your custom models
-          'modelUrl': 'assets/models/ZuluHat.glb', // Your GLB model
-          'iosModelUrl': 'assets/models/zulu_basket.usdz',
           'rating': 4.9,
           'reviewCount': 31,
           'isInStock': true,

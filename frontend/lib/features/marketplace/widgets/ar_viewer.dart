@@ -1,6 +1,7 @@
 // features/marketplace/widgets/ar_viewer.dart
 import 'package:flutter/material.dart';
 import 'package:model_viewer_plus/model_viewer_plus.dart';
+import 'package:audioplayers/audioplayers.dart';
 
 class ARViewer extends StatefulWidget {
   final Map<String, dynamic> product;
@@ -22,9 +23,13 @@ class _ARViewerState extends State<ARViewer>
   late Animation<double> _rotationAnimation;
   bool _isLoading = true;
 
+  // 🎵 Audio
+  late AudioPlayer _audioPlayer;
+
   @override
   void initState() {
     super.initState();
+
     _animationController = AnimationController(
       duration: const Duration(seconds: 2),
       vsync: this,
@@ -34,6 +39,9 @@ class _ARViewerState extends State<ARViewer>
       begin: 0,
       end: 1,
     ).animate(_animationController);
+
+    // 🎵 initialize audio
+    _audioPlayer = AudioPlayer();
 
     // Simulate AR loading
     Future.delayed(const Duration(seconds: 2), () {
@@ -48,7 +56,60 @@ class _ARViewerState extends State<ARViewer>
   @override
   void dispose() {
     _animationController.dispose();
+    _audioPlayer.dispose(); // 🎵 cleanup audio
     super.dispose();
+  }
+
+  /// 🎵 Show bottom sheet with product info
+  void showModelInfoModal(BuildContext context, Map<String, dynamic> product) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (context) {
+        return Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                product['title'] ?? 'Product Info',
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                product['description'] ?? 'No description available.',
+                style: const TextStyle(fontSize: 16),
+              ),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  const Icon(Icons.category, size: 18),
+                  const SizedBox(width: 8),
+                  Text(
+                    product['category'] ?? 'Unknown category',
+                    style: const TextStyle(fontSize: 14),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              Align(
+                alignment: Alignment.centerRight,
+                child: ElevatedButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('Close'),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -104,7 +165,7 @@ class _ARViewerState extends State<ARViewer>
                   ),
                 ),
                 Text(
-                  widget.product['title'] ?? 'Wanders Craft',
+                  widget.product['title'] ?? 'Zulu Beaded Hat',
                   style: const TextStyle(
                     color: Colors.white70,
                     fontSize: 14,
@@ -176,80 +237,82 @@ class _ARViewerState extends State<ARViewer>
     );
   }
 
-///////////////
-//////////////
-  ///
-  // Inside _buildARView()
-  // Replace your _buildARView() method with this:
-// Update your _buildARView() method to properly load local assets
-Widget _buildARView() {
-  // For web, construct the asset URL properly
-  String modelUrl = widget.product['modelUrl'] as String? ?? '';
-  
-  if (modelUrl.isEmpty) {
-    // Default local asset - this is the correct format for Flutter web
-    modelUrl = 'assets/models/ZuluHat.glb';
-  }
-  
-  // Remove any leading slash if present
-  if (modelUrl.startsWith('/')) {
-    modelUrl = modelUrl.substring(1);
-  }
+  /// 🎵 Main AR View
+  Widget _buildARView() {
+    String modelUrl = widget.product['modelUrl'] as String? ?? '';
+    if (modelUrl.isEmpty) modelUrl = 'assets/models/ZuluHat.glb';
+    if (modelUrl.startsWith('/')) modelUrl = modelUrl.substring(1);
 
-  return Container(
-    margin: const EdgeInsets.all(16),
-    decoration: BoxDecoration(
-      borderRadius: BorderRadius.circular(12),
-      border: Border.all(
-        color: Colors.purple.withOpacity(0.3),
-        width: 2,
+    return Container(
+      margin: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: Colors.purple.withOpacity(0.3),
+          width: 2,
+        ),
       ),
-    ),
-    child: ClipRRect(
-      borderRadius: BorderRadius.circular(12),
-      child: Stack(
-        children: [
-          ModelViewer(
-            src: modelUrl,
-            alt: widget.product['title'] ?? '3D Model',
-            ar: false, // Keep AR disabled for web
-            autoRotate: true,
-            cameraControls: true,
-            backgroundColor: Colors.grey.shade50,
-            loading: Loading.eager,
-            interactionPrompt: InteractionPrompt.auto,
-            debugLogging: true,
-            onWebViewCreated: (controller) {
-              debugPrint('Loading model from: $modelUrl');
-            },
-          ),
-          
-          // Add a fallback message if model fails to load
-          Positioned(
-            bottom: 8,
-            left: 8,
-            right: 8,
-            child: Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.7),
-                borderRadius: BorderRadius.circular(6),
-              ),
-              child: Text(
-                'Drag to rotate • Scroll to zoom',
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 12,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: Stack(
+          children: [
+            ModelViewer(
+              src: modelUrl,
+              alt: widget.product['title'] ?? '3D Model',
+              ar: false,
+              autoRotate: true,
+              cameraControls: true,
+              backgroundColor: Colors.grey.shade50,
+              loading: Loading.eager,
+              interactionPrompt: InteractionPrompt.auto,
+              debugLogging: true,
+              onWebViewCreated: (controller) {
+                debugPrint('Loading model from: $modelUrl');
+              },
+            ),
+
+            // Transparent overlay to catch taps
+            Positioned.fill(
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: () async {
+                    // 🎵 play audio
+                    await _audioPlayer
+                        .play(AssetSource('audio/zulu_hat_story.mp3'));
+                    // Show info modal
+                    showModelInfoModal(context, widget.product);
+                  },
                 ),
-                textAlign: TextAlign.center,
               ),
             ),
-          ),
-        ],
+
+            Positioned(
+              bottom: 8,
+              left: 8,
+              right: 8,
+              child: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.black.withOpacity(0.7),
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: const Text(
+                  'Drag to rotate • Scroll to zoom • Tap for story & details',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
-    ),
-  );
-}
+    );
+  }
+
   Widget _buildControls() {
     return Container(
       padding: const EdgeInsets.all(16),
@@ -258,7 +321,6 @@ Widget _buildARView() {
           Expanded(
             child: OutlinedButton.icon(
               onPressed: () {
-                // Simulate taking AR screenshot
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
                     content: Text('AR Screenshot saved!'),
@@ -278,7 +340,6 @@ Widget _buildARView() {
           Expanded(
             child: ElevatedButton.icon(
               onPressed: () {
-                // Navigate to product detail or add to cart
                 widget.onClose?.call();
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
@@ -300,52 +361,4 @@ Widget _buildARView() {
       ),
     );
   }
-
-  IconData _getProductIcon() {
-    final category = widget.product['category']?.toString().toLowerCase() ?? '';
-    switch (category) {
-      case 'artwork':
-        return Icons.palette;
-      case 'textile':
-        return Icons.checkroom;
-      case 'pottery':
-        return Icons.emoji_objects;
-      case 'food':
-        return Icons.restaurant;
-      default:
-        return Icons.handyman;
-    }
-  }
-}
-
-class ARGridPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = Colors.cyan.withValues(alpha: 0.3)
-      ..strokeWidth = 1.0;
-
-    const gridSize = 20.0;
-
-    // Draw vertical lines
-    for (double x = 0; x < size.width; x += gridSize) {
-      canvas.drawLine(
-        Offset(x, 0),
-        Offset(x, size.height),
-        paint,
-      );
-    }
-
-    // Draw horizontal lines
-    for (double y = 0; y < size.height; y += gridSize) {
-      canvas.drawLine(
-        Offset(0, y),
-        Offset(size.width, y),
-        paint,
-      );
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
