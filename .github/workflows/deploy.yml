@@ -1,4 +1,6 @@
 # .github/workflows/deploy.yml
+# Builds the Next.js app in ./frontend as a static export and publishes it to GitHub Pages
+# at https://khanyisatechmed.github.io/G20_CATALYSTS/
 name: Deploy to GitHub Pages
 
 on:
@@ -16,40 +18,51 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
-    
+    defaults:
+      run:
+        working-directory: ./frontend
+
     steps:
     - name: Checkout
       uses: actions/checkout@v4
 
-    - name: Setup Flutter
-      uses: subosito/flutter-action@v2
+    - name: Setup Node
+      uses: actions/setup-node@v4
       with:
-        flutter-version: '3.24.3'
-        channel: 'stable'
-        cache: true
+        node-version: 22
+        cache: npm
+        cache-dependency-path: frontend/package-lock.json
 
     - name: Install dependencies
-      working-directory: ./frontend
-      run: flutter pub get
+      run: npm ci
 
-    - name: Build web
-      working-directory: ./frontend
-      run: |
-        flutter build web --release \
-          --web-renderer html \
-          --base-href /G20_CATALYSTS/ \
-          --no-tree-shake-icons
+    - name: Build static site
+      env:
+        # Project pages are served from /<repo-name>/
+        NEXT_PUBLIC_BASE_PATH: /G20_CATALYSTS
+      run: npm run build
+
+    - name: Disable Jekyll processing
+      run: touch out/.nojekyll
 
     - name: Setup Pages
-      uses: actions/configure-pages@v4
+      uses: actions/configure-pages@v5
 
     - name: Upload artifact
       uses: actions/upload-pages-artifact@v3
       with:
-        path: ./frontend/build/web
+        path: ./frontend/out
 
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
     - name: Deploy to GitHub Pages
       id: deployment
       uses: actions/deploy-pages@v4

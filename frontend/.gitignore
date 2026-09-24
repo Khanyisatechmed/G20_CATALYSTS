@@ -62,6 +62,15 @@ coverage/
 .env.local
 .env.production
 
+# Next.js / Node
+node_modules/
+.next/
+out/
+tsconfig.tsbuildinfo
+
+# Local Claude Code session settings
+.claude/
+
 # IDE files
 .vscode/
 .idea/
