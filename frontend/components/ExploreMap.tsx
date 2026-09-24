@@ -2,6 +2,7 @@
 
 import dynamic from "next/dynamic";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { useMemo, useState } from "react";
 import { List, LocateFixed, Map as MapIcon, MapPin, Search, X } from "lucide-react";
 import { categoryColours } from "@/components/mapColours";
@@ -25,11 +26,16 @@ type LocationState =
   | { status: "error"; message: string };
 
 export default function ExploreMap() {
+  // Links such as /explore/map/?province=limpopo&place=modjadji open the map pre-filtered.
+  const searchParams = useSearchParams();
+  const linkedProvince = provinces.find((item) => item.slug === searchParams.get("province"))?.name;
+  const linkedPlace = mapPlaces.find((place) => place.id === searchParams.get("place"))?.id ?? null;
+
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState<MapCategory | "all">("all");
-  const [province, setProvince] = useState("all");
+  const [province, setProvince] = useState(linkedProvince ?? "all");
   const [view, setView] = useState<"map" | "list">("map");
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [selectedId, setSelectedId] = useState<string | null>(linkedPlace);
   const [location, setLocation] = useState<LocationState>({ status: "idle" });
 
   const userLocation = useMemo(

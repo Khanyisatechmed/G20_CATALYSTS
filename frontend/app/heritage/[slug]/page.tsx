@@ -2,8 +2,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Crown, MapPin, Mountain, Palette, Play } from "lucide-react";
+import HeritageMiniMap from "@/components/HeritageMiniMap";
 import ImageStoryCard, { HeritagePlaceholder } from "@/components/ImageStoryCard";
-import { heritageEntries } from "@/lib/content";
+import { heritageEntries, provinces } from "@/lib/content";
+import { mapPlaces } from "@/lib/mapPlaces";
 import { asset } from "@/lib/basePath";
 
 export function generateStaticParams() {
@@ -29,6 +31,15 @@ export default async function HeritageDetailPage({
     .filter((item) => item.slug !== entry.slug && item.provinces.some((province) => entry.provinces.includes(province)))
     .slice(0, 4);
   const overviewIcons = [Crown, Palette, Mountain];
+
+  // Map: places in this community's provinces, highlighting the one linked to this profile.
+  const featuredPlace = mapPlaces.find((place) => place.href === `/heritage/${entry.slug}`);
+  const nearbyPlaces = mapPlaces.filter((place) => entry.provinces.includes(place.province) && !place.isSample);
+  const homeProvince = provinces.find((province) => province.name === (featuredPlace?.province ?? entry.provinces[0]));
+  const exploreParams = new URLSearchParams();
+  if (homeProvince) exploreParams.set("province", homeProvince.slug);
+  if (featuredPlace) exploreParams.set("place", featuredPlace.id);
+  const exploreHref = `/explore/map/?${exploreParams.toString()}`;
 
   return (
     <main className="bg-brand-ivory">
@@ -144,13 +155,14 @@ export default async function HeritageDetailPage({
 
         <aside className="rounded-xl border border-brand-sage/25 bg-white p-6 shadow-sm">
           <h3 className="font-serif text-2xl font-black text-brand-deep">Explore on Map</h3>
-          <p className="mt-2 text-sm text-brand-deep/70">
-            View nearby attractions, vendors and destinations.
+          <p className="mt-2 text-sm text-brand-deep/80">
+            {nearbyPlaces.length} heritage {nearbyPlaces.length === 1 ? "place" : "places"} in {entry.provinces.join(", ")}.
+            {featuredPlace ? ` Highlighted: ${featuredPlace.name}.` : ""}
           </p>
-          <div className="mt-4 grid h-40 place-items-center rounded-xl bg-brand-sage/25 text-brand-forest">
-            <MapPin size={44} />
+          <div className="mt-4">
+            <HeritageMiniMap places={nearbyPlaces} initialSelectedId={featuredPlace?.id ?? null} />
           </div>
-          <Link href="/explore/map" className="mt-4 flex justify-center rounded-xl bg-brand-forest px-4 py-3 font-bold text-white">
+          <Link href={exploreHref} className="mt-4 flex justify-center rounded-xl bg-brand-forest px-4 py-3 font-bold text-white">
             Open Interactive Map →
           </Link>
         </aside>

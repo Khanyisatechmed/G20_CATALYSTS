@@ -1,6 +1,7 @@
-﻿import Link from "next/link";
+import Link from "next/link";
 import ImageStoryCard from "@/components/ImageStoryCard";
 import MockupHero from "@/components/MockupHero";
+import { Suspense } from "react";
 import ExploreMap from "@/components/ExploreMap";
 
 const popularDestinations = [
@@ -22,7 +23,9 @@ export default function ExploreMapPage() {
         note={"Local People.\nAuthentic Experiences.\nReal Stories."}
       />
 
-      <ExploreMap />
+      <Suspense>
+        <ExploreMap />
+      </Suspense>
 
       <section className="mx-auto max-w-[1800px] px-6 pb-12 md:px-20">
         <div className="flex items-center justify-between">
