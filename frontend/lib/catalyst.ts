@@ -2,6 +2,7 @@
 // Runs entirely in the browser (the site is a static export), so it only knows what the site knows.
 import { heritageEntries, exhibitions, provinces, type HeritageEntry } from "@/lib/content";
 import { demoEvents, demoFood, demoVendors } from "@/lib/demoData";
+import { hologramSessions, hologramTicketPrices } from "@/lib/hologramTickets";
 import { sampleItineraryStops } from "@/lib/itinerary";
 import { mapPlaces, type MapPlace } from "@/lib/mapPlaces";
 import { marketplaceProducts, type MarketplaceProduct } from "@/lib/products";
@@ -19,14 +20,6 @@ export type ChatReply = {
 export type ChatContext = { heritage?: string; province?: string; product?: string; place?: string };
 export type CartSummary = { count: number; total: number; titles: string[] };
 
-// Keep in step with the prices on app/bookings/hologram/page.tsx.
-const hologramTicketPrices = [
-  ["Adult", 320],
-  ["Child", 160],
-  ["Student", 220],
-  ["Family or group (per person)", 250]
-] as const;
-const hologramSessions = ["09:30", "11:00", "13:30", "15:00", "17:30"];
 
 const heritageAliases: Record<string, string[]> = {
   "zulu-heritage": ["zulu", "amazulu", "isizulu", "shaka", "emakhosini"],
@@ -304,7 +297,7 @@ function hologramReply(scores: Record<string, number>): ChatReply {
     `Sessions run at ${listJoin(hologramSessions)}${rainQueen ? ` and last about ${rainQueen.duration}` : ""}.`
   ];
   if (scores.price > 0 || scores.hologram > 0) {
-    text.push(`Sample ticket prices: ${hologramTicketPrices.map(([label, price]) => `${label} ${rand(price)}`).join(", ")}.`);
+    text.push(`Ticket prices per person: ${hologramTicketPrices.map((ticket) => `${ticket.label} ${rand(ticket.price)}`).join(", ")}.`);
   }
   text.push("Booking sends a reservation request. Confirmed tickets and payment aren't connected yet.");
   return {

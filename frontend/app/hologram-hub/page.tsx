@@ -13,6 +13,7 @@ import {
   Warehouse
 } from "lucide-react";
 import ActionStrip from "@/components/ActionStrip";
+import HologramBookingWidget from "@/components/HologramBookingWidget";
 import HologramPreview from "@/components/HologramPreview";
 import { rainQueenPoster } from "@/lib/hologramMedia";
 import { exhibitions } from "@/lib/content";
@@ -103,8 +104,8 @@ export default function HologramHubPage() {
 
       <ActionStrip items={hubActions} />
 
-      <section id="overview" className="relative mx-auto grid max-w-[1800px] gap-8 px-6 py-10 lg:grid-cols-[300px_minmax(0,1fr)] 2xl:grid-cols-[340px_minmax(0,1fr)_380px] md:px-20">
-        <article>
+      <section id="overview" className="relative mx-auto grid max-w-[1800px] gap-8 px-6 py-10 md:px-20 lg:grid-cols-[minmax(0,1fr)_380px] 2xl:grid-cols-[340px_minmax(0,1fr)_380px]">
+        <article className="lg:col-start-1 lg:row-start-1 2xl:col-start-1">
           <p className="text-sm font-black uppercase tracking-[0.38em] text-brand-terracotta">
             Featured Experience
           </p>
@@ -124,49 +125,13 @@ export default function HologramHubPage() {
           </Link>
         </article>
 
-        <div id="preview">
+        <div id="preview" className="min-w-0 lg:col-start-1 lg:row-start-2 2xl:col-start-2 2xl:row-start-1">
           <HologramPreview />
         </div>
 
-        <aside className="rounded-xl border border-brand-sage/25 bg-white p-6 shadow-sm">
-          <h3 className="font-serif text-3xl font-black text-brand-deep">
-            Book Your Visit
-          </h3>
-          <p className="mt-1 text-brand-deep/70">Experience the Hologram Hub</p>
-          <div className="mt-5 grid gap-3">
-            <select className="rounded-xl border border-brand-sage/40 px-4 py-3">
-              <option>Modjadji Rain Queen Experience</option>
-            </select>
-            <div className="grid grid-cols-2 gap-3">
-              <input type="month" defaultValue="2026-10" className="rounded-xl border border-brand-sage/40 px-4 py-3" />
-              <select className="rounded-xl border border-brand-sage/40 px-4 py-3">
-                <option>11:00 AM</option>
-              </select>
-            </div>
-            {[
-              ["Adult", "R180", "2"],
-              ["Child (3–12)", "R90", "0"],
-              ["Student", "R120", "0"],
-              ["Family", "R420", "0"]
-            ].map(([label, price, count]) => (
-              <div key={label} className="flex items-center justify-between border-b border-brand-sage/25 py-2 text-sm">
-                <span>{label}</span>
-                <span>{price}</span>
-                <span className="rounded-lg bg-brand-ivory px-3 py-1">− {count} +</span>
-              </div>
-            ))}
-            <div className="flex justify-between rounded-lg bg-brand-sage/30 px-4 py-3 text-xl font-black text-brand-deep">
-              <span>Total</span>
-              <span>R360</span>
-            </div>
-            <Link href="/bookings/hologram" className="rounded-xl bg-brand-forest px-5 py-3 text-center font-bold text-white">
-              Reserve Your Tickets →
-            </Link>
-            <p className="flex items-center justify-center gap-2 text-xs text-brand-deep/70">
-              <ShieldCheck size={14} /> Demo booking / confirmation pending backend
-            </p>
-          </div>
-        </aside>
+        <div className="lg:col-start-2 lg:row-span-2 lg:row-start-1 2xl:col-start-3 2xl:row-span-1">
+          <HologramBookingWidget />
+        </div>
       </section>
 
       <section id="exhibitions" className="mx-auto grid max-w-[1800px] gap-5 px-6 pb-16 md:grid-cols-4 md:px-20">

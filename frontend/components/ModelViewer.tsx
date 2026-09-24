@@ -8,13 +8,15 @@ type ModelViewerProps = {
   alt: string;
   poster?: string;
   className?: string;
+  viewerClassName?: string;
 };
 
 export default function ModelViewer({
   src,
   alt,
   poster,
-  className = ""
+  className = "",
+  viewerClassName = "h-[420px] w-full md:h-[640px]"
 }: ModelViewerProps) {
   useEffect(() => {
     void import("@google/model-viewer");
@@ -48,7 +50,7 @@ export default function ModelViewer({
         touch-action="pan-y"
         loading="lazy"
         reveal="auto"
-        className="h-[420px] w-full md:h-[640px]"
+        className={viewerClassName}
       />
 
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-brand-deep/72 to-transparent" />

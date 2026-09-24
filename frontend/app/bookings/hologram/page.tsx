@@ -2,14 +2,10 @@
 
 import { useMemo, useState } from "react";
 import { asset } from "@/lib/basePath";
+import { hologramPriceByCategory, hologramSessions } from "@/lib/hologramTickets";
 
-const slots = ["09:30", "11:00", "13:30", "15:00", "17:30"];
-const ticketPrices: Record<string, number> = {
-  Adult: 320,
-  Child: 160,
-  Student: 220,
-  "Family or Group": 250
-};
+const slots = hologramSessions;
+const ticketPrices: Record<string, number> = hologramPriceByCategory;
 
 export default function HologramBookingPage() {
   const [selectedExhibition, setSelectedExhibition] = useState("balobedu-rain-queen");

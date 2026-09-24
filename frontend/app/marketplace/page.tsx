@@ -11,6 +11,7 @@ import {
   UsersRound
 } from "lucide-react";
 import ActionStrip from "@/components/ActionStrip";
+import Marketplace3DShowcase from "@/components/Marketplace3DShowcase";
 import MockupHero from "@/components/MockupHero";
 import { marketplaceProducts } from "@/lib/products";
 
@@ -169,8 +170,8 @@ export default function MarketplacePage() {
       <ActionStrip items={marketplaceActions} />
 
       <section className="border-b border-brand-sage/25 bg-brand-ivory py-5">
-        <div className="mx-auto grid max-w-[1800px] gap-4 px-6 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-[1fr_170px_220px_220px_220px_240px] md:px-16">
-          <div className="relative">
+        <div className="mx-auto grid max-w-[1800px] gap-4 px-6 sm:grid-cols-2 md:px-16 lg:grid-cols-4 2xl:grid-cols-[1fr_170px_220px_220px_220px_240px]">
+          <div className="relative sm:col-span-2 lg:col-span-3 2xl:col-span-1">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-black" size={21} />
             <input
               placeholder="Search for products, artisans or cultural crafts..."
@@ -274,36 +275,7 @@ export default function MarketplacePage() {
           </div>
         </div>
 
-        <aside className="rounded-xl border border-brand-sage/25 bg-white p-6 shadow-sm md:col-span-2 2xl:col-span-1">
-          <p className="text-sm font-black uppercase tracking-[0.3em] text-brand-terracotta">
-            Interactive Experience
-          </p>
-          <h2 className="mt-3 font-serif text-4xl font-black leading-tight text-brand-deep">
-            View in 3D and Augmented Reality
-          </h2>
-          <p className="mt-4 leading-7 text-brand-deep/70">
-            See the detail, explore the design and experience South African
-            craftsmanship in a whole new way.
-          </p>
-          <div className="relative mt-6 h-72 overflow-hidden rounded-xl bg-brand-ivory">
-            <Image src="/images/marketplace/zulu-hat.png" alt="Traditional Zulu Hat" fill className="object-contain p-6" />
-          </div>
-          <div className="mt-3 grid grid-cols-4 gap-2">
-            {["/images/marketplace/zulu-hat.png", "/images/marketplace/zulu-ikhamba.png", "/images/zulunecklace.png", "/images/zulubasket.png"].map((image) => (
-              <div key={image} className="relative h-14 overflow-hidden rounded-lg border border-brand-sage/30">
-                <Image src={image} alt="Product preview" fill className="object-cover" />
-              </div>
-            ))}
-          </div>
-          <Link href="/marketplace/zulu-hat" className="mt-5 flex justify-center rounded-xl bg-brand-forest px-5 py-3 font-bold text-white">
-            View 3D Model →
-          </Link>
-          <div className="mt-5 grid grid-cols-3 gap-3 text-center text-xs text-brand-deep/70">
-            <span>Rotate 360</span>
-            <span>Zoom in/out</span>
-            <span>View in AR</span>
-          </div>
-        </aside>
+        <Marketplace3DShowcase className="md:col-span-2 2xl:col-span-1" />
       </section>
     </main>
   );
