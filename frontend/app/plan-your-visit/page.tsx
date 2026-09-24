@@ -204,7 +204,7 @@ export default function PlanYourVisitPage() {
             </p>
             <button
               type="button"
-              onClick={() => window.dispatchEvent(new Event("open-ask-catalyst"))}
+              onClick={() => window.dispatchEvent(new CustomEvent("open-ask-catalyst", { detail: { question: "Plan a heritage trip" } }))}
               className="mt-3 inline-flex font-bold text-brand-forest"
             >
               Chat with Ask Catalyst -&gt;

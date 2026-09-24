@@ -80,7 +80,9 @@ export const useCartStore = create<CartState>()(
         )
     }),
     {
-      name: "catalystic-wanders-cart"
+      name: "catalystic-wanders-cart",
+      // Restored by <CartHydrator /> after React hydrates, so server and client HTML match.
+      skipHydration: true
     }
   )
 );
