@@ -21,7 +21,17 @@ import {
   Utensils,
   Wand2
 } from "lucide-react";
+import dynamic from "next/dynamic";
 import MockupHero from "@/components/MockupHero";
+import { sampleItineraryStops } from "@/lib/itinerary";
+
+// Leaflet needs the browser, so the route map renders client-side only.
+const ItineraryLeaflet = dynamic(() => import("@/components/ItineraryLeaflet"), {
+  ssr: false,
+  loading: () => (
+    <div className="grid h-full place-items-center bg-[#dfead6] text-sm font-semibold text-brand-deep/80">Loading map…</div>
+  )
+});
 
 const chips = ["Heritage & History", "Cultural Experiences", "Nature & Wildlife", "Local Food", "Arts & Crafts"];
 
@@ -47,7 +57,7 @@ const itinerary = [
     Icon: MapPin,
     title: "Modjadji Royal Heritage Experience",
     description: "Learn about the Balobedu kingdom, including the Modjadji Rain Queen legacy, oral histories and sacred landscapes.",
-    image: "/images/heritage/emakhosini.png",
+    image: "/images/heritage/balobedu.jpg",
     tag: "Cultural Experience"
   },
   {
@@ -80,7 +90,7 @@ const featured = [
   {
     title: "Modjadji Hologram Experience",
     location: "Limpopo",
-    image: "/images/hologram-hub/hologram-hub.png"
+    image: "/images/hologram-hub/rain-queen-frame-4.jpg"
   },
   {
     title: "Magoebaskloof Nature Trails",
@@ -202,7 +212,7 @@ export default function PlanYourVisitPage() {
           </article>
         </aside>
 
-        <section className="rounded-xl border border-brand-sage/30 bg-white p-6 shadow-sm">
+        <section className="min-w-0 rounded-xl border border-brand-sage/30 bg-white p-4 shadow-sm sm:p-6">
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
               <div className="flex flex-wrap items-center gap-3">
@@ -228,13 +238,15 @@ export default function PlanYourVisitPage() {
             </div>
           </div>
 
-          <div className="mt-7 grid gap-2 md:grid-cols-5">
+          <div className="-mx-1 mt-7 flex gap-2 overflow-x-auto px-1 pb-1">
             {days.map((day, index) => (
               <button
                 key={day.label}
+                type="button"
                 onClick={() => setActiveDay(index)}
+                aria-pressed={activeDay === index}
                 className={[
-                  "rounded-xl border px-5 py-4 text-left",
+                  "min-w-[7.5rem] flex-1 shrink-0 rounded-xl border px-4 py-3 text-left",
                   activeDay === index
                     ? "border-brand-forest bg-brand-forest text-white"
                     : "border-brand-sage/35 bg-brand-ivory text-brand-deep"
@@ -246,35 +258,38 @@ export default function PlanYourVisitPage() {
             ))}
           </div>
 
-          <div className="mt-7 rounded-xl border border-brand-sage/30 bg-brand-ivory/40 p-5">
+          <div className="mt-7 rounded-xl border border-brand-sage/30 bg-brand-ivory/40 p-3 sm:p-5">
             <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
               <div>
                 <h3 className="font-serif text-3xl font-black text-brand-deep">Day 1 - Arrival & Cultural Immersion</h3>
                 <p className="mt-1 text-brand-deep/65">Limpopo | Fri, 10 Oct 2026</p>
               </div>
-              <button className="flex items-center gap-2 rounded-xl border border-brand-sage/35 bg-white px-5 py-3 font-bold text-brand-deep">
+              <a href="#itinerary-map" className="flex items-center gap-2 rounded-xl border border-brand-sage/35 bg-white px-5 py-3 font-bold text-brand-deep">
                 <Map size={17} /> View Full Day Map
-              </button>
+              </a>
             </div>
 
-            <div className="relative grid gap-5">
-              <div className="absolute left-[84px] top-4 hidden h-[calc(100%-40px)] w-1 bg-brand-forest md:block" />
+            {/* Laid out by the width of this column (container queries in globals.css), not the screen. */}
+            <div className="itinerary-list relative grid gap-5">
+              <div className="itinerary-line absolute top-4 h-[calc(100%-40px)] w-1 bg-brand-forest" aria-hidden="true" />
               {itinerary.map((item, index) => (
-                <article key={item.title} className="grid gap-4 md:grid-cols-[110px_44px_minmax(0,1fr)_220px]">
+                <article key={item.title} className="itinerary-row">
                   <p className="pt-3 text-sm font-bold text-brand-deep">{item.time}</p>
-                  <div className="relative z-10 grid h-11 w-11 place-items-center rounded-full bg-brand-forest text-white">
+                  <div className="itinerary-icon relative z-10 h-11 w-11 place-items-center rounded-full bg-brand-forest text-white">
                     <item.Icon size={20} />
                   </div>
-                  <div className="rounded-xl bg-white p-4">
-                    <h4 className="font-serif text-xl font-black text-brand-deep">{item.title}</h4>
-                    <p className="mt-1 text-sm leading-6 text-brand-deep/70">{item.description}</p>
-                    <span className="mt-3 inline-flex rounded-full bg-brand-sand/55 px-3 py-1 text-xs font-bold text-brand-terracotta">
-                      {item.tag}
-                    </span>
-                  </div>
-                  <div className="relative min-h-32 overflow-hidden rounded-xl">
-                    <Image src={item.image} alt={item.title} fill className="object-cover" />
-                    {index === 1 ? <Heart className="absolute right-3 top-3 text-white" size={19} /> : null}
+                  <div className="itinerary-card rounded-xl bg-white p-4">
+                    <div className="min-w-0">
+                      <h4 className="font-serif text-xl font-black text-brand-deep">{item.title}</h4>
+                      <p className="mt-1 text-sm leading-6 text-brand-deep/80">{item.description}</p>
+                      <span className="mt-3 inline-flex rounded-full bg-brand-sand/55 px-3 py-1 text-xs font-bold text-brand-deep">
+                        {item.tag}
+                      </span>
+                    </div>
+                    <div className="relative min-h-36 overflow-hidden rounded-lg">
+                      <Image src={item.image} alt={item.title} fill sizes="(min-width: 1280px) 220px, 90vw" className="object-cover" />
+                      {index === 1 ? <Heart className="absolute right-3 top-3 text-white" size={19} /> : null}
+                    </div>
                   </div>
                 </article>
               ))}
@@ -282,7 +297,7 @@ export default function PlanYourVisitPage() {
           </div>
         </section>
 
-        <aside className="grid content-start gap-5 lg:col-span-2 lg:grid-cols-2 2xl:col-span-1 2xl:grid-cols-1">
+        <aside className="grid min-w-0 content-start gap-5 lg:col-span-2 lg:grid-cols-2 2xl:col-span-1 2xl:grid-cols-1">
           <article className="rounded-xl border border-brand-sage/30 bg-white p-6 shadow-sm">
             <h2 className="font-serif text-3xl font-black text-brand-deep">Trip Overview</h2>
             <div className="mt-5 grid gap-4 text-sm text-brand-deep/75">
@@ -301,19 +316,38 @@ export default function PlanYourVisitPage() {
             </div>
           </article>
 
-          <article className="rounded-xl border border-brand-sage/30 bg-white p-5 shadow-sm">
-            <h2 className="font-serif text-2xl font-black text-brand-deep">Itinerary Map</h2>
-            <div className="relative mt-4 min-h-72 overflow-hidden rounded-xl bg-[#dfead6]">
-              <div className="absolute inset-8 rounded-[45%] border-[14px] border-brand-sage/40" />
-              <div className="absolute left-[24%] top-[18%] rounded-full bg-brand-forest px-3 py-2 text-xs font-bold text-white">Polokwane</div>
-              <div className="absolute left-[43%] top-[40%] rounded-full bg-brand-terracotta px-3 py-2 text-xs font-bold text-white">Modjadji</div>
-              <div className="absolute bottom-[22%] right-[16%] rounded-full bg-brand-forest px-3 py-2 text-xs font-bold text-white">Kruger</div>
-              <svg className="absolute inset-0 h-full w-full" viewBox="0 0 320 240" aria-hidden="true">
-                <path d="M78 55 C115 92, 128 105, 154 113 S224 157, 264 184" fill="none" stroke="#315D42" strokeWidth="5" strokeLinecap="round" strokeDasharray="8 10" />
-              </svg>
-              <button className="absolute bottom-4 right-4 rounded-xl bg-brand-forest px-5 py-3 font-bold text-white">
+          <article id="itinerary-map" className="scroll-mt-32 rounded-xl border border-brand-sage/30 bg-white p-5 shadow-sm">
+            <div className="flex flex-wrap items-baseline justify-between gap-2">
+              <h2 className="font-serif text-2xl font-black text-brand-deep">Itinerary Map</h2>
+              <p className="text-sm font-semibold text-brand-terracotta">
+                {days[activeDay].label} · {days[activeDay].place}
+              </p>
+            </div>
+            <div className="relative isolate mt-4 h-80 overflow-hidden rounded-xl border border-brand-sage/30">
+              <ItineraryLeaflet stops={sampleItineraryStops} activeDay={activeDay} />
+            </div>
+            <ol className="mt-4 grid gap-2 text-sm">
+              {sampleItineraryStops.map((stop, index) => (
+                <li key={stop.name} className="flex items-start gap-3">
+                  <span
+                    className={[
+                      "grid h-6 w-6 shrink-0 place-items-center rounded-full text-xs font-bold text-white",
+                      stop.day === activeDay ? "bg-brand-forest" : "bg-brand-sage"
+                    ].join(" ")}
+                  >
+                    {index + 1}
+                  </span>
+                  <span className={stop.day === activeDay ? "font-semibold text-brand-deep" : "text-brand-deep/80"}>
+                    {stop.name} <span className="text-brand-deep/80">· Day {stop.day + 1}</span>
+                  </span>
+                </li>
+              ))}
+            </ol>
+            <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
+              <p className="text-xs text-brand-deep/80">Straight-line route between stops, not driving directions.</p>
+              <Link href="/explore/map" className="rounded-xl bg-brand-forest px-5 py-3 font-bold text-white">
                 View Full Map -&gt;
-              </button>
+              </Link>
             </div>
           </article>
 

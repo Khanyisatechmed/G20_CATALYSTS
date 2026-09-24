@@ -31,6 +31,59 @@ select {
   font: inherit;
 }
 
+/* Plan Your Visit timeline: adapts to its column width, which varies with the page layout. */
+.itinerary-list {
+  container-type: inline-size;
+}
+
+/* Narrow columns (phones): the time sits above its card. */
+.itinerary-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 4px 12px;
+}
+
+.itinerary-row > p {
+  padding-top: 0;
+}
+
+.itinerary-icon,
+.itinerary-line {
+  display: none;
+}
+
+.itinerary-card {
+  display: grid;
+  gap: 14px;
+}
+
+@container (min-width: 460px) {
+  .itinerary-row {
+    grid-template-columns: 56px 44px minmax(0, 1fr);
+  }
+
+  .itinerary-row > p {
+    padding-top: 0.75rem;
+  }
+
+  .itinerary-icon {
+    display: grid;
+  }
+
+  /* Centred on the icon column: 56px time + 12px gap + 22px half-icon - 2px half-line. */
+  .itinerary-line {
+    display: block;
+    left: 88px;
+  }
+}
+
+@container (min-width: 700px) {
+  .itinerary-card {
+    grid-template-columns: minmax(0, 1fr) 200px;
+    align-items: stretch;
+  }
+}
+
 ::selection {
   background: rgba(200, 117, 75, 0.28);
 }
